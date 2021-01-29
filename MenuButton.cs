@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CustomControls {
+namespace KLCProxy {
     public class MenuButton : Button {
         [DefaultValue(null)]
         public ContextMenuStrip Menu { get; set; }
