@@ -490,42 +490,48 @@ namespace KLCProxy {
                     agent.WaitLabel = "RC";
                     agent.WaitCommand = command;
                 } else {
-                    dynamic agentApi = agent.GetAgentInfoFromAPI(lastAuthToken);
-
-                    string agentName = agentApi["Result"]["AgentName"];
-                    string agentDWG = agentApi["Result"]["DomainWorkgroup"];
-                    string agentUserLast = agentApi["Result"]["LastLoggedInUser"];
-                    string agentUserCurrent = agentApi["Result"]["CurrentUser"];
-
-                    /*
-                    string agentLastReboot = agentApi["Result"]["LastRebootTime"];
-                    string agentOSType = agentApi["Result"]["OSType"];
-                    string agentOSInfo = agentApi["Result"]["OSInfo"];
-                    string agentNetIP = agentApi["Result"]["IPAddress"];
-                    string agentNetDefaultGW = agentApi["Result"]["DefaultGateway"];
-                    string agentNetConnectionGW = agentApi["Result"]["ConnectionGatewayIP"];
-                    string agentNetDHCPServer = agentApi["Result"]["DHCPServer"];
-                    string agentNetDNS1 = agentApi["Result"]["DNSServer1"];
-                    string agentNetDNS2 = agentApi["Result"]["DNSServer2"];
-                    */
-
-                    string displayGroup = agentApi["Result"]["MachineGroup"];
-                    string displayUser = (agentUserCurrent != "" ? agentUserCurrent : agentUserLast);
-                    string displayGWG = "";
-                    if (agentApi["Result"]["OSType"] != "Mac OS X")
-                        displayGWG = (agentDWG.Contains("(d") ? "Domain: " : "Workgroup: ") + agentDWG.Substring(0, agentDWG.IndexOf(" ("));
-
-                    string[] arrAdmins = new string[] { "administrator", "brandadmin", "adminc", "company" };
-                    if (arrAdmins.Contains(displayUser.ToLower())) {
+                    if(ConnectPromptWithAdminBypass(agent))
                         command.Launch(false, Settings.UseMITM);
-                    } else {
-                        string textConfirm = string.Format("Agent: {0}\r\nUser: {1}\r\n{2}", agentName, displayUser, displayGWG);
-                        DialogResult result = MessageBox.Show("Connect to:\r\n\r\n" + textConfirm, "Connecting to " + agentName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        if (result == DialogResult.Yes)
-                            command.Launch(false, Settings.UseMITM);
-                    }
                 }
             }
+        }
+
+        private bool ConnectPromptWithAdminBypass(Agent agent) {
+            dynamic agentApi = agent.GetAgentInfoFromAPI(lastAuthToken);
+
+            string agentName = agentApi["Result"]["AgentName"];
+            string agentDWG = agentApi["Result"]["DomainWorkgroup"];
+            string agentUserLast = agentApi["Result"]["LastLoggedInUser"];
+            string agentUserCurrent = agentApi["Result"]["CurrentUser"];
+
+            /*
+            string agentLastReboot = agentApi["Result"]["LastRebootTime"];
+            string agentOSType = agentApi["Result"]["OSType"];
+            string agentOSInfo = agentApi["Result"]["OSInfo"];
+            string agentNetIP = agentApi["Result"]["IPAddress"];
+            string agentNetDefaultGW = agentApi["Result"]["DefaultGateway"];
+            string agentNetConnectionGW = agentApi["Result"]["ConnectionGatewayIP"];
+            string agentNetDHCPServer = agentApi["Result"]["DHCPServer"];
+            string agentNetDNS1 = agentApi["Result"]["DNSServer1"];
+            string agentNetDNS2 = agentApi["Result"]["DNSServer2"];
+            */
+
+            string displayGroup = agentApi["Result"]["MachineGroup"];
+            string displayUser = (agentUserCurrent != "" ? agentUserCurrent : agentUserLast);
+            string displayGWG = "";
+            if (agentApi["Result"]["OSType"] != "Mac OS X")
+                displayGWG = (agentDWG.Contains("(d") ? "Domain: " : "Workgroup: ") + agentDWG.Substring(0, agentDWG.IndexOf(" ("));
+
+            DialogResult result;
+            string[] arrAdmins = new string[] { "administrator", "brandadmin", "adminc", "company" };
+            if (arrAdmins.Contains(displayUser.ToLower()))
+                result = DialogResult.Yes;
+            else {
+                string textConfirm = string.Format("Agent: {0}\r\nUser: {1}\r\n{2}", agentName, displayUser, displayGWG);
+                result = MessageBox.Show("Connect to:\r\n\r\n" + textConfirm, "Connecting to " + agentName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            }
+
+            return (result == DialogResult.Yes);
         }
 
         private void contextOriginalPrivate_Click(object sender, EventArgs e) {
@@ -579,28 +585,8 @@ namespace KLCProxy {
                     agent.WaitLabel = "Fi";
                     agent.WaitCommand = command;
                 } else {
-                    dynamic agentApi = agent.GetAgentInfoFromAPI(lastAuthToken);
-
-                    string agentName = agentApi["Result"]["AgentName"];
-                    string agentDWG = agentApi["Result"]["DomainWorkgroup"];
-                    string agentUserLast = agentApi["Result"]["LastLoggedInUser"];
-                    string agentUserCurrent = agentApi["Result"]["CurrentUser"];
-
-                    string displayGroup = agentApi["Result"]["MachineGroup"];
-                    string displayUser = (agentUserCurrent != "" ? agentUserCurrent : agentUserLast);
-                    string displayGWG = "";
-                    if (agentApi["Result"]["OSType"] != "Mac OS X")
-                        displayGWG = (agentDWG.Contains("(d") ? "Domain: " : "Workgroup: ") + agentDWG.Substring(0, agentDWG.IndexOf(" ("));
-
-                    string[] arrAdmins = new string[] { "administrator", "brandadmin", "adminc", "company" };
-                    if (arrAdmins.Contains(displayUser.ToLower())) {
-                        command.Launch(false, Settings.UseMITM);
-                    } else {
-                        string textConfirm = string.Format("Agent: {0}\r\nUser: {1}\r\n{2}", agentName, displayUser, displayGWG);
-                        DialogResult result = MessageBox.Show("Connect to:\r\n\r\n" + textConfirm, "Connecting to " + agentName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        if (result == DialogResult.Yes)
-                            command.Launch(true, false);
-                    }
+                    if (ConnectPromptWithAdminBypass(agent))
+                        command.Launch(true, false);
                 }
             }
         }
