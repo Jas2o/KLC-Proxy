@@ -566,7 +566,7 @@ namespace KLCProxy {
                 command.SetForLiveConnect();
 
                 if (agent.Watch && agent.Online == 0) {
-                    agent.WaitLabel = "Fi-L";
+                    agent.WaitLabel = "Alt";
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 } else
