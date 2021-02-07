@@ -47,7 +47,14 @@ namespace KLCProxy {
             Kaseya.Start();
 
             NamedPipeListener<String> pipeListener = new NamedPipeListener<String>();
-            pipeListener.MessageReceived += (sender, e) => LaunchFromArgument(e.Message);
+            pipeListener.MessageReceived += (sender, e) => {
+                if (e.Message.Contains("kaseyaliveconnect:///"))
+                    LaunchFromArgument(e.Message.Replace("kaseyaliveconnect:///", ""));
+                else if (e.Message.Contains("klcproxy:"))
+                    CheckAndLoadToken(string.Join("", e.Message.ToCharArray().Where(Char.IsDigit)));
+                else
+                    AddAgentToList(e.Message);
+            };
             pipeListener.Error += (sender, e) => MessageBox.Show(string.Format("Error ({0}): {1}", e.ErrorType, e.Exception.ToString()));
             pipeListener.Start();
 
@@ -95,8 +102,15 @@ namespace KLCProxy {
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1) {
-                string base64 = args[1].Replace("kaseyaliveconnect:///", "");
-                LaunchFromArgument(base64);
+                if (args[1].Contains("kaseyaliveconnect:///")) {
+                    string base64 = args[1].Replace("kaseyaliveconnect:///", "");
+                    LaunchFromArgument(base64);
+                } else if (args[1].Contains("klcproxy:")) {
+                    CheckAndLoadToken(string.Join("", args[1].ToCharArray().Where(Char.IsDigit)));
+                } else {
+                    CheckAndLoadToken(KaseyaAuth.GetStoredAuth());
+                    AddAgentToList(args[1]);
+                }
             } else {
                 CheckAndLoadToken(KaseyaAuth.GetStoredAuth());
             }
@@ -218,7 +232,7 @@ namespace KLCProxy {
             IRestResponse responseTV = Kaseya.GetRequest(lastAuthToken, "api/v1.0/assetmgmt/agents?$filter=AgentId eq " + agentID + "M");
             dynamic resultTV = JsonConvert.DeserializeObject(responseTV.Content);
 
-            if ((int)resultTV["TotalRecords"] == 1) {
+            if (resultTV["TotalRecords"] != null && (int)resultTV["TotalRecords"] == 1) {
                 KLCCommand command = KLCCommand.Example(resultTV["Result"][0]["AgentId"].ToString(), lastAuthToken);
                 command.SetForRemoteControl(false, true);
                 AddAgentToList(command);

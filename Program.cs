@@ -22,7 +22,7 @@ namespace KLCProxy {
             if (!createdNew) {
                 string[] args = Environment.GetCommandLineArgs();
                 if (args.Length > 1)
-                    NamedPipeListener<String>.SendMessage(args[1].Replace("kaseyaliveconnect:///", ""));
+                    NamedPipeListener<String>.SendMessage(args[1]);
                 return;
             } else {
                 Application.EnableVisualStyles();
