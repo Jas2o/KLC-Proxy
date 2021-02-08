@@ -518,6 +518,10 @@ namespace KLCProxy {
             string agentUserLast = agentApi["Result"]["LastLoggedInUser"];
             string agentUserCurrent = agentApi["Result"]["CurrentUser"];
 
+            if (agentDWG == null) agentDWG = "";
+            if (agentUserLast == null) agentUserLast = "";
+            if (agentUserCurrent == null) agentUserCurrent = "";
+
             /*
             string agentLastReboot = agentApi["Result"]["LastRebootTime"];
             string agentOSType = agentApi["Result"]["OSType"];
@@ -530,7 +534,7 @@ namespace KLCProxy {
             string agentNetDNS2 = agentApi["Result"]["DNSServer2"];
             */
 
-            string displayGroup = agentApi["Result"]["MachineGroup"];
+            //string displayGroup = agentApi["Result"]["MachineGroup"];
             string displayUser = (agentUserCurrent != "" ? agentUserCurrent : agentUserLast);
             string displayGWG = "";
             if (agentApi["Result"]["OSType"] != "Mac OS X")
