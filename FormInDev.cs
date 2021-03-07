@@ -452,15 +452,6 @@ namespace KLCProxy {
             Process.Start("https://company.itglue.com/1432194/passwords/11018769"); //TeamV
         }
 
-        private void kLCExplorerToolStripMenuItem_Click(object sender, EventArgs e) {
-            string pathKLCEx = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCEx.exe";
-            if (File.Exists(pathKLCEx)) {
-                Process process = new Process();
-                process.StartInfo.FileName = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCEx.exe";
-                process.Start();
-            }
-        }
-
         private void contextOriginalLiveConnect_Click(object sender, EventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
@@ -625,5 +616,34 @@ namespace KLCProxy {
             }
         }
 
+        private void toolAppHawk_Click(object sender, EventArgs e) {
+            string pathKLCHawk = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Hawk.exe";
+            if (!File.Exists(pathKLCHawk))
+                pathKLCHawk = pathKLCHawk.Replace(@"\Build\", @"\KLC-Hawk\bin\");
+
+            if (File.Exists(pathKLCHawk)) {
+                Process process = new Process();
+                process.StartInfo.FileName = pathKLCHawk;
+                process.Start();
+            }
+        }
+
+        private void toolAppFinch_Click(object sender, EventArgs e) {
+            string pathKLCFinch = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Finch.exe";
+            if (File.Exists(pathKLCFinch)) {
+                Process process = new Process();
+                process.StartInfo.FileName = pathKLCFinch;
+                process.Start();
+            }
+        }
+
+        private void toolAppExplorer_Click(object sender, EventArgs e) {
+            string pathKLCEx = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCEx.exe";
+            if (File.Exists(pathKLCEx)) {
+                Process process = new Process();
+                process.StartInfo.FileName = pathKLCEx;
+                process.Start();
+            }
+        }
     }
 }

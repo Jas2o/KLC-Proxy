@@ -37,8 +37,11 @@
             this.contextOriginalVNC = new System.Windows.Forms.ToolStripMenuItem();
             this.btnWatch = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.appsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolAppExplorer = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolAppFinch = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolAppHawk = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.kLCExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.screenshotToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aHKAutoTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,9 +52,9 @@
             this.cjasonpcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addByGUIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.liveConnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reconnectCurrentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.killAllLiveConnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.kLCRemoteDebugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.forceAlternativeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -172,6 +175,7 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.appsToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -180,10 +184,40 @@
             this.menuStrip1.TabIndex = 14;
             this.menuStrip1.Text = "menuStrip1";
             // 
+            // appsToolStripMenuItem
+            // 
+            this.appsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolAppExplorer,
+            this.toolAppFinch,
+            this.toolAppHawk});
+            this.appsToolStripMenuItem.Name = "appsToolStripMenuItem";
+            this.appsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            this.appsToolStripMenuItem.Text = "Apps";
+            // 
+            // toolAppExplorer
+            // 
+            this.toolAppExplorer.Name = "toolAppExplorer";
+            this.toolAppExplorer.Size = new System.Drawing.Size(180, 22);
+            this.toolAppExplorer.Text = "Explorer";
+            this.toolAppExplorer.Click += new System.EventHandler(this.toolAppExplorer_Click);
+            // 
+            // toolAppFinch
+            // 
+            this.toolAppFinch.Name = "toolAppFinch";
+            this.toolAppFinch.Size = new System.Drawing.Size(180, 22);
+            this.toolAppFinch.Text = "Finch";
+            this.toolAppFinch.Click += new System.EventHandler(this.toolAppFinch_Click);
+            // 
+            // toolAppHawk
+            // 
+            this.toolAppHawk.Name = "toolAppHawk";
+            this.toolAppHawk.Size = new System.Drawing.Size(180, 22);
+            this.toolAppHawk.Text = "Hawk/Shark";
+            this.toolAppHawk.Click += new System.EventHandler(this.toolAppHawk_Click);
+            // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.kLCExplorerToolStripMenuItem,
             this.viewInfoToolStripMenuItem,
             this.screenshotToolToolStripMenuItem,
             this.aHKAutoTypeToolStripMenuItem,
@@ -194,20 +228,13 @@
             this.cjasonpcToolStripMenuItem,
             this.addByGUIDToolStripMenuItem,
             this.toolStripSeparator2,
+            this.liveConnectToolStripMenuItem,
             this.reconnectCurrentToolStripMenuItem,
             this.killAllLiveConnectToolStripMenuItem,
-            this.toolStripSeparator6,
             this.kLCRemoteDebugToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // kLCExplorerToolStripMenuItem
-            // 
-            this.kLCExplorerToolStripMenuItem.Name = "kLCExplorerToolStripMenuItem";
-            this.kLCExplorerToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
-            this.kLCExplorerToolStripMenuItem.Text = "KLC Explorer";
-            this.kLCExplorerToolStripMenuItem.Click += new System.EventHandler(this.kLCExplorerToolStripMenuItem_Click);
             // 
             // viewInfoToolStripMenuItem
             // 
@@ -277,6 +304,13 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(176, 6);
             // 
+            // liveConnectToolStripMenuItem
+            // 
+            this.liveConnectToolStripMenuItem.Enabled = false;
+            this.liveConnectToolStripMenuItem.Name = "liveConnectToolStripMenuItem";
+            this.liveConnectToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.liveConnectToolStripMenuItem.Text = "Live Connect:";
+            // 
             // reconnectCurrentToolStripMenuItem
             // 
             this.reconnectCurrentToolStripMenuItem.Name = "reconnectCurrentToolStripMenuItem";
@@ -291,17 +325,11 @@
             this.killAllLiveConnectToolStripMenuItem.Text = "Kill All Live Connect";
             this.killAllLiveConnectToolStripMenuItem.Click += new System.EventHandler(this.KillAllLiveConnectToolStripMenuItem_Click);
             // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(176, 6);
-            this.toolStripSeparator6.Visible = false;
-            // 
             // kLCRemoteDebugToolStripMenuItem
             // 
             this.kLCRemoteDebugToolStripMenuItem.Name = "kLCRemoteDebugToolStripMenuItem";
             this.kLCRemoteDebugToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
-            this.kLCRemoteDebugToolStripMenuItem.Text = "KLC Remote Debug";
+            this.kLCRemoteDebugToolStripMenuItem.Text = "Remote Debug";
             this.kLCRemoteDebugToolStripMenuItem.Visible = false;
             this.kLCRemoteDebugToolStripMenuItem.Click += new System.EventHandler(this.kLCRemoteDebugToolStripMenuItem_Click);
             // 
@@ -389,12 +417,12 @@
             this.contextAlternativeShared,
             this.contextAlternativePrivate});
             this.contextAlternative.Name = "contextMenuStrip1";
-            this.contextAlternative.Size = new System.Drawing.Size(181, 98);
+            this.contextAlternative.Size = new System.Drawing.Size(129, 76);
             // 
             // contextAlternativeLaunch
             // 
             this.contextAlternativeLaunch.Name = "contextAlternativeLaunch";
-            this.contextAlternativeLaunch.Size = new System.Drawing.Size(180, 22);
+            this.contextAlternativeLaunch.Size = new System.Drawing.Size(128, 22);
             this.contextAlternativeLaunch.Text = "Launch";
             this.contextAlternativeLaunch.Click += new System.EventHandler(this.contextAlternativeLaunch_Click);
             // 
@@ -406,14 +434,14 @@
             // contextAlternativeShared
             // 
             this.contextAlternativeShared.Name = "contextAlternativeShared";
-            this.contextAlternativeShared.Size = new System.Drawing.Size(180, 22);
+            this.contextAlternativeShared.Size = new System.Drawing.Size(128, 22);
             this.contextAlternativeShared.Text = "RC Shared";
             this.contextAlternativeShared.Click += new System.EventHandler(this.contextAlternativeShared_Click);
             // 
             // contextAlternativePrivate
             // 
             this.contextAlternativePrivate.Name = "contextAlternativePrivate";
-            this.contextAlternativePrivate.Size = new System.Drawing.Size(180, 22);
+            this.contextAlternativePrivate.Size = new System.Drawing.Size(128, 22);
             this.contextAlternativePrivate.Text = "RC Private";
             this.contextAlternativePrivate.Click += new System.EventHandler(this.contextAlternativePrivate_Click);
             // 
@@ -492,20 +520,23 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem authTokenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem kLCRemoteDebugToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem cjasonpcToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem forceAlternativeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem useMITMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addByGUIDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem iTGlueTeamVToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
-        private System.Windows.Forms.ToolStripMenuItem kLCExplorerToolStripMenuItem;
         private MenuButton btnOriginal;
         private System.Windows.Forms.ContextMenuStrip contextAlternative;
         private System.Windows.Forms.ToolStripMenuItem contextAlternativeLaunch;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripMenuItem contextAlternativeShared;
         private System.Windows.Forms.ToolStripMenuItem contextAlternativePrivate;
+        private System.Windows.Forms.ToolStripMenuItem appsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolAppHawk;
+        private System.Windows.Forms.ToolStripMenuItem toolAppFinch;
+        private System.Windows.Forms.ToolStripMenuItem toolAppExplorer;
+        private System.Windows.Forms.ToolStripMenuItem liveConnectToolStripMenuItem;
     }
 }
 
