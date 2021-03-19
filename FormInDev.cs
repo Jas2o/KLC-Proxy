@@ -181,25 +181,32 @@ namespace KLCProxy {
 
             AddAgentToList(command);
 
-            switch(Settings.OnLiveConnect) {
-                case Settings.OnLiveConnectAction.UseLiveConnect:
-                    command.Launch(false, Settings.UseMITM);
-                    break;
-                case Settings.OnLiveConnectAction.UseAlternative:
+            if (command.payload.navId == "dashboard") {
+                switch (Settings.OnLiveConnect) {
+                    case Settings.OnLiveConnectAction.UseLiveConnect:
+                        command.Launch(false, Settings.UseMITM);
+                        break;
+                    case Settings.OnLiveConnectAction.UseAlternative:
+                        command.Launch(true, false);
+                        break;
+                    case Settings.OnLiveConnectAction.Prompt:
+                        DialogResult result;
+                        menuStrip1.Invoke(new Action(() => {
+                            this.TopMost = true;
+                            result = MessageBox.Show("Use Alternative instead?", "Received Live Connect launch", MessageBoxButtons.YesNoCancel);
+                            this.TopMost = false;
+                            if (result == DialogResult.Yes)
+                                command.Launch(true, false);
+                            else if (result == DialogResult.No)
+                                command.Launch(false, Settings.UseMITM);
+                        }));
+                        break;
+                }
+            } else {
+                if(Settings.RedirectToAlternative)
                     command.Launch(true, false);
-                    break;
-                case Settings.OnLiveConnectAction.Prompt:
-                    DialogResult result;
-                    menuStrip1.Invoke(new Action(() => {
-                        this.TopMost = true;
-                        result = MessageBox.Show("Use Alternative instead?", "Received Live Connect launch", MessageBoxButtons.YesNoCancel);
-                        this.TopMost = false;
-                        if (result == DialogResult.Yes)
-                            command.Launch(true, false);
-                        else if(result == DialogResult.No)
-                            command.Launch(false, Settings.UseMITM);
-                    }));
-                    break;
+                else
+                    command.Launch(false, Settings.UseMITM);
             }
 
             menuStrip1.Invoke(new Action(() => {
