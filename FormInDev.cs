@@ -29,9 +29,6 @@ namespace KLCProxy {
         public FormInDev() {
             InitializeComponent();
 
-            //_notifyIcon.Icon = Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            //_notifyIcon.BalloonTipClosed += (s, e) => _notifyIcon.Visible = false;
-
             //This is currently only here for future plans to adjust going to primary screen top left
             string pathSettings = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCProxy-config.json";
             if (File.Exists(pathSettings))
