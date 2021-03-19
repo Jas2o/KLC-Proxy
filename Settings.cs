@@ -12,10 +12,18 @@ namespace KLCProxy {
         public Settings() { }
         public Settings(string fileName) : base(fileName) { }
 
+        public enum OnLiveConnectAction {
+            UseLiveConnect,
+            UseAlternative,
+            Prompt
+        }
+
         //--
 
         public bool UseMITM { get; set; } = false;
         public bool RedirectToAlternative { get; set; } = false;
-        [JsonIgnore] public bool ForceLiveConnect { get; set; } = false;
+        //[JsonIgnore] public bool ForceLiveConnect { get; set; } = false;
+        public OnLiveConnectAction OnLiveConnect { get; set; } = Settings.OnLiveConnectAction.UseLiveConnect;
+        public bool ToastWhenOnline = false;
     }
 }

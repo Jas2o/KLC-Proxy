@@ -36,6 +36,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Split45.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CredentialManagement, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CredentialManagement.1.0.2\lib\net35\CredentialManagement.dll</HintPath>
@@ -95,6 +98,7 @@
     <Compile Include="MinimizeCapture\WindowSnapCollection.cs" />
     <Compile Include="MinimizeCapture\XPAppearance.cs" />
     <Compile Include="MinimizeCapture\XPAppearance.SPI.cs" />
+    <Content Include="Split45.ico" />
     <None Include="Utilities\ClipboardMonitor.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SnapForm.cs">
@@ -166,6 +170,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="..\LibKaseya\LibKaseya.projitems" Label="Shared" />
   <Import Project="..\LibKaseyaAuth\LibKaseyaAuth.projitems" Label="Shared" />

@@ -29,6 +29,9 @@ namespace KLCProxy {
         public FormInDev() {
             InitializeComponent();
 
+            //_notifyIcon.Icon = Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            //_notifyIcon.BalloonTipClosed += (s, e) => _notifyIcon.Visible = false;
+
             //This is currently only here for future plans to adjust going to primary screen top left
             string pathSettings = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCProxy-config.json";
             if (File.Exists(pathSettings))
@@ -97,6 +100,7 @@ namespace KLCProxy {
                     ConfigureHandler.ToggleProxy(true);
                     useKLCProxyToolStripMenuItem.Checked = true;
                 }
+                toolSettingsToastTest.Visible = false;
             }
             ds = null;
 
@@ -135,9 +139,11 @@ namespace KLCProxy {
                 Settings.UseMITM = false;
             }
 
-            forceLiveConnectToolStripMenuItem.Checked = Settings.ForceLiveConnect;
+            //forceLiveConnectToolStripMenuItem.Checked = Settings.ForceLiveConnect;
             forceAlternativeToolStripMenuItem.Checked = Settings.RedirectToAlternative;
             useMITMToolStripMenuItem.Checked = Settings.UseMITM;
+            toolSettingsToastWhenOnline.Checked = Settings.ToastWhenOnline;
+            UpdateOnLiveConnect();
 
             aHKAutoTypeToolStripMenuItem.Enabled = File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk");
         }
@@ -178,13 +184,25 @@ namespace KLCProxy {
 
             AddAgentToList(command);
 
-            if (Settings.RedirectToAlternative) {
-                command.Launch(true, false);
-            } else {
-                if (Settings.ForceLiveConnect)
-                    command.ForceLiveConnect();
-
-                command.Launch(false, Settings.UseMITM);
+            switch(Settings.OnLiveConnect) {
+                case Settings.OnLiveConnectAction.UseLiveConnect:
+                    command.Launch(false, Settings.UseMITM);
+                    break;
+                case Settings.OnLiveConnectAction.UseAlternative:
+                    command.Launch(true, false);
+                    break;
+                case Settings.OnLiveConnectAction.Prompt:
+                    DialogResult result;
+                    menuStrip1.Invoke(new Action(() => {
+                        this.TopMost = true;
+                        result = MessageBox.Show("Use Alternative instead?", "Received Live Connect launch", MessageBoxButtons.YesNoCancel);
+                        this.TopMost = false;
+                        if (result == DialogResult.Yes)
+                            command.Launch(true, false);
+                        else if(result == DialogResult.No)
+                            command.Launch(false, Settings.UseMITM);
+                    }));
+                    break;
             }
 
             menuStrip1.Invoke(new Action(() => {
@@ -271,7 +289,7 @@ namespace KLCProxy {
                     if (agent != null)
                     {
                         KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
-                        command.SetForRemoteControl(k.Contains(":Private"), !Settings.ForceLiveConnect);
+                        command.SetForRemoteControl(k.Contains(":Private"), true);// Old: rcOnly=!Settings.ForceLiveConnect
                         Debug.WriteLine("Relaunching");
                         command.Launch(false, Settings.UseMITM);
                         Thread.Sleep(100);
@@ -288,10 +306,12 @@ namespace KLCProxy {
         }
 
         //Settings
+        /*
         private void ForceLiveConnectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             forceLiveConnectToolStripMenuItem.Checked = Settings.ForceLiveConnect = !Settings.ForceLiveConnect;
         }
+        */
 
         private void UseKLCProxyToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -316,7 +336,7 @@ namespace KLCProxy {
 
             if (agent == null)
             {
-                agents.Add(new Agent(command.payload.agentId, command.payload.auth.Token));
+                agents.Add(new Agent(command.payload.agentId, command.payload.auth.Token, new Agent.StatusChange(NotifyForAgent)));
 
                 RefreshAgentsList(true);
 
@@ -387,17 +407,19 @@ namespace KLCProxy {
                     agent = (listAgent.SelectedItem as Agent);
                 }));
 
-                string theText = agent.GetAgentRemoteControlLogs(lastAuthToken);
+                if (agent != null) {
+                    string theText = agent.GetAgentRemoteControlLogs(lastAuthToken);
 
-                //if (txtSelectedLogs.InvokeRequired)
-                //{
-                txtSelectedLogs.Invoke(new Action(() => {
-                    txtSelectedLogs.Text = theText;
-                }));
-                //}
-                //else
-                //{
-                //}
+                    //if (txtSelectedLogs.InvokeRequired)
+                    //{
+                    txtSelectedLogs.Invoke(new Action(() => {
+                        txtSelectedLogs.Text = theText;
+                    }));
+                    //}
+                    //else
+                    //{
+                    //}
+                }
             });
 
             //bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
@@ -489,7 +511,7 @@ namespace KLCProxy {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
                 KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
-                command.SetForRemoteControl(false, !Settings.ForceLiveConnect);
+                command.SetForRemoteControl(false, true);// Old: rcOnly=!Settings.ForceLiveConnect
 
                 if (agent.Watch && agent.Online == 0) {
                     agent.WaitLabel = "RC";
@@ -548,7 +570,7 @@ namespace KLCProxy {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
                 KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
-                command.SetForRemoteControl(true, !Settings.ForceLiveConnect);
+                command.SetForRemoteControl(true, false); // Old: rcOnly=!Settings.ForceLiveConnect
 
                 if (agent.Watch && agent.Online == 0) {
                     agent.WaitLabel = "RC-P";
@@ -644,6 +666,41 @@ namespace KLCProxy {
                 process.StartInfo.FileName = pathKLCEx;
                 process.Start();
             }
+        }
+
+        private void toolSettingsToastWhenOnline_Click(object sender, EventArgs e) {
+            toolSettingsToastWhenOnline.Checked = Settings.ToastWhenOnline = !toolSettingsToastWhenOnline.Checked;
+        }
+
+        private void toolSettingsToastTest_Click(object sender, EventArgs e) {
+            notifyIcon.Visible = true;
+            notifyIcon.ShowBalloonTip(3000, "Toast Test", "This is an example toast.", ToolTipIcon.None);
+        }
+
+        private void NotifyForAgent(string agentName) {
+            notifyIcon.Visible = true;
+            notifyIcon.ShowBalloonTip(3000, "Agent Online", agentName + " is now online.", ToolTipIcon.None);
+        }
+
+        private void notifyIcon_BalloonTipClosed(object sender, EventArgs e) {
+            notifyIcon.Visible = false;
+        }
+
+        private void toolOnLiveConnect_Click(object sender, EventArgs e) {
+            if(sender == useAlternativeToolStripMenuItem)
+                Settings.OnLiveConnect = Settings.OnLiveConnectAction.UseAlternative;
+            else if(sender == useLiveConnectToolStripMenuItem)
+                Settings.OnLiveConnect = Settings.OnLiveConnectAction.UseLiveConnect;
+            else if (sender == askMeToolStripMenuItem)
+                Settings.OnLiveConnect = Settings.OnLiveConnectAction.Prompt;
+
+            UpdateOnLiveConnect();
+        }
+
+        private void UpdateOnLiveConnect() {
+            useLiveConnectToolStripMenuItem.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseLiveConnect);
+            useAlternativeToolStripMenuItem.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseAlternative);
+            askMeToolStripMenuItem.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Prompt);
         }
     }
 }
