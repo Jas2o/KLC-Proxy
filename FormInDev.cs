@@ -120,13 +120,16 @@ namespace KLCProxy {
 
             txtSelectedLogs.Clear();
 
-
-
             if (File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCAlt.exe") || File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Finch.exe")) {
-                forceAlternativeToolStripMenuItem.Enabled = true;
             } else {
-                forceAlternativeToolStripMenuItem.Enabled = false;
+                toolOnRC_UseAlt.Enabled = false;
+                toolOnRC_UseLC.Enabled = false;
+                toolOnLC_UseAlt.Enabled = false;
+                toolOnLC_UseLC.Enabled = false;
+                toolOnLC_Ask.Enabled = false;
+
                 Settings.RedirectToAlternative = false;
+                Settings.OnLiveConnect = Settings.OnLiveConnectAction.Default;
             }
 
             if (File.Exists(@"C:\Program Files\Kaseya Live Connect-MITM\KaseyaLiveConnect.exe")) {
@@ -136,11 +139,9 @@ namespace KLCProxy {
                 Settings.UseMITM = false;
             }
 
-            //forceLiveConnectToolStripMenuItem.Checked = Settings.ForceLiveConnect;
-            forceAlternativeToolStripMenuItem.Checked = Settings.RedirectToAlternative;
             useMITMToolStripMenuItem.Checked = Settings.UseMITM;
             toolSettingsToastWhenOnline.Checked = Settings.ToastWhenOnline;
-            UpdateOnLiveConnect();
+            UpdateOnRCandLC();
 
             aHKAutoTypeToolStripMenuItem.Enabled = File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk");
         }
@@ -183,6 +184,12 @@ namespace KLCProxy {
 
             if (command.payload.navId == "dashboard") {
                 switch (Settings.OnLiveConnect) {
+                    case Settings.OnLiveConnectAction.Default:
+                        if (Settings.RedirectToAlternative)
+                            command.Launch(true, false);
+                        else
+                            command.Launch(false, Settings.UseMITM);
+                        break;
                     case Settings.OnLiveConnectAction.UseLiveConnect:
                         command.Launch(false, Settings.UseMITM);
                         break;
@@ -443,10 +450,6 @@ namespace KLCProxy {
             Process.Start(@"http://localhost:9999");
         }
 
-        private void forceAlternativeToolStripMenuItem_Click(object sender, EventArgs e) {
-            forceAlternativeToolStripMenuItem.Checked = Settings.RedirectToAlternative = !Settings.RedirectToAlternative;
-        }
-
         private void alternativeToolStripMenuItem_Click(object sender, EventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
@@ -690,21 +693,34 @@ namespace KLCProxy {
             notifyIcon.Visible = false;
         }
 
+        private void toolOnRemoteControl_Click(object sender, EventArgs e) {
+            Settings.RedirectToAlternative = (sender == toolOnRC_UseAlt);
+
+            UpdateOnRCandLC();
+        }
+
         private void toolOnLiveConnect_Click(object sender, EventArgs e) {
-            if(sender == useAlternativeToolStripMenuItem)
+            if (sender == toolOnLC_UseDefault)
+                Settings.OnLiveConnect = Settings.OnLiveConnectAction.Default;
+            else if(sender == toolOnLC_UseAlt)
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.UseAlternative;
-            else if(sender == useLiveConnectToolStripMenuItem)
+            else if(sender == toolOnLC_UseLC)
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.UseLiveConnect;
-            else if (sender == askMeToolStripMenuItem)
+            else if (sender == toolOnLC_Ask)
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.Prompt;
 
-            UpdateOnLiveConnect();
+            UpdateOnRCandLC();
         }
 
-        private void UpdateOnLiveConnect() {
-            useLiveConnectToolStripMenuItem.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseLiveConnect);
-            useAlternativeToolStripMenuItem.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseAlternative);
-            askMeToolStripMenuItem.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Prompt);
+        private void UpdateOnRCandLC() {
+            toolOnRC_UseAlt.Checked = Settings.RedirectToAlternative;
+            toolOnRC_UseLC.Checked = !Settings.RedirectToAlternative;
+
+            toolOnLC_UseDefault.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Default);
+            toolOnLC_UseAlt.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseAlternative);
+            toolOnLC_UseLC.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseLiveConnect);
+            toolOnLC_Ask.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Prompt);
         }
+
     }
 }

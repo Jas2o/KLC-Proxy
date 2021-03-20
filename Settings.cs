@@ -13,6 +13,7 @@ namespace KLCProxy {
         public Settings(string fileName) : base(fileName) { }
 
         public enum OnLiveConnectAction {
+            Default, //Refer to RedirectToAlternative
             UseLiveConnect,
             UseAlternative,
             Prompt
@@ -22,8 +23,7 @@ namespace KLCProxy {
 
         public bool UseMITM { get; set; } = false;
         public bool RedirectToAlternative { get; set; } = false;
-        //[JsonIgnore] public bool ForceLiveConnect { get; set; } = false;
-        public OnLiveConnectAction OnLiveConnect { get; set; } = Settings.OnLiveConnectAction.UseLiveConnect;
+        public OnLiveConnectAction OnLiveConnect { get; set; } = Settings.OnLiveConnectAction.Default;
         public bool ToastWhenOnline = false;
     }
 }
