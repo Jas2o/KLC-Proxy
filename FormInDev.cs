@@ -721,6 +721,5 @@ namespace KLCProxy {
             toolOnLC_UseLC.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseLiveConnect);
             toolOnLC_Ask.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Prompt);
         }
-
     }
 }

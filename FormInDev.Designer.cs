@@ -68,6 +68,7 @@
             this.toolOnRC_UseLC = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.onLiveConnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolOnLC_UseDefault = new System.Windows.Forms.ToolStripMenuItem();
             this.toolOnLC_UseAlt = new System.Windows.Forms.ToolStripMenuItem();
             this.toolOnLC_UseLC = new System.Windows.Forms.ToolStripMenuItem();
             this.toolOnLC_Ask = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,7 +86,6 @@
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.toolOnLC_UseDefault = new System.Windows.Forms.ToolStripMenuItem();
             this.contextOriginal.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.contextAlternative.SuspendLayout();
@@ -215,34 +215,35 @@
             // toolAppExplorer
             // 
             this.toolAppExplorer.Name = "toolAppExplorer";
-            this.toolAppExplorer.Size = new System.Drawing.Size(138, 22);
+            this.toolAppExplorer.Size = new System.Drawing.Size(180, 22);
             this.toolAppExplorer.Text = "Explorer";
             this.toolAppExplorer.Click += new System.EventHandler(this.toolAppExplorer_Click);
             // 
             // toolAppFinch
             // 
             this.toolAppFinch.Name = "toolAppFinch";
-            this.toolAppFinch.Size = new System.Drawing.Size(138, 22);
+            this.toolAppFinch.Size = new System.Drawing.Size(180, 22);
             this.toolAppFinch.Text = "Finch";
             this.toolAppFinch.Click += new System.EventHandler(this.toolAppFinch_Click);
             // 
             // toolAppHawk
             // 
             this.toolAppHawk.Name = "toolAppHawk";
-            this.toolAppHawk.Size = new System.Drawing.Size(138, 22);
+            this.toolAppHawk.Size = new System.Drawing.Size(180, 22);
             this.toolAppHawk.Text = "Hawk/Shark";
             this.toolAppHawk.Click += new System.EventHandler(this.toolAppHawk_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(135, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(177, 6);
             // 
             // authTokenToolStripMenuItem
             // 
             this.authTokenToolStripMenuItem.Name = "authTokenToolStripMenuItem";
-            this.authTokenToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.authTokenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.authTokenToolStripMenuItem.Text = "Auth Token";
+            this.authTokenToolStripMenuItem.Click += new System.EventHandler(this.authTokenToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -268,54 +269,54 @@
             // viewInfoToolStripMenuItem
             // 
             this.viewInfoToolStripMenuItem.Name = "viewInfoToolStripMenuItem";
-            this.viewInfoToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.viewInfoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.viewInfoToolStripMenuItem.Text = "View Agent Info";
             this.viewInfoToolStripMenuItem.Click += new System.EventHandler(this.ViewInfoToolStripMenuItem_Click);
             // 
             // screenshotToolToolStripMenuItem
             // 
             this.screenshotToolToolStripMenuItem.Name = "screenshotToolToolStripMenuItem";
-            this.screenshotToolToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.screenshotToolToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.screenshotToolToolStripMenuItem.Text = "Screenshot Tool";
             this.screenshotToolToolStripMenuItem.Click += new System.EventHandler(this.ScreenshotToolToolStripMenuItem_Click);
             // 
             // aHKAutoTypeToolStripMenuItem
             // 
             this.aHKAutoTypeToolStripMenuItem.Name = "aHKAutoTypeToolStripMenuItem";
-            this.aHKAutoTypeToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.aHKAutoTypeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aHKAutoTypeToolStripMenuItem.Text = "AHK AutoType";
             this.aHKAutoTypeToolStripMenuItem.Click += new System.EventHandler(this.AHKAutoTypeToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(176, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
             // 
             // teamViewerToolStripMenuItem
             // 
             this.teamViewerToolStripMenuItem.Enabled = false;
             this.teamViewerToolStripMenuItem.Name = "teamViewerToolStripMenuItem";
-            this.teamViewerToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.teamViewerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.teamViewerToolStripMenuItem.Text = "Add: JumpBox";
             this.teamViewerToolStripMenuItem.Click += new System.EventHandler(this.JumpBoxToolStripMenuItem_Click);
             // 
             // iTGlueTeamVToolStripMenuItem
             // 
             this.iTGlueTeamVToolStripMenuItem.Name = "iTGlueTeamVToolStripMenuItem";
-            this.iTGlueTeamVToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.iTGlueTeamVToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.iTGlueTeamVToolStripMenuItem.Text = "IT Glue TeamV";
             this.iTGlueTeamVToolStripMenuItem.Click += new System.EventHandler(this.iTGlueTeamVToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(176, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(177, 6);
             // 
             // cjasonpcToolStripMenuItem
             // 
             this.cjasonpcToolStripMenuItem.Enabled = false;
             this.cjasonpcToolStripMenuItem.Name = "cjasonpcToolStripMenuItem";
-            this.cjasonpcToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.cjasonpcToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.cjasonpcToolStripMenuItem.Text = "Add: EIT-Jason-PC";
             this.cjasonpcToolStripMenuItem.Visible = false;
             this.cjasonpcToolStripMenuItem.Click += new System.EventHandler(this.cjasonpcToolStripMenuItem_Click);
@@ -324,40 +325,40 @@
             // 
             this.addByGUIDToolStripMenuItem.Enabled = false;
             this.addByGUIDToolStripMenuItem.Name = "addByGUIDToolStripMenuItem";
-            this.addByGUIDToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.addByGUIDToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addByGUIDToolStripMenuItem.Text = "Add by GUID";
             this.addByGUIDToolStripMenuItem.Click += new System.EventHandler(this.addByGUIDToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(176, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // liveConnectToolStripMenuItem
             // 
             this.liveConnectToolStripMenuItem.Enabled = false;
             this.liveConnectToolStripMenuItem.Name = "liveConnectToolStripMenuItem";
-            this.liveConnectToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.liveConnectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.liveConnectToolStripMenuItem.Text = "Live Connect:";
             // 
             // reconnectCurrentToolStripMenuItem
             // 
             this.reconnectCurrentToolStripMenuItem.Name = "reconnectCurrentToolStripMenuItem";
-            this.reconnectCurrentToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.reconnectCurrentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.reconnectCurrentToolStripMenuItem.Text = "Reconnect Current";
             this.reconnectCurrentToolStripMenuItem.Click += new System.EventHandler(this.ReconnectCurrentToolStripMenuItem_Click);
             // 
             // killAllLiveConnectToolStripMenuItem
             // 
             this.killAllLiveConnectToolStripMenuItem.Name = "killAllLiveConnectToolStripMenuItem";
-            this.killAllLiveConnectToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.killAllLiveConnectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.killAllLiveConnectToolStripMenuItem.Text = "Kill All Live Connect";
             this.killAllLiveConnectToolStripMenuItem.Click += new System.EventHandler(this.KillAllLiveConnectToolStripMenuItem_Click);
             // 
             // kLCRemoteDebugToolStripMenuItem
             // 
             this.kLCRemoteDebugToolStripMenuItem.Name = "kLCRemoteDebugToolStripMenuItem";
-            this.kLCRemoteDebugToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.kLCRemoteDebugToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.kLCRemoteDebugToolStripMenuItem.Text = "Remote Debug";
             this.kLCRemoteDebugToolStripMenuItem.Visible = false;
             this.kLCRemoteDebugToolStripMenuItem.Click += new System.EventHandler(this.kLCRemoteDebugToolStripMenuItem_Click);
@@ -435,6 +436,13 @@
             this.onLiveConnectToolStripMenuItem.Name = "onLiveConnectToolStripMenuItem";
             this.onLiveConnectToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.onLiveConnectToolStripMenuItem.Text = "On \'Live Connect\'...";
+            // 
+            // toolOnLC_UseDefault
+            // 
+            this.toolOnLC_UseDefault.Name = "toolOnLC_UseDefault";
+            this.toolOnLC_UseDefault.Size = new System.Drawing.Size(204, 22);
+            this.toolOnLC_UseDefault.Text = "Same as Remote Control";
+            this.toolOnLC_UseDefault.Click += new System.EventHandler(this.toolOnLiveConnect_Click);
             // 
             // toolOnLC_UseAlt
             // 
@@ -589,13 +597,6 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(106, 121);
             this.flowLayoutPanel1.TabIndex = 0;
             this.flowLayoutPanel1.WrapContents = false;
-            // 
-            // toolOnLC_UseDefault
-            // 
-            this.toolOnLC_UseDefault.Name = "toolOnLC_UseDefault";
-            this.toolOnLC_UseDefault.Size = new System.Drawing.Size(204, 22);
-            this.toolOnLC_UseDefault.Text = "Same as Remote Control";
-            this.toolOnLC_UseDefault.Click += new System.EventHandler(this.toolOnLiveConnect_Click);
             // 
             // FormInDev
             // 
