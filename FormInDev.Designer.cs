@@ -215,33 +215,33 @@
             // toolAppExplorer
             // 
             this.toolAppExplorer.Name = "toolAppExplorer";
-            this.toolAppExplorer.Size = new System.Drawing.Size(180, 22);
+            this.toolAppExplorer.Size = new System.Drawing.Size(138, 22);
             this.toolAppExplorer.Text = "Explorer";
             this.toolAppExplorer.Click += new System.EventHandler(this.toolAppExplorer_Click);
             // 
             // toolAppFinch
             // 
             this.toolAppFinch.Name = "toolAppFinch";
-            this.toolAppFinch.Size = new System.Drawing.Size(180, 22);
+            this.toolAppFinch.Size = new System.Drawing.Size(138, 22);
             this.toolAppFinch.Text = "Finch";
             this.toolAppFinch.Click += new System.EventHandler(this.toolAppFinch_Click);
             // 
             // toolAppHawk
             // 
             this.toolAppHawk.Name = "toolAppHawk";
-            this.toolAppHawk.Size = new System.Drawing.Size(180, 22);
+            this.toolAppHawk.Size = new System.Drawing.Size(138, 22);
             this.toolAppHawk.Text = "Hawk/Shark";
             this.toolAppHawk.Click += new System.EventHandler(this.toolAppHawk_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(135, 6);
             // 
             // authTokenToolStripMenuItem
             // 
             this.authTokenToolStripMenuItem.Name = "authTokenToolStripMenuItem";
-            this.authTokenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.authTokenToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.authTokenToolStripMenuItem.Text = "Auth Token";
             this.authTokenToolStripMenuItem.Click += new System.EventHandler(this.authTokenToolStripMenuItem_Click);
             // 
@@ -317,7 +317,7 @@
             this.cjasonpcToolStripMenuItem.Enabled = false;
             this.cjasonpcToolStripMenuItem.Name = "cjasonpcToolStripMenuItem";
             this.cjasonpcToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.cjasonpcToolStripMenuItem.Text = "Add: EIT-Jason-PC";
+            this.cjasonpcToolStripMenuItem.Text = "Add: NB";
             this.cjasonpcToolStripMenuItem.Visible = false;
             this.cjasonpcToolStripMenuItem.Click += new System.EventHandler(this.cjasonpcToolStripMenuItem_Click);
             // 
@@ -481,7 +481,7 @@
             // 
             this.toolSettingsToastWhenOnline.Name = "toolSettingsToastWhenOnline";
             this.toolSettingsToastWhenOnline.Size = new System.Drawing.Size(204, 22);
-            this.toolSettingsToastWhenOnline.Text = "Toast when Online";
+            this.toolSettingsToastWhenOnline.Text = "Toast when online";
             this.toolSettingsToastWhenOnline.Click += new System.EventHandler(this.toolSettingsToastWhenOnline_Click);
             // 
             // txtSelectedLogs

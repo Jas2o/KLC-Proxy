@@ -99,7 +99,6 @@ namespace KLCProxy {
                 }
                 toolSettingsToastTest.Visible = false;
             }
-            ds = null;
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1) {
@@ -254,7 +253,7 @@ namespace KLCProxy {
         }
 
         private void cjasonpcToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddAgentToList("429424626294329"); //EIT-JASON-PC
+            AddAgentToList("217718234548815"); //NB
         }
 
         private void AddAgentToList(string agentID) {
