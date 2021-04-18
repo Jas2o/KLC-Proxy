@@ -84,6 +84,8 @@ namespace KLCProxy {
             ConfigureHandler.ProxyState proxyState = ConfigureHandler.IsProxyEnabled();
             if (proxyState == ConfigureHandler.ProxyState.Enabled)
                 useKLCProxyToolStripMenuItem.Checked = true;
+            else if (proxyState == ConfigureHandler.ProxyState.BypassToFinch)
+                bypassKLCProxyToolStripMenuItem.Checked = true;
 
             DebuggingService ds = new DebuggingService();
             if (ds.RunningInDebugMode()) {
@@ -326,6 +328,8 @@ namespace KLCProxy {
         private void UseKLCProxyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             useKLCProxyToolStripMenuItem.Checked = ConfigureHandler.ToggleProxy(!useKLCProxyToolStripMenuItem.Checked);
+            if (useKLCProxyToolStripMenuItem.Checked)
+                bypassKLCProxyToolStripMenuItem.Checked = false;
             useKLCProxyToolStripMenuItem.Text = "Use KLCProxy"; //This gets rid of the "(updates path)"
         }
 
@@ -719,6 +723,12 @@ namespace KLCProxy {
             toolOnLC_UseAlt.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseAlternative);
             toolOnLC_UseLC.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseLiveConnect);
             toolOnLC_Ask.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Prompt);
+        }
+
+        private void bypassKLCProxyToolStripMenuItem_Click(object sender, EventArgs e) {
+            useKLCProxyToolStripMenuItem.Checked = ConfigureHandler.ToggleProxy(false);
+            useKLCProxyToolStripMenuItem.Text = "Use KLCProxy"; //This gets rid of the "(updates path)"
+            bypassKLCProxyToolStripMenuItem.Checked = ConfigureHandler.ToggleProxy(!bypassKLCProxyToolStripMenuItem.Checked, true);
         }
     }
 }
