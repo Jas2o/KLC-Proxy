@@ -148,7 +148,11 @@ namespace KLCProxy {
         }
 
         private void FormInDev_FormClosing(object sender, FormClosingEventArgs e) {
-            Settings.Save();
+            try {
+                Settings.Save();
+            } catch (Exception) {
+                MessageBox.Show("Seems we don't have permission to write to " + Settings.FileName, "KLCProxy: Save Settings");
+            }
         }
 
         private void timerAuto_Tick(object sender, EventArgs e)
