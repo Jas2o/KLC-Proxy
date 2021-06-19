@@ -13,12 +13,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LibKaseya;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using nucs.JsonSettings;
 using RestSharp;
 
 namespace KLCProxy {
-    public partial class FormInDev : HDshared.SnapForm {
+    public partial class FormInDev : Form {
 
         string lastAuthToken = "";
         List<Agent> agents = new List<Agent>();
@@ -37,7 +38,7 @@ namespace KLCProxy {
                 Settings = JsonSettings.Construct<Settings>(pathSettings);
             }
 
-            MoveToScreenPrimaryTopLeft();
+            MoveToSettingsScreenCorner();
 
             agentsSource = new BindingSource();
             agentsSource.DataSource = agents;
@@ -48,7 +49,11 @@ namespace KLCProxy {
 
             NamedPipeListener<String> pipeListener = new NamedPipeListener<String>();
             pipeListener.MessageReceived += (sender, e) => {
-                if (e.Message.Contains("kaseyaliveconnect:///"))
+                if (e.Message == "focus") {
+                    Invoke(new Action(() => {
+                        ShowMe();
+                    }));
+                } else if (e.Message.Contains("kaseyaliveconnect:///"))
                     LaunchFromArgument(e.Message.Replace("kaseyaliveconnect:///", ""));
                 else if (e.Message.Contains("klcproxy:"))
                     CheckAndLoadToken(string.Join("", e.Message.ToCharArray().Where(Char.IsDigit)));
@@ -63,13 +68,44 @@ namespace KLCProxy {
             //UpdateClipboard(null, EventArgs.Empty);
         }
 
+        private void MoveToSettingsScreenCorner() {
+            Screen screen = Screen.PrimaryScreen;
+            if (Settings.StartDisplay != "Default") {
+                foreach (Screen scr in Screen.AllScreens) {
+                    if (scr.DeviceName == Settings.StartDisplay || scr.Bounds.ToString() == Settings.StartDisplayFallback) {
+                        screen = scr;
+                        break;
+                    }
+                }
+            }
+
+            switch (Settings.StartCorner) {
+                case 1: //Top-Right
+                    this.Left = screen.WorkingArea.Left + screen.WorkingArea.Width - this.Size.Width + 7;
+                    this.Top = screen.WorkingArea.Top;
+                    break;
+                case 2: //Bottom-Left
+                    this.Left = screen.WorkingArea.Left - 7;
+                    this.Top = screen.WorkingArea.Top + screen.WorkingArea.Height - this.Size.Height + 7;
+                    break;
+                case 3: //Bottom-Right
+                    this.Left = screen.WorkingArea.Left + screen.WorkingArea.Width - this.Size.Width + 7;
+                    this.Top = screen.WorkingArea.Top + screen.WorkingArea.Height - this.Size.Height + 7;
+                    break;
+                default: //Top-Left
+                    this.Left = screen.WorkingArea.Left - 7;
+                    this.Top = screen.WorkingArea.Top;
+                    break;
+            }
+        }
+
         private bool CheckAndLoadToken(string token) {
             if (token != null) {
                 try {
                     KaseyaAuth auth = KaseyaAuth.ApiAuthX(token);
                     lastAuthToken = token;
 
-                    cjasonpcToolStripMenuItem.Visible = cjasonpcToolStripMenuItem.Enabled = (auth.UserName == "company.com.au/username");
+                    addThisComputerToolStripMenuItem.Enabled = true;
                     teamViewerToolStripMenuItem.Enabled = true;
                     addByGUIDToolStripMenuItem.Enabled = true;
                     return true;
@@ -137,22 +173,37 @@ namespace KLCProxy {
                 //useMITMToolStripMenuItem.Checked = true;
             } else {
                 useMITMToolStripMenuItem.Enabled = false;
-                Settings.UseMITM = false;
+                if (Settings.Extra == LaunchExtra.Hawk)
+                    Settings.Extra = LaunchExtra.None;
             }
 
-            useMITMToolStripMenuItem.Checked = Settings.UseMITM;
+            if (File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\..\..\KLC-Wolf\bin\Debug\KLC-Wolf.exe")) {
+            } else {
+                useWolfToolStripMenuItem.Enabled = false;
+                if(Settings.Extra == LaunchExtra.Wolf)
+                    Settings.Extra = LaunchExtra.None;
+            }
+
+            this.TopMost = toolSettingsAlwaysOnTop.Checked = Settings.AlwaysOnTop;
+            notifyIcon.Visible = toolSettingsMinimizeToTray.Checked = Settings.AddToSystemTray;
+            useMITMToolStripMenuItem.Checked = (Settings.Extra == LaunchExtra.Hawk);
+            useWolfToolStripMenuItem.Checked = (Settings.Extra == LaunchExtra.Wolf);
             toolSettingsToastWhenOnline.Checked = Settings.ToastWhenOnline;
             UpdateOnRCandLC();
 
             aHKAutoTypeToolStripMenuItem.Enabled = File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk");
         }
 
-        private void FormInDev_FormClosing(object sender, FormClosingEventArgs e) {
+        private void SaveSettings() {
             try {
                 Settings.Save();
             } catch (Exception) {
                 MessageBox.Show("Seems we don't have permission to write to " + Settings.FileName, "KLCProxy: Save Settings");
             }
+        }
+
+        private void FormInDev_FormClosing(object sender, FormClosingEventArgs e) {
+            SaveSettings();
         }
 
         private void timerAuto_Tick(object sender, EventArgs e)
@@ -191,34 +242,32 @@ namespace KLCProxy {
                 switch (Settings.OnLiveConnect) {
                     case Settings.OnLiveConnectAction.Default:
                         if (Settings.RedirectToAlternative)
-                            command.Launch(true, false);
+                            command.Launch(true, LaunchExtra.None);
                         else
-                            command.Launch(false, Settings.UseMITM);
+                            command.Launch(false, Settings.Extra);
                         break;
                     case Settings.OnLiveConnectAction.UseLiveConnect:
-                        command.Launch(false, Settings.UseMITM);
+                        command.Launch(false, Settings.Extra);
                         break;
                     case Settings.OnLiveConnectAction.UseAlternative:
-                        command.Launch(true, false);
+                        command.Launch(true, LaunchExtra.None);
                         break;
                     case Settings.OnLiveConnectAction.Prompt:
                         DialogResult result;
                         menuStrip1.Invoke(new Action(() => {
-                            this.TopMost = true;
-                            result = MessageBox.Show("Use Alternative instead?", "Received Live Connect launch", MessageBoxButtons.YesNoCancel);
-                            this.TopMost = false;
+                            result = new FormAskMe().ShowDialog();
                             if (result == DialogResult.Yes)
-                                command.Launch(true, false);
+                                command.Launch(true, LaunchExtra.None);
                             else if (result == DialogResult.No)
-                                command.Launch(false, Settings.UseMITM);
+                                command.Launch(false, Settings.Extra);
                         }));
                         break;
                 }
             } else {
                 if(Settings.RedirectToAlternative)
-                    command.Launch(true, false);
+                    command.Launch(true, LaunchExtra.None);
                 else
-                    command.Launch(false, Settings.UseMITM);
+                    command.Launch(false, Settings.Extra);
             }
 
             menuStrip1.Invoke(new Action(() => {
@@ -237,14 +286,18 @@ namespace KLCProxy {
                 string output = JsonPrettify(agentApi.ToString());
                 //dynamic json = Base64ToJSON((listAgent.SelectedItem as Agent).Base64);
                 //output += "\r\n\r\n" + JsonPrettify(json.ToString());
-                new FormJsonViewTable(this, output).Show();
+                new FormJsonViewTable(output).Show();
             }
         }
 
+        /*
         private void ScreenshotToolToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            this.TopMost = false;
             new FormKaseyaScreenshot(this).ShowDialog();
+            this.TopMost = Settings.AlwaysOnTop;
         }
+        */
 
         private void AHKAutoTypeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -256,10 +309,6 @@ namespace KLCProxy {
         private void JumpBoxToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AddAgentToList("111111111111111"); //EIT Teamviewer
-        }
-
-        private void cjasonpcToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddAgentToList("217718234548815"); //NB
         }
 
         private void AddAgentToList(string agentID) {
@@ -307,7 +356,7 @@ namespace KLCProxy {
                         KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
                         command.SetForRemoteControl(k.Contains(":Private"), true);// Old: rcOnly=!Settings.ForceLiveConnect
                         Debug.WriteLine("Relaunching");
-                        command.Launch(false, Settings.UseMITM);
+                        command.Launch(false, Settings.Extra);
                         Thread.Sleep(100);
                     }
                 }
@@ -339,12 +388,14 @@ namespace KLCProxy {
 
         private void authTokenToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            this.TopMost = false;
             FormGenericEntry entry = new FormGenericEntry("Auth Token", "Your Kaseya authorization token is already loaded whenever KLCProxy is launched from VSA. Use this to force load and save your token to Windows Credential Manager (for this session).", lastAuthToken, "Save for Session");
             DialogResult result = entry.ShowDialog();
             if (result == DialogResult.OK && entry.ReturnInput.Length > 0) {
                 if(CheckAndLoadToken(entry.ReturnInput))
                     KaseyaAuth.SetCredentials(lastAuthToken);
             }
+            this.TopMost = Settings.AlwaysOnTop;
         }
         #endregion
 
@@ -468,20 +519,28 @@ namespace KLCProxy {
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 } else
-                    command.Launch(true, false);
+                    command.Launch(true, LaunchExtra.None);
             }
         }
 
         private void useMITMToolStripMenuItem_Click(object sender, EventArgs e) {
-            useMITMToolStripMenuItem.Checked = Settings.UseMITM = !Settings.UseMITM;
+            if (Settings.Extra == LaunchExtra.Hawk)
+                Settings.Extra = LaunchExtra.None;
+            else
+                Settings.Extra = LaunchExtra.Hawk;
+
+            useMITMToolStripMenuItem.Checked = (Settings.Extra == LaunchExtra.Hawk);
+            useWolfToolStripMenuItem.Checked = (Settings.Extra == LaunchExtra.Wolf);
         }
 
         private void addByGUIDToolStripMenuItem_Click(object sender, EventArgs e) {
+            this.TopMost = false;
             FormGenericEntry entry = new FormGenericEntry("Add Agent by GUID", "Agent GUID:", "", "Add");
             DialogResult result = entry.ShowDialog();
             if(result == DialogResult.OK && entry.ReturnInput.Length > 0) {
                 AddAgentToList(entry.ReturnInput);
             }
+            this.TopMost = Settings.AlwaysOnTop;
         }
 
         private void iTGlueTeamVToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -500,7 +559,7 @@ namespace KLCProxy {
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 } else
-                    command.Launch(false, Settings.UseMITM);
+                    command.Launch(false, Settings.Extra);
             }
         }
 
@@ -516,7 +575,7 @@ namespace KLCProxy {
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 } else
-                    command.Launch(false, Settings.UseMITM);
+                    command.Launch(false, Settings.Extra);
             }
         }
 
@@ -525,14 +584,14 @@ namespace KLCProxy {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
                 KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
-                command.SetForRemoteControl(false, true);// Old: rcOnly=!Settings.ForceLiveConnect
+                command.SetForRemoteControl(false, true);
 
                 if (agent.Watch && agent.Online == 0) {
                     agent.WaitLabel = "RC";
                     agent.WaitCommand = command;
                 } else {
                     if(ConnectPromptWithAdminBypass(agent))
-                        command.Launch(false, Settings.UseMITM);
+                        command.Launch(false, Settings.Extra);
                 }
             }
         }
@@ -584,14 +643,14 @@ namespace KLCProxy {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
                 KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
-                command.SetForRemoteControl(true, false); // Old: rcOnly=!Settings.ForceLiveConnect
+                command.SetForRemoteControl(true, true);
 
                 if (agent.Watch && agent.Online == 0) {
                     agent.WaitLabel = "RC-P";
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 } else
-                    command.Launch(false, Settings.UseMITM);
+                    command.Launch(false, Settings.Extra);
             }
         }
 
@@ -615,7 +674,7 @@ namespace KLCProxy {
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 } else
-                    command.Launch(true, false);
+                    command.Launch(true, LaunchExtra.None);
             }
         }
 
@@ -631,7 +690,7 @@ namespace KLCProxy {
                     agent.WaitCommand = command;
                 } else {
                     if (ConnectPromptWithAdminBypass(agent))
-                        command.Launch(true, false);
+                        command.Launch(true, LaunchExtra.None);
                 }
             }
         }
@@ -648,7 +707,7 @@ namespace KLCProxy {
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 } else
-                    command.Launch(true, false);
+                    command.Launch(true, LaunchExtra.None);
             }
         }
 
@@ -674,10 +733,15 @@ namespace KLCProxy {
         }
 
         private void toolAppExplorer_Click(object sender, EventArgs e) {
+            LaunchKLCEx();
+        }
+
+        private void LaunchKLCEx() {
             string pathKLCEx = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCEx.exe";
             if (File.Exists(pathKLCEx)) {
                 Process process = new Process();
                 process.StartInfo.FileName = pathKLCEx;
+                process.StartInfo.Arguments = "klcex:" + lastAuthToken;
                 process.Start();
             }
         }
@@ -697,36 +761,37 @@ namespace KLCProxy {
         }
 
         private void notifyIcon_BalloonTipClosed(object sender, EventArgs e) {
-            notifyIcon.Visible = false;
+            if(!Settings.AddToSystemTray)
+                notifyIcon.Visible = false;
         }
 
         private void toolOnRemoteControl_Click(object sender, EventArgs e) {
-            Settings.RedirectToAlternative = (sender == toolOnRC_UseAlt);
+            Settings.RedirectToAlternative = (sender == toolOnRC_UseAlt || sender == contextOnRC_UseAlt);
 
             UpdateOnRCandLC();
         }
 
         private void toolOnLiveConnect_Click(object sender, EventArgs e) {
-            if (sender == toolOnLC_UseDefault)
+            if (sender == toolOnLC_UseDefault || sender == contextOnLC_UseDefault)
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.Default;
-            else if(sender == toolOnLC_UseAlt)
+            else if(sender == toolOnLC_UseAlt || sender == contextOnLC_UseAlt)
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.UseAlternative;
-            else if(sender == toolOnLC_UseLC)
+            else if(sender == toolOnLC_UseLC || sender == contextOnLC_UseLC)
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.UseLiveConnect;
-            else if (sender == toolOnLC_Ask)
+            else if (sender == toolOnLC_Ask || sender == contextOnLC_Ask)
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.Prompt;
 
             UpdateOnRCandLC();
         }
 
         private void UpdateOnRCandLC() {
-            toolOnRC_UseAlt.Checked = Settings.RedirectToAlternative;
-            toolOnRC_UseLC.Checked = !Settings.RedirectToAlternative;
+            toolOnRC_UseAlt.Checked = contextOnRC_UseAlt.Checked = Settings.RedirectToAlternative;
+            toolOnRC_UseLC.Checked = contextOnRC_UseLC.Checked = !Settings.RedirectToAlternative;
 
-            toolOnLC_UseDefault.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Default);
-            toolOnLC_UseAlt.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseAlternative);
-            toolOnLC_UseLC.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseLiveConnect);
-            toolOnLC_Ask.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Prompt);
+            toolOnLC_UseDefault.Checked = contextOnLC_UseDefault.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Default);
+            toolOnLC_UseAlt.Checked = contextOnLC_UseAlt.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseAlternative);
+            toolOnLC_UseLC.Checked = contextOnLC_UseLC.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseLiveConnect);
+            toolOnLC_Ask.Checked = contextOnLC_Ask.Checked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Prompt);
         }
 
         private void bypassKLCProxyToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -734,5 +799,121 @@ namespace KLCProxy {
             useKLCProxyToolStripMenuItem.Text = "Use KLCProxy"; //This gets rid of the "(updates path)"
             bypassKLCProxyToolStripMenuItem.Checked = ConfigureHandler.ToggleProxy(!bypassKLCProxyToolStripMenuItem.Checked, true);
         }
+
+        private void FormInDev_Resize(object sender, EventArgs e) {
+            if (Settings.AddToSystemTray && this.WindowState == FormWindowState.Minimized) {
+                Hide();
+                notifyIcon.Visible = true;
+            }
+        }
+
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e) {
+            if (e.Button == MouseButtons.Left) {
+                if (this.WindowState == FormWindowState.Normal) {
+                    Hide();
+                    this.WindowState = FormWindowState.Minimized;
+                } else {
+                    ShowMe();
+                }
+            } else {
+                contextTrayIcon.Show();
+            }
+        }
+
+        private void ShowMe() {
+            Show();
+            this.WindowState = FormWindowState.Normal;
+            this.Activate();
+            this.Focus();
+
+            //this.TopMost = true;
+            //this.TopMost = Settings.AlwaysOnTop;
+        }
+
+        private void toolSettingsMinimizeToTray_Click(object sender, EventArgs e) {
+            notifyIcon.Visible = toolSettingsMinimizeToTray.Checked = Settings.AddToSystemTray = !toolSettingsMinimizeToTray.Checked;
+        }
+
+        private void toolSettingsAlwaysOnTop_Click(object sender, EventArgs e) {
+            this.TopMost = toolSettingsAlwaysOnTop.Checked = Settings.AlwaysOnTop = !toolSettingsAlwaysOnTop.Checked;
+        }
+
+        private void trayContextShow_Click(object sender, EventArgs e) {
+            ShowMe();
+            //notifyIcon.Visible = false;
+        }
+
+        private void trayContextExit_Click(object sender, EventArgs e) {
+            this.Close();
+        }
+
+        private void trayContextExplorer_Click(object sender, EventArgs e) {
+            LaunchKLCEx();
+        }
+
+        private void useWolfToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (Settings.Extra == LaunchExtra.Wolf)
+                Settings.Extra = LaunchExtra.None;
+            else
+                Settings.Extra = LaunchExtra.Wolf;
+
+            useMITMToolStripMenuItem.Checked = (Settings.Extra == LaunchExtra.Hawk);
+            useWolfToolStripMenuItem.Checked = (Settings.Extra == LaunchExtra.Wolf);
+        }
+
+        private void addThisComputerToolStripMenuItem_Click(object sender, EventArgs e) {
+            string val = "";
+
+            using (RegistryKey view32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
+                RegistryKey subkey = view32.OpenSubKey(@"SOFTWARE\Kaseya\Agent\AGENT11111111111111"); //Actually in WOW6432Node
+                if (subkey != null)
+                    val = subkey.GetValue("AgentGUID").ToString();
+                subkey.Close();
+            }
+
+            if(val.Length > 0)
+                AddAgentToList(val);
+        }
+
+        private void toolSettingsStartPos_Click(object sender, EventArgs e) {
+            FormStartPos form = new FormStartPos(Settings.StartDisplay, Settings.StartDisplayFallback, Settings.StartCorner);
+            DialogResult result = form.ShowDialog(this);
+            if(result == DialogResult.OK) {
+                Settings.StartDisplay = form.ReturnDisplayName;
+                Settings.StartDisplayFallback = form.ReturnDisplayFallback;
+                Settings.StartCorner = form.ReturnCornerIndex;
+                MoveToSettingsScreenCorner();
+                SaveSettings();
+            }
+        }
+
+        private void AdjustDropDownOpening(object sender, EventArgs e) {
+            ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+            if (menuItem.HasDropDownItems == false) {
+                return; // not a drop down item
+            }
+
+            foreach (Screen screen in Screen.AllScreens) {
+                if (screen.Bounds.IntersectsWith(this.Bounds)) {
+                    int checkX = screen.Bounds.X + (screen.Bounds.Width / 2);
+                    int checkY = screen.Bounds.Y + (screen.Bounds.Height / 2);
+
+                    if (this.Bounds.Y > checkY) {
+                        if (this.Bounds.X > checkX)
+                            menuItem.DropDownDirection = ToolStripDropDownDirection.AboveLeft;
+                        else
+                            menuItem.DropDownDirection = ToolStripDropDownDirection.AboveRight;
+                    } else {
+                        if (this.Bounds.X > checkX)
+                            menuItem.DropDownDirection = ToolStripDropDownDirection.BelowLeft;
+                        else
+                            menuItem.DropDownDirection = ToolStripDropDownDirection.BelowRight;
+                    }
+
+                    break;
+                }
+            }
+        }
+
     }
 }

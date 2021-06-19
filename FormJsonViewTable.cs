@@ -5,12 +5,11 @@ using System.Windows.Forms;
 
 namespace KLCProxy
 {
-    public partial class FormJsonViewTable : HDshared.SnapForm
+    public partial class FormJsonViewTable : Form
     {
-        public FormJsonViewTable(Form parentForm, string input)
+        public FormJsonViewTable(string input)
         {
             InitializeComponent();
-            MoveBelow(parentForm);
 
             dynamic json = JsonConvert.DeserializeObject(input);
             DataTable dt = new DataTable();

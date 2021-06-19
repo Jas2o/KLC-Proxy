@@ -19,15 +19,45 @@ namespace KLCProxy {
             base.OnMouseDown(mevent);
 
             if (Menu != null && mevent.Button == MouseButtons.Left) {
-                Point menuLocation;
+                Point menuLocation = new Point(0, 0);
+                Rectangle testArea = new Rectangle(this.Parent.Parent.Parent.Bounds.X, this.Parent.Parent.Parent.Bounds.Y, 10, 10);
+
+                foreach (Screen screen in Screen.AllScreens) {
+                    if (screen.Bounds.IntersectsWith(testArea)) {
+                        int checkX = screen.Bounds.X + (screen.Bounds.Width / 2);
+                        int checkY = screen.Bounds.Y + (screen.Bounds.Height / 2);
+
+                        if (testArea.Y > checkY) {
+                            if (testArea.X > checkX) {
+                                Menu.DefaultDropDownDirection = ToolStripDropDownDirection.AboveLeft;
+                                menuLocation = new Point(0, Height);
+                            } else {
+                                Menu.DefaultDropDownDirection = ToolStripDropDownDirection.AboveRight;
+                                menuLocation = new Point(Width, Height);
+                            }
+                        } else {
+                            if (testArea.X > checkX) {
+                                Menu.DefaultDropDownDirection = ToolStripDropDownDirection.BelowLeft;
+                                menuLocation = new Point(0, 0);
+                            } else {
+                                Menu.DefaultDropDownDirection = ToolStripDropDownDirection.BelowRight;
+                                menuLocation = new Point(Width, 0);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+                //--
 
                 if (ShowMenuUnderCursor) {
-                    menuLocation = mevent.Location;
-                } else {
-                    menuLocation = new Point(0, Height);
-                }
+                    //menuLocation = mevent.Location;
+                }/* else {
+                    menuLocation = new Point(Width, 0);
+                    //menuLocation = new Point(0, Height);
+                }*/
 
-                Menu.Show(this, menuLocation);
+                Menu.Show(this, menuLocation, Menu.DefaultDropDownDirection);
             }
         }
 

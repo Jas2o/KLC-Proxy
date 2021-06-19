@@ -10,11 +10,10 @@ using System.Windows.Forms;
 
 namespace KLCProxy
 {
-    public partial class FormJsonViewBasic : HDshared.SnapForm
+    public partial class FormJsonViewBasic : Form
     {
-        public FormJsonViewBasic(Form parentForm, string input) {
+        public FormJsonViewBasic(string input) {
             InitializeComponent();
-            MoveBelow(parentForm);
 
             textBoxJson.Text = input;
         }

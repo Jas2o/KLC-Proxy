@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LibKaseya;
+using Newtonsoft.Json;
 using nucs.JsonSettings;
 using System;
 using System.Collections.Generic;
@@ -21,9 +22,15 @@ namespace KLCProxy {
 
         //--
 
-        public bool UseMITM { get; set; } = false;
+        //public bool UseMITM { get; set; } = false;
+        public LaunchExtra Extra { get; set; } = LaunchExtra.None;
         public bool RedirectToAlternative { get; set; } = false;
-        public OnLiveConnectAction OnLiveConnect { get; set; } = Settings.OnLiveConnectAction.Default;
+        public OnLiveConnectAction OnLiveConnect { get; set; } = OnLiveConnectAction.Default;
         public bool ToastWhenOnline = false;
+        public bool AddToSystemTray = false;
+        public bool AlwaysOnTop = false;
+        public string StartDisplay = "Default";
+        public string StartDisplayFallback = "";
+        public int StartCorner = 0;
     }
 }

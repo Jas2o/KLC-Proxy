@@ -23,6 +23,8 @@ namespace KLCProxy {
                 string[] args = Environment.GetCommandLineArgs();
                 if (args.Length > 1)
                     NamedPipeListener<String>.SendMessage(args[1]);
+                else
+                    NamedPipeListener<String>.SendMessage("focus");
                 return;
             } else {
                 Application.EnableVisualStyles();

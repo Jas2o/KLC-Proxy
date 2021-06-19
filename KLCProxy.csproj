@@ -69,6 +69,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormAskMe.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAskMe.Designer.cs">
+      <DependentUpon>FormAskMe.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormAuthToken.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,29 +87,35 @@
     <Compile Include="FormJsonViewTable.Designer.cs">
       <DependentUpon>FormJsonViewTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormKaseyaScreenshot.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormKaseyaScreenshot.Designer.cs">
+    <None Include="Archive\FormKaseyaScreenshot.cs" />
+    <None Include="Archive\FormKaseyaScreenshot.Designer.cs">
       <DependentUpon>FormKaseyaScreenshot.cs</DependentUpon>
-    </Compile>
+    </None>
     <Compile Include="FormGenericEntry.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormGenericEntry.Designer.cs">
       <DependentUpon>FormGenericEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormStartPos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormStartPos.Designer.cs">
+      <DependentUpon>FormStartPos.cs</DependentUpon>
+    </Compile>
     <Compile Include="JExtensions.cs" />
-    <Compile Include="MinimizeCapture\WindowSnap.cs" />
-    <Compile Include="MinimizeCapture\WindowSnapCollection.cs" />
-    <Compile Include="MinimizeCapture\XPAppearance.cs" />
-    <Compile Include="MinimizeCapture\XPAppearance.SPI.cs" />
+    <Compile Include="Archive\MinimizeCapture\WindowSnap.cs" />
+    <Compile Include="Archive\MinimizeCapture\WindowSnapCollection.cs" />
+    <Compile Include="Archive\MinimizeCapture\XPAppearance.cs" />
+    <Compile Include="Archive\MinimizeCapture\XPAppearance.SPI.cs" />
+    <None Include="Resources\Close.png" />
+    <None Include="Resources\Finch.png" />
     <Content Include="Split45.ico" />
     <None Include="Utilities\ClipboardMonitor.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="SnapForm.cs">
+    <None Include="Archive\SnapForm.cs">
       <SubType>Form</SubType>
-    </Compile>
+    </None>
     <Compile Include="Utilities\ConfigureHandler.cs" />
     <Compile Include="Utilities\DebuggingService.cs" />
     <Compile Include="FormInDev.cs">
@@ -124,6 +136,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormAskMe.resx">
+      <DependentUpon>FormAskMe.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormAuthToken.resx">
       <DependentUpon>FormAuthToken.cs</DependentUpon>
     </EmbeddedResource>
@@ -136,11 +151,14 @@
     <EmbeddedResource Include="FormJsonViewTable.resx">
       <DependentUpon>FormJsonViewTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormKaseyaScreenshot.resx">
+    <None Include="Archive\FormKaseyaScreenshot.resx">
       <DependentUpon>FormKaseyaScreenshot.cs</DependentUpon>
-    </EmbeddedResource>
+    </None>
     <EmbeddedResource Include="FormGenericEntry.resx">
       <DependentUpon>FormGenericEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormStartPos.resx">
+      <DependentUpon>FormStartPos.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -171,9 +189,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="..\LibKaseya\LibKaseya.projitems" Label="Shared" />
   <Import Project="..\LibKaseyaAuth\LibKaseyaAuth.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

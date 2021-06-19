@@ -91,7 +91,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(523, 369);
+            this.tabPage2.Size = new System.Drawing.Size(523, 480);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "JSON";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -103,7 +103,7 @@
             this.textBoxJson.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxJson.Location = new System.Drawing.Point(3, 3);
             this.textBoxJson.Name = "textBoxJson";
-            this.textBoxJson.Size = new System.Drawing.Size(517, 363);
+            this.textBoxJson.Size = new System.Drawing.Size(517, 474);
             this.textBoxJson.TabIndex = 1;
             this.textBoxJson.Text = "";
             // 
@@ -114,6 +114,7 @@
             this.ClientSize = new System.Drawing.Size(531, 506);
             this.Controls.Add(this.tabControl1);
             this.Name = "FormJsonViewTable";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormJsonViewTable";
             this.Shown += new System.EventHandler(this.FormJsonViewTable_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
