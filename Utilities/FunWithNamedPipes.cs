@@ -93,7 +93,7 @@ namespace KLCProxy {
 
         /// <summary>Starts listening on the named pipe specified for the instance.</summary>
         internal void Start() {
-            if (pipeServer == null) pipeServer = new NamedPipeServerStream(DEFAULT_PIPENAME, PipeDirection.In, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
+            if (pipeServer == null) pipeServer = new NamedPipeServerStream(PipeName, PipeDirection.In, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
 
             try { pipeServer.BeginWaitForConnection(new AsyncCallback(PipeConnectionCallback), null); } catch (Exception ex) { this.OnError(NamedPipeListenerErrorType.BeginWaitForConnection, ex); }
         }
@@ -139,14 +139,14 @@ namespace KLCProxy {
             }
         }
 
+        /*
         private void OnMessageReceived(TMessage message) {
-            this.OnMessageReceived(new NamedPipeListenerMessageReceivedEventArgs<TMessage>(message));
+            OnMessageReceived(new NamedPipeListenerMessageReceivedEventArgs<TMessage>(message));
         }
+        */
 
         protected virtual void OnMessageReceived(NamedPipeListenerMessageReceivedEventArgs<TMessage> e) {
-            if (this.MessageReceived != null) {
-                this.MessageReceived(this, e);
-            }
+            MessageReceived?.Invoke(this, e);
         }
 
         private void OnError(NamedPipeListenerErrorType errorType, Exception ex) {
@@ -154,9 +154,7 @@ namespace KLCProxy {
         }
 
         protected virtual void OnError(NamedPipeListenerErrorEventArgs e) {
-            if (this.Error != null) {
-                this.Error(this, e);
-            }
+            Error?.Invoke(this, e);
         }
 
         void IDisposable.Dispose() {
@@ -178,8 +176,8 @@ namespace KLCProxy {
         /// <summary>Sends the specified <paramref name="message" /> to the specified named pipe.</summary>
         /// <param name="pipeName">The name of the named pipe the message will be sent to.</param>
         /// <param name="message">The message to send.</param>
-        public static void SendMessage(String pipeName, TMessage message) {
-            using (var pipeClient = new NamedPipeClientStream(".", DEFAULT_PIPENAME, PipeDirection.Out, PipeOptions.None)) {
+        public static void SendMessage(string pipeName, TMessage message) {
+            using (var pipeClient = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.None)) {
                 pipeClient.Connect();
 
                 formatter.Serialize(pipeClient, message);

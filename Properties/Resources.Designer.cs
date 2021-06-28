@@ -61,6 +61,16 @@ namespace KLCProxy.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 2021-06-27 
+        ///.
+        /// </summary>
+        internal static string BuildDate {
+            get {
+                return ResourceManager.GetString("BuildDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Close {
@@ -77,6 +87,16 @@ namespace KLCProxy.Properties {
             get {
                 object obj = ResourceManager.GetObject("Finch", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Split45 {
+            get {
+                object obj = ResourceManager.GetObject("Split45", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
     }

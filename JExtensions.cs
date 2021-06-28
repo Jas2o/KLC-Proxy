@@ -1,26 +1,35 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace KLCProxy
 {
-    /* Source: https://www.anotherdevblog.net/posts/flattening-json-in-json-net
-    /*
-     * Usage:
-        foreach (var jValue in JExtensions.GetLeafValues(json))
-            {
-                DataRow row = dt.NewRow();
-                row[0] = jValue.Path;
-                row[1] = jValue.Value;
-                dt.Rows.Add(row);
-            }
-     * */
 
     public static class JExtensions
     {
+        public static string JsonPrettify(string json) {
+            using (var stringReader = new StringReader(json))
+            using (var stringWriter = new StringWriter()) {
+                var jsonReader = new JsonTextReader(stringReader);
+                var jsonWriter = new JsonTextWriter(stringWriter) { Formatting = Formatting.Indented };
+                jsonWriter.WriteToken(jsonReader);
+                return stringWriter.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Source: https://www.anotherdevblog.net/posts/flattening-json-in-json-net
+        /// Usage:
+        ///     foreach (var jValue in JExtensions.GetLeafValues(json)) {
+        ///         DataRow row = dt.NewRow();
+        ///         row[0] = jValue.Path;
+        ///         row[1] = jValue.Value;
+        ///         dt.Rows.Add(row);
+        ///     }
+        /// </summary>
+        /// <param name="jToken"></param>
+        /// <returns></returns>
         public static IEnumerable<JValue> GetLeafValues(this JToken jToken)
         {
             if (jToken is JValue jValue)

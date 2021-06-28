@@ -4,15 +4,31 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B72EC4FA-0E1C-443C-9E2A-E9E9ED657C1E}</ProjectGuid>
+    <ProjectGuid>{BAFA847A-E964-43E1-B091-ED461E56B0DE}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>KLCProxy</RootNamespace>
     <AssemblyName>KLCProxy</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,142 +50,120 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>Split45.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CredentialManagement, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CredentialManagement.1.0.2\lib\net35\CredentialManagement.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nucs.JsonSettings, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\nucs.JsonSettings.1.0.7\lib\net461\nucs.JsonSettings.dll</HintPath>
+      <HintPath>..\packages\nucs.JsonSettings.1.0.7\lib\net47\nucs.JsonSettings.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp, Version=106.11.7.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.11.7\lib\net452\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormAskMe.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormAskMe.Designer.cs">
-      <DependentUpon>FormAskMe.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormAuthToken.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormAuthToken.Designer.cs">
-      <DependentUpon>FormAuthToken.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormJsonViewTable.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormJsonViewTable.Designer.cs">
-      <DependentUpon>FormJsonViewTable.cs</DependentUpon>
-    </Compile>
-    <None Include="Archive\FormKaseyaScreenshot.cs" />
-    <None Include="Archive\FormKaseyaScreenshot.Designer.cs">
-      <DependentUpon>FormKaseyaScreenshot.cs</DependentUpon>
-    </None>
-    <Compile Include="FormGenericEntry.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormGenericEntry.Designer.cs">
-      <DependentUpon>FormGenericEntry.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormStartPos.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormStartPos.Designer.cs">
-      <DependentUpon>FormStartPos.cs</DependentUpon>
-    </Compile>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="DropdownButton.cs" />
     <Compile Include="JExtensions.cs" />
-    <Compile Include="Archive\MinimizeCapture\WindowSnap.cs" />
-    <Compile Include="Archive\MinimizeCapture\WindowSnapCollection.cs" />
-    <Compile Include="Archive\MinimizeCapture\XPAppearance.cs" />
-    <Compile Include="Archive\MinimizeCapture\XPAppearance.SPI.cs" />
-    <None Include="Resources\Close.png" />
-    <None Include="Resources\Finch.png" />
-    <Content Include="Split45.ico" />
-    <None Include="Utilities\ClipboardMonitor.cs" />
+    <Compile Include="MainData.cs" />
     <Compile Include="Settings.cs" />
-    <None Include="Archive\SnapForm.cs">
-      <SubType>Form</SubType>
-    </None>
     <Compile Include="Utilities\ConfigureHandler.cs" />
     <Compile Include="Utilities\DebuggingService.cs" />
-    <Compile Include="FormInDev.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormInDev.Designer.cs">
-      <DependentUpon>FormInDev.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormJsonViewBasic.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormJsonViewBasic.Designer.cs">
-      <DependentUpon>FormJsonViewBasic.cs</DependentUpon>
-    </Compile>
     <Compile Include="Utilities\FunWithNamedPipes.cs" />
-    <Compile Include="MenuButton.cs">
-      <SubType>Component</SubType>
+    <Compile Include="WindowAskMe.xaml.cs">
+      <DependentUpon>WindowAskMe.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FormAskMe.resx">
-      <DependentUpon>FormAskMe.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormAuthToken.resx">
-      <DependentUpon>FormAuthToken.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormInDev.resx">
-      <DependentUpon>FormInDev.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormJsonViewBasic.resx">
-      <DependentUpon>FormJsonViewBasic.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormJsonViewTable.resx">
-      <DependentUpon>FormJsonViewTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="Archive\FormKaseyaScreenshot.resx">
-      <DependentUpon>FormKaseyaScreenshot.cs</DependentUpon>
-    </None>
-    <EmbeddedResource Include="FormGenericEntry.resx">
-      <DependentUpon>FormGenericEntry.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormStartPos.resx">
-      <DependentUpon>FormStartPos.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="WindowAuthToken.xaml.cs">
+      <DependentUpon>WindowAuthToken.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WindowJsonViewTable.xaml.cs">
+      <DependentUpon>WindowJsonViewTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WindowGenericEntry.xaml.cs">
+      <DependentUpon>WindowGenericEntry.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WindowStartPos.xaml.cs">
+      <DependentUpon>WindowStartPos.xaml</DependentUpon>
+    </Compile>
+    <Page Include="WindowAskMe.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WindowAuthToken.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WindowMain.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WindowMain.xaml.cs">
+      <DependentUpon>WindowMain.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="WindowJsonViewTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WindowGenericEntry.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WindowStartPos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Resources\Split45.ico" />
+    <None Include="Resources\BuildDate.txt" />
+    <Resource Include="Split45.ico" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Content Include="AutoType.ahk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -178,23 +172,33 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Close.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Finch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <Import Project="..\LibKaseya\LibKaseya.projitems" Label="Shared" />
   <Import Project="..\LibKaseyaAuth\LibKaseyaAuth.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PreBuildEvent>set mydate=%25date:~10,4%25-%25date:~7,2%25-%25date:~4,2%25
+echo %25mydate%25 &gt; "$(ProjectDir)\Resources\BuildDate.txt"</PreBuildEvent>
   </PropertyGroup>
 </Project>

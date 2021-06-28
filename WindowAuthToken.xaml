@@ -1,0 +1,24 @@
+﻿<Window x:Class="KLCProxy.WindowAuthToken"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KLCProxy"
+        mc:Ignorable="d"
+        Title="KLCProxy: Auth Token" MinHeight="70" Width="320" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.ColumnSpan="3" TextWrapping="Wrap" Margin="0,0,0,5">Your authorization token is loaded in when any VSA command is sent to KLCProxy. You can use this screen to apply your last token without relaunching from VSA.</TextBlock>
+        <TextBlock Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center" Margin="5,0" HorizontalAlignment="Left"><Run Text="Token:"/></TextBlock>
+        <PasswordBox Grid.Row="1" Grid.Column="1" x:Name="txtAuthToken" Height="23" VerticalAlignment="Center" Margin="5,0"/>
+        <Button Grid.Row="1" Grid.Column="2" x:Name="btnAuthSave" Content="Save for session" VerticalAlignment="Center" Margin="5,0" Click="OKButton_Click" HorizontalAlignment="Right"/>
+    </Grid>
+</Window>
