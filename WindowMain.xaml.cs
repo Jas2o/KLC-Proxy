@@ -35,22 +35,22 @@ namespace KLCProxy {
         #endregion Disable Maximize Box
 
         private string lastAuthToken = "";
-        private MainData mainData;
-        private NamedPipeListener<string> pipeListener;
+        private readonly MainData mainData;
+        private readonly NamedPipeListener<string> pipeListener;
 
-        private NotifyIcon notifyIcon;
-        private System.Windows.Controls.ContextMenu trayMenu;
-        private System.Windows.Controls.MenuItem traySettingsOnRC_UseAlt;
-        private System.Windows.Controls.MenuItem traySettingsOnRC_UseLC;
-        private System.Windows.Controls.MenuItem traySettingsOnLC_UseDefault;
-        private System.Windows.Controls.MenuItem traySettingsOnLC_UseAlt;
-        private System.Windows.Controls.MenuItem traySettingsOnLC_UseLC;
-        private System.Windows.Controls.MenuItem traySettingsOnLC_Ask;
+        private readonly NotifyIcon notifyIcon;
+        private readonly System.Windows.Controls.ContextMenu trayMenu;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseAlt;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseLC;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseDefault;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseAlt;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseLC;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_Ask;
 
         //private List<Agent> agents = new List<Agent>();
-        private Settings Settings;
+        private readonly Settings Settings;
 
-        private Timer timerAuto;
+        private readonly Timer timerAuto;
 
         public MainWindow() {
             mainData = new MainData();
@@ -129,15 +129,15 @@ namespace KLCProxy {
             }
         }
 
-        private void btnAlternative_Click(object sender, RoutedEventArgs e) {
+        private void BtnAlternative_Click(object sender, RoutedEventArgs e) {
             btnAlternative.ContextMenu.IsOpen = true;
         }
 
-        private void btnOriginal_Click(object sender, RoutedEventArgs e) {
+        private void BtnOriginal_Click(object sender, RoutedEventArgs e) {
             btnOriginal.ContextMenu.IsOpen = true;
         }
 
-        private void btnRemove_Click(object sender, RoutedEventArgs e) {
+        private void BtnRemove_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 mainData.ListAgent.Remove((listAgent.SelectedItem as Agent));
 
@@ -145,7 +145,7 @@ namespace KLCProxy {
             }
         }
 
-        private void btnWatch_Click(object sender, RoutedEventArgs e) {
+        private void BtnWatch_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
                 agent.Watch = !agent.Watch;
@@ -218,7 +218,7 @@ namespace KLCProxy {
             return (result == System.Windows.Forms.DialogResult.Yes);
         }
 
-        private void contextAlternativeLaunch_Click(object sender, RoutedEventArgs e) {
+        private void ContextAlternativeLaunch_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
@@ -234,9 +234,9 @@ namespace KLCProxy {
             }
         }
 
-        private void contextAlternativePrivate_Click(object sender, RoutedEventArgs e) {
+        private void ContextAlternativePrivate_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
-                Agent agent = (listAgent.SelectedItem as Agent);
+                Agent agent = listAgent.SelectedItem as Agent;
 
                 KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
                 command.SetForRemoteControl(true, true);
@@ -250,7 +250,7 @@ namespace KLCProxy {
             }
         }
 
-        private void contextAlternativeShared_Click(object sender, RoutedEventArgs e) {
+        private void ContextAlternativeShared_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
@@ -267,9 +267,9 @@ namespace KLCProxy {
             }
         }
 
-        private void contextOriginalLiveConnect_Click(object sender, RoutedEventArgs e) {
+        private void ContextOriginalLiveConnect_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
-                Agent agent = (listAgent.SelectedItem as Agent);
+                Agent agent = listAgent.SelectedItem as Agent;
 
                 KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
                 command.SetForLiveConnect();
@@ -283,9 +283,9 @@ namespace KLCProxy {
             }
         }
 
-        private void contextOriginalPrivate_Click(object sender, RoutedEventArgs e) {
+        private void ContextOriginalPrivate_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
-                Agent agent = (listAgent.SelectedItem as Agent);
+                Agent agent = listAgent.SelectedItem as Agent;
 
                 KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
                 command.SetForRemoteControl(true, true);
@@ -299,7 +299,7 @@ namespace KLCProxy {
             }
         }
 
-        private void contextOriginalShared_Click(object sender, RoutedEventArgs e) {
+        private void ContextOriginalShared_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
@@ -316,9 +316,9 @@ namespace KLCProxy {
             }
         }
 
-        private void contextOriginalTerminal_Click(object sender, RoutedEventArgs e) {
+        private void ContextOriginalTerminal_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
-                Agent agent = (listAgent.SelectedItem as Agent);
+                Agent agent = listAgent.SelectedItem as Agent;
 
                 KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
                 command.SetForTerminal(agent.OSType.Contains("Mac OS"));
@@ -332,7 +332,7 @@ namespace KLCProxy {
             }
         }
 
-        private void contextOriginalVNC_Click(object sender, RoutedEventArgs e) {
+        private void ContextOriginalVNC_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
                 string url = "https://vsa-web.company.com.au/HelpDeskTab/kVncCtl.asp?acctGuid=" + agent.ID + "&encryptRelay=1&tryDirect=&rSes=0"; // &722903
@@ -393,12 +393,13 @@ namespace KLCProxy {
             if (File.Exists(pathKLCEx)) {
                 Process process = new Process();
                 process.StartInfo.FileName = pathKLCEx;
-                process.StartInfo.Arguments = "klcex:" + lastAuthToken;
+                KaseyaAuth.SetCredentials(lastAuthToken);
+                //process.StartInfo.Arguments = "klcex:" + lastAuthToken;
                 process.Start();
             }
         }
 
-        private void menuAppsAuth_Click(object sender, RoutedEventArgs e) {
+        private void MenuAppsAuth_Click(object sender, RoutedEventArgs e) {
             Topmost = false;
             string newToken = WindowAuthToken.GetInput(lastAuthToken, this);
             if (lastAuthToken != newToken) {
@@ -408,11 +409,11 @@ namespace KLCProxy {
             Topmost = Settings.AlwaysOnTop;
         }
 
-        private void menuAppsExplorer_Click(object sender, RoutedEventArgs e) {
+        private void MenuAppsExplorer_Click(object sender, RoutedEventArgs e) {
             LaunchKLCEx();
         }
 
-        private void menuAppsFinch_Click(object sender, RoutedEventArgs e) {
+        private void MenuAppsFinch_Click(object sender, RoutedEventArgs e) {
             string pathKLCFinch = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Finch.exe";
             if (File.Exists(pathKLCFinch)) {
                 Process process = new Process();
@@ -421,7 +422,7 @@ namespace KLCProxy {
             }
         }
 
-        private void menuAppsHawk_Click(object sender, RoutedEventArgs e) {
+        private void MenuAppsHawk_Click(object sender, RoutedEventArgs e) {
             string pathKLCHawk = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Hawk.exe";
             if (!File.Exists(pathKLCHawk))
                 pathKLCHawk = pathKLCHawk.Replace(@"\Build\", @"\KLC-Hawk\bin\");
@@ -433,15 +434,15 @@ namespace KLCProxy {
             }
         }
 
-        private void menuSettingsAlwaysOnTop_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsAlwaysOnTop_Click(object sender, RoutedEventArgs e) {
             Settings.AlwaysOnTop = menuSettingsAlwaysOnTop.IsChecked;
         }
 
-        private void menuSettingsMinimizeToTray_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsMinimizeToTray_Click(object sender, RoutedEventArgs e) {
             Settings.AddToSystemTray = menuSettingsMinimizeToTray.IsChecked;
         }
 
-        private void menuSettingsOnLC_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsOnLC_Click(object sender, RoutedEventArgs e) {
             if (sender == menuSettingsOnLC_UseDefault || sender == traySettingsOnLC_UseDefault)
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.Default;
             else if (sender == menuSettingsOnLC_UseAlt || sender == traySettingsOnLC_UseAlt)
@@ -454,14 +455,15 @@ namespace KLCProxy {
             UpdateOnRCandLC();
         }
 
-        private void menuSettingsOnRC_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsOnRC_Click(object sender, RoutedEventArgs e) {
             Settings.RedirectToAlternative = (sender == menuSettingsOnRC_UseAlt || sender == traySettingsOnRC_UseAlt);
             UpdateOnRCandLC();
         }
 
-        private void menuSettingsStartPos_Click(object sender, RoutedEventArgs e) {
-            WindowStartPos form = new WindowStartPos(Settings.StartDisplay, Settings.StartDisplayFallback, Settings.StartCorner);
-            form.Owner = this;
+        private void MenuSettingsStartPos_Click(object sender, RoutedEventArgs e) {
+            WindowStartPos form = new WindowStartPos(Settings.StartDisplay, Settings.StartDisplayFallback, Settings.StartCorner) {
+                Owner = this
+            };
             if (form.ShowDialog() == true) {
                 Settings.StartDisplay = form.ReturnDisplayName;
                 Settings.StartDisplayFallback = form.ReturnDisplayFallback;
@@ -471,22 +473,22 @@ namespace KLCProxy {
             }
         }
 
-        private void menuSettingsToastTest_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsToastTest_Click(object sender, RoutedEventArgs e) {
             notifyIcon.Visible = true;
             notifyIcon.ShowBalloonTip(3000, "Toast Test", "This is an example toast.", ToolTipIcon.None);
         }
 
-        private void menuSettingsToastWhenOnline_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsToastWhenOnline_Click(object sender, RoutedEventArgs e) {
             Settings.ToastWhenOnline = menuSettingsToastWhenOnline.IsChecked;
         }
 
-        private void menuSettingsUseBypass_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsUseBypass_Click(object sender, RoutedEventArgs e) {
             menuSettingsUseProxy.IsChecked = ConfigureHandler.ToggleProxy(false);
             menuSettingsUseProxy.Header = "Use KLCProxy"; //This gets rid of the "(updates path)"
             ConfigureHandler.ToggleProxy(menuSettingsUseBypass.IsChecked, true);
         }
 
-        private void menuSettingsUseHawk_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsUseHawk_Click(object sender, RoutedEventArgs e) {
             if (Settings.Extra == LaunchExtra.Hawk)
                 Settings.Extra = LaunchExtra.None;
             else
@@ -496,14 +498,14 @@ namespace KLCProxy {
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
         }
 
-        private void menuSettingsUseProxy_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsUseProxy_Click(object sender, RoutedEventArgs e) {
             ConfigureHandler.ToggleProxy(menuSettingsUseProxy.IsChecked);
             if (menuSettingsUseProxy.IsChecked)
                 menuSettingsUseBypass.IsChecked = false;
             menuSettingsUseProxy.Header = "Use KLCProxy"; //This gets rid of the "(updates path)"
         }
 
-        private void menuSettingsUseWolf_Click(object sender, RoutedEventArgs e) {
+        private void MenuSettingsUseWolf_Click(object sender, RoutedEventArgs e) {
             if (Settings.Extra == LaunchExtra.Wolf)
                 Settings.Extra = LaunchExtra.None;
             else
@@ -513,21 +515,22 @@ namespace KLCProxy {
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
         }
 
-        private void menuToolsAddGUID_Click(object sender, RoutedEventArgs e) {
+        private void MenuToolsAddGUID_Click(object sender, RoutedEventArgs e) {
             Topmost = false;
-            WindowGenericEntry entry = new WindowGenericEntry("Add Agent by GUID", "Agent GUID:", "", "Add");
-            entry.Owner = this;
+            WindowGenericEntry entry = new WindowGenericEntry("Add Agent by GUID", "Agent GUID:", "", "Add") {
+                Owner = this
+            };
             if (entry.ShowDialog() == true && entry.ReturnInput.Length > 0) {
                 AddAgentToList(entry.ReturnInput);
             }
             Topmost = Settings.AlwaysOnTop;
         }
 
-        private void menuToolsAddJumpBox_Click(object sender, RoutedEventArgs e) {
+        private void MenuToolsAddJumpBox_Click(object sender, RoutedEventArgs e) {
             AddAgentToList("111111111111111"); //EIT Teamviewer
         }
 
-        private void menuToolsAddThis_Click(object sender, RoutedEventArgs e) {
+        private void MenuToolsAddThis_Click(object sender, RoutedEventArgs e) {
             string val = "";
 
             try {
@@ -544,17 +547,17 @@ namespace KLCProxy {
             }
         }
 
-        private void menuToolsAHKAutotype_Click(object sender, RoutedEventArgs e) {
+        private void MenuToolsAHKAutotype_Click(object sender, RoutedEventArgs e) {
             Process process = new Process();
             process.StartInfo.FileName = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk";
             process.Start();
         }
 
-        private void menuToolsITGlueJumpBox_Click(object sender, RoutedEventArgs e) {
+        private void MenuToolsITGlueJumpBox_Click(object sender, RoutedEventArgs e) {
             Process.Start("https://company.itglue.com/1432194/passwords/11018769"); //TeamV
         }
 
-        private void menuToolsLCKillAll_Click(object sender, RoutedEventArgs e) {
+        private void MenuToolsLCKillAll_Click(object sender, RoutedEventArgs e) {
             System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show("Do you really want to kill Kaseya Live Connect?", "KLCProxy", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (dialogResult == System.Windows.Forms.DialogResult.Yes)
                 KLCCommand.LaunchFromBase64("");
@@ -599,7 +602,7 @@ namespace KLCProxy {
         }
         */
 
-        private void menuToolsViewAgentInfo_Click(object sender, RoutedEventArgs e) {
+        private void MenuToolsViewAgentInfo_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
                 Newtonsoft.Json.Linq.JObject agentApi = agent.GetAgentInfoFromAPI(lastAuthToken);
@@ -724,15 +727,15 @@ namespace KLCProxy {
                 RefreshAgentsList(false);
         }
 
-        private void trayAppExplorer_Click(object sender, RoutedEventArgs e) {
+        private void TrayAppExplorer_Click(object sender, RoutedEventArgs e) {
             LaunchKLCEx();
         }
 
-        private void trayAppProxy_Click(object sender, RoutedEventArgs e) {
+        private void TrayAppProxy_Click(object sender, RoutedEventArgs e) {
             ShowMe();
         }
 
-        private void trayExit_Click(object sender, RoutedEventArgs e) {
+        private void TrayExit_Click(object sender, RoutedEventArgs e) {
             Close();
         }
 
