@@ -35,7 +35,7 @@
             Margin="5"
             Padding="5"
             Click="BtnAlternative_Click">
-            <Image Source="/KLCProxy;component/Resources/Finch.png" StretchDirection="DownOnly" />
+            <Image Source="/KLCProxyWPF;component/Resources/Finch.png" StretchDirection="DownOnly" />
         </Button>
         <Button
             x:Name="btnCancel"
@@ -43,7 +43,7 @@
             Margin="5"
             Padding="5"
             Click="BtnCancel_Click">
-            <Image Source="/KLCProxy;component/Resources/Close.png" StretchDirection="DownOnly" />
+            <Image Source="/KLCProxyWPF;component/Resources/Close.png" StretchDirection="DownOnly" />
         </Button>
         <TextBlock
             Grid.Row="1"

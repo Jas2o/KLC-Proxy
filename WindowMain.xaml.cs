@@ -94,8 +94,8 @@ namespace KLCProxy {
                     Dispatcher.Invoke((Action)delegate {
                         ShowMe();
                     });
-                } else if (e.Message.Contains("kaseyaliveconnect:///"))
-                    LaunchFromArgument(e.Message.Replace("kaseyaliveconnect:///", ""));
+                } else if (e.Message.Contains("liveconnect:///"))
+                    LaunchFromArgument(e.Message.Replace("liveconnect:///", ""));
                 else if (e.Message.Contains("klcproxy:"))
                     CheckAndLoadToken(string.Join("", e.Message.ToCharArray().Where(Char.IsDigit)));
                 else
@@ -777,8 +777,8 @@ namespace KLCProxy {
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1) {
-                if (args[1].Contains("kaseyaliveconnect:///")) {
-                    string base64 = args[1].Replace("kaseyaliveconnect:///", "");
+                if (args[1].Contains("liveconnect:///")) {
+                    string base64 = args[1].Replace("liveconnect:///", "");
                     LaunchFromArgument(base64);
                 } else if (args[1].Contains("klcproxy:")) {
                     CheckAndLoadToken(string.Join("", args[1].ToCharArray().Where(Char.IsDigit)));
@@ -828,7 +828,7 @@ namespace KLCProxy {
             menuSettingsToastWhenOnline.IsChecked = Settings.ToastWhenOnline;
             UpdateOnRCandLC();
 
-            menuToolsAHKAutotype.IsEnabled = File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk");
+            //menuToolsAHKAutotype.IsEnabled = File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk");
         }
 
         private void Window_SourceInitialized(object sender, EventArgs e) {

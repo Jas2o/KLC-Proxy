@@ -11,8 +11,8 @@ namespace KLCProxy
         public static ProxyState IsProxyEnabled()
         {
             InitializeCurrentUserValue();
-            RegistryKey subkey = Registry.ClassesRoot.OpenSubKey(@"kaseyaliveconnect\shell\open\command", false);
-            RegistryKey subkeyCU = Registry.CurrentUser.OpenSubKey(@"Software\Classes\kaseyaliveconnect\shell\open\command", true);
+            RegistryKey subkey = Registry.ClassesRoot.OpenSubKey(@"liveconnect\shell\open\command", false);
+            //RegistryKey subkeyCU = Registry.CurrentUser.OpenSubKey(@"Software\Classes\liveconnect\shell\open\command", true);
 
             string val = "";
             if (subkey != null)
@@ -28,7 +28,7 @@ namespace KLCProxy
                 ret = ProxyState.BypassToFinch;
 
             subkey.Close();
-            subkeyCU.Close();
+            //subkeyCU.Close();
             return ret;
         }
 
@@ -44,8 +44,8 @@ namespace KLCProxy
         {
             InitializeCurrentUserValue();
 
-            RegistryKey subkey = Registry.ClassesRoot.OpenSubKey(@"kaseyaliveconnect\shell\open\command", false);
-            RegistryKey subkeyCU = Registry.CurrentUser.OpenSubKey(@"Software\Classes\kaseyaliveconnect\shell\open\command", true);
+            RegistryKey subkey = Registry.ClassesRoot.OpenSubKey(@"liveconnect\shell\open\command", false);
+            RegistryKey subkeyCU = Registry.CurrentUser.OpenSubKey(@"Software\Classes\liveconnect\shell\open\command", true);
 
             if (enabled) {
                 if (bypass)
@@ -53,7 +53,7 @@ namespace KLCProxy
                 else
                     subkeyCU.SetValue("", ExpectedValue());
             } else
-                Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\kaseyaliveconnect\shell\open");
+                Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\liveconnect\shell\open");
 
             subkey.Close();
             subkeyCU.Close();
@@ -63,11 +63,11 @@ namespace KLCProxy
 
         private static void InitializeCurrentUserValue()
         {
-            if (Registry.CurrentUser.OpenSubKey(@"Software\Classes\kaseyaliveconnect\shell\open\command", false) == null)
+            if (Registry.CurrentUser.OpenSubKey(@"Software\Classes\liveconnect\shell\open\command", false) == null)
             {
-                using (RegistryKey key = Registry.CurrentUser.CreateSubKey("SOFTWARE\\Classes\\kaseyaliveconnect"))
+                using (RegistryKey key = Registry.CurrentUser.CreateSubKey("SOFTWARE\\Classes\\liveconnect"))
                 {
-                    key.SetValue("", "URL:Kaseya Live Connect Protocol");
+                    key.SetValue("", "URL:Live Connect Protocol");
                     key.SetValue("URL Protocol", "");
 
                     using (var commandKey = key.CreateSubKey(@"shell\open\command"))

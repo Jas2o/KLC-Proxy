@@ -93,10 +93,10 @@
                     x:Name="menuToolsViewAgentInfo"
                     Click="MenuToolsViewAgentInfo_Click"
                     Header="View Agent Info" />
-                <MenuItem
+                <!--<MenuItem
                     x:Name="menuToolsAHKAutotype"
                     Click="MenuToolsAHKAutotype_Click"
-                    Header="AHK Autotype" />
+                    Header="AHK Autotype" />-->
                 <Separator />
                 <MenuItem
                     x:Name="menuToolsAddJumpBox"
