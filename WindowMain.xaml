@@ -219,7 +219,9 @@
                 x:Name="listAgent"
                 Margin="0"
                 DisplayMemberPath="Label"
-                ItemsSource="{Binding ListAgent, Mode=OneWay}" />
+                ItemsSource="{Binding ListAgent, Mode=OneWay}"
+                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                SelectionChanged="listAgent_SelectionChanged" />
             <StackPanel Grid.Column="2" Margin="0">
                 <Grid Margin="0,0,0,5" VerticalAlignment="Top">
                     <Button
@@ -293,11 +295,6 @@
                                     x:Name="contextOriginalPrivate"
                                     Click="ContextOriginalPrivate_Click"
                                     Header="Private Remote Control" />
-                                <Separator />
-                                <MenuItem
-                                    x:Name="contextOriginalVNC"
-                                    Click="ContextOriginalVNC_Click"
-                                    Header="VNC" />
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>

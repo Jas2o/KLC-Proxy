@@ -17,15 +17,14 @@ namespace KLCProxy {
         private static Mutex mutex = null;
 
         public App() : base() {
-            bool createdNew;
-            mutex = new Mutex(true, appName, out createdNew);
+            mutex = new Mutex(true, appName, out bool createdNew);
 
             if (!createdNew) {
                 string[] args = Environment.GetCommandLineArgs();
                 if (args.Length > 1) {
-                    NamedPipeListener<string>.SendMessage(args[1]);
+                    NamedPipeListener<string>.SendMessage("KLCProxy2", args[1]);
                 } else {
-                    NamedPipeListener<string>.SendMessage("focus");
+                    NamedPipeListener<string>.SendMessage("KLCProxy2", "focus");
                 }
 
                 Current.Shutdown();

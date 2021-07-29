@@ -34,28 +34,26 @@ namespace KLCProxy {
 
         #endregion Disable Maximize Box
 
-        private string lastAuthToken = "";
         private readonly MainData mainData;
-        private readonly NamedPipeListener<string> pipeListener;
-
         private readonly NotifyIcon notifyIcon;
-        private readonly System.Windows.Controls.ContextMenu trayMenu;
-        private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseAlt;
-        private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseLC;
-        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseDefault;
-        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseAlt;
-        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseLC;
-        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_Ask;
-
+        private readonly NamedPipeListener<string> pipeListener;
         //private List<Agent> agents = new List<Agent>();
         private readonly Settings Settings;
 
         private readonly Timer timerAuto;
-
+        private readonly System.Windows.Controls.ContextMenu trayMenu;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_Ask;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseAlt;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseDefault;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseLC;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseAlt;
+        private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseLC;
+        private string lastAuthToken = "";
         public MainWindow() {
+            InitializeComponent();
+
             mainData = new MainData();
             DataContext = mainData;
-            InitializeComponent();
 
             trayMenu = (System.Windows.Controls.ContextMenu)this.FindResource("trayMenu");
             traySettingsOnRC_UseAlt = (System.Windows.Controls.MenuItem)LogicalTreeHelper.FindLogicalNode(trayMenu, "traySettingsOnRC_UseAlt");
@@ -109,12 +107,14 @@ namespace KLCProxy {
             Agent agent = mainData.ListAgent.FirstOrDefault(x => x.ID == command.payload.agentId);
 
             if (agent == null) {
-                mainData.ListAgent.Add(new Agent(command.payload.agentId, command.payload.auth.Token, new Agent.StatusChange(NotifyForAgent)));
+                Dispatcher.Invoke((Action)delegate {
+                    mainData.ListAgent.Add(new Agent(command.payload.agentId, command.payload.auth.Token, new Agent.StatusChange(NotifyForAgent)));
 
-                RefreshAgentsList(true);
+                    RefreshAgentsList(true);
 
-                if (mainData.ListAgent.Count == 1)
-                    SelectedAgentRefreshRemoteControlLogs();
+                    if (mainData.ListAgent.Count == 1)
+                        SelectedAgentRefreshRemoteControlLogs();
+                });
             }
         }
 
@@ -332,18 +332,10 @@ namespace KLCProxy {
             }
         }
 
-        private void ContextOriginalVNC_Click(object sender, RoutedEventArgs e) {
-            if (listAgent.SelectedIndex > -1) {
-                Agent agent = (listAgent.SelectedItem as Agent);
-                string url = "https://vsa-web.company.com.au/HelpDeskTab/kVncCtl.asp?acctGuid=" + agent.ID + "&encryptRelay=1&tryDirect=&rSes=0"; // &722903
-                Process.Start(url);
-            }
-        }
-
         private void LaunchFromArgument(string base64) {
             KLCCommand command = KLCCommand.NewFromBase64(base64);
             lastAuthToken = command.payload.auth.Token;
-
+            Kaseya.LaunchNotify(lastAuthToken, command.launchNotifyUrl);
             AddAgentToList(command);
 
             if (command.payload.navId == "dashboard") {
@@ -397,6 +389,11 @@ namespace KLCProxy {
                 //process.StartInfo.Arguments = "klcex:" + lastAuthToken;
                 process.Start();
             }
+        }
+
+        private void listAgent_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
+            if (listAgent.SelectedIndex > -1)
+                SelectedAgentRefreshRemoteControlLogs();
         }
 
         private void MenuAppsAuth_Click(object sender, RoutedEventArgs e) {
@@ -690,11 +687,14 @@ namespace KLCProxy {
                 Agent agent = null;
                 Dispatcher.Invoke((Action)delegate {
                     agent = (listAgent.SelectedItem as Agent);
-                    if (agent != null) {
-                        string theText = agent.GetAgentRemoteControlLogs(lastAuthToken);
-                        txtSelectedLogs.Text = theText;
-                    }
                 });
+
+                if (agent != null) {
+                    string theText = agent.GetAgentRemoteControlLogs(lastAuthToken);
+                    Dispatcher.Invoke((Action)delegate {
+                        txtSelectedLogs.Text = theText;
+                    });
+                }
             });
 
             //bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
@@ -754,6 +754,8 @@ namespace KLCProxy {
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
+            //Something in here is slow
+
             ConfigureHandler.ProxyState proxyState = ConfigureHandler.IsProxyEnabled();
             if (proxyState == ConfigureHandler.ProxyState.Enabled)
                 menuSettingsUseProxy.IsChecked = true;
