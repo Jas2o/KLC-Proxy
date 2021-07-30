@@ -139,9 +139,11 @@ namespace KLCProxy {
 
         private void BtnRemove_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
+                int index = listAgent.SelectedIndex;
                 mainData.ListAgent.Remove((listAgent.SelectedItem as Agent));
-
                 RefreshAgentsList(false);
+                listAgent.SelectedIndex = index;
+                listAgent.Focus();
             }
         }
 
