@@ -27,6 +27,8 @@ namespace KLCProxy {
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private extern static bool DestroyIcon(IntPtr handle);
 
+        public bool ReturnUseAlternative;
+
         public WindowAskMe() {
             InitializeComponent();
 
@@ -46,21 +48,24 @@ namespace KLCProxy {
             DestroyIcon(hiconSmall);
             DestroyIcon(hiconSmall);
 
+            WindowUtilities.ActivateWindow(this);
             btnAlternative.Focus();
         }
 
         private void BtnOriginal_Click(object sender, RoutedEventArgs e) {
-            DialogResult = false;
+            ReturnUseAlternative = false;
+            DialogResult = true;
             Close();
         }
 
         private void BtnAlternative_Click(object sender, RoutedEventArgs e) {
+            ReturnUseAlternative = true;
             DialogResult = true;
             Close();
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e) {
-            DialogResult = null;
+            DialogResult = false;
             Close();
         }
     }

@@ -360,11 +360,14 @@ namespace KLCProxy {
                     case Settings.OnLiveConnectAction.Prompt:
                         bool? result;
                         Dispatcher.Invoke((Action)delegate {
-                            result = new WindowAskMe().ShowDialog();
-                            if (result == true)
-                                command.Launch(true, LaunchExtra.None);
-                            else if (result == false)
-                                command.Launch(false, Settings.Extra);
+                            WindowAskMe winAskMe = new WindowAskMe();
+                            result = winAskMe.ShowDialog();
+                            if (result == true) {
+                                if(winAskMe.ReturnUseAlternative)
+                                    command.Launch(true, LaunchExtra.None);
+                                else
+                                    command.Launch(false, Settings.Extra);
+                            }
                         });
                         break;
                 }

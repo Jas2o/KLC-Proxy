@@ -96,6 +96,7 @@
     <Compile Include="Utilities\ConfigureHandler.cs" />
     <Compile Include="Utilities\DebuggingService.cs" />
     <Compile Include="Utilities\FunWithNamedPipes.cs" />
+    <Compile Include="Utilities\WindowUtilities.cs" />
     <Compile Include="WindowAskMe.xaml.cs">
       <DependentUpon>WindowAskMe.xaml</DependentUpon>
     </Compile>
