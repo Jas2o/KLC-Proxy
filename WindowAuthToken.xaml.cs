@@ -34,5 +34,8 @@ namespace KLCProxy {
             DialogResult = true;
         }
 
+        private void btnAuthCopy_Click(object sender, RoutedEventArgs e) {
+            Clipboard.SetDataObject(txtAuthToken.Password);
+        }
     }
 }

@@ -70,6 +70,8 @@ namespace KLCProxy {
             notifyIcon.BalloonTipClosed += NotifyIcon_BalloonTipClosed;
             notifyIcon.MouseClick += NotifyIcon_MouseClick;
 
+            txtVersion.Text = Properties.Resources.BuildDate.Trim();
+
             timerAuto = new Timer {
                 Interval = 10000
             };
@@ -109,7 +111,6 @@ namespace KLCProxy {
             if (agent == null) {
                 Dispatcher.Invoke((Action)delegate {
                     mainData.ListAgent.Add(new Agent(command.payload.agentId, command.payload.auth.Token, new Agent.StatusChange(NotifyForAgent)));
-
                     RefreshAgentsList(true);
 
                     if (mainData.ListAgent.Count == 1)
@@ -140,6 +141,8 @@ namespace KLCProxy {
         private void BtnRemove_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 int index = listAgent.SelectedIndex;
+                if (index == listAgent.Items.Count - 1)
+                    index--;
                 mainData.ListAgent.Remove((listAgent.SelectedItem as Agent));
                 RefreshAgentsList(false);
                 listAgent.SelectedIndex = index;
@@ -397,6 +400,11 @@ namespace KLCProxy {
         }
 
         private void listAgent_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
+            if (listAgent.SelectedIndex > -1)
+                SelectedAgentRefreshRemoteControlLogs();
+        }
+
+        private void listAgent_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
             if (listAgent.SelectedIndex > -1)
                 SelectedAgentRefreshRemoteControlLogs();
         }
@@ -671,8 +679,10 @@ namespace KLCProxy {
 
         private void RefreshAgentsList(bool selectLast = false) {
             Dispatcher.Invoke((Action)delegate {
-                if (selectLast)
+                if (selectLast) {
                     listAgent.SelectedIndex = listAgent.Items.Count - 1;
+                    listAgent.ScrollIntoView(listAgent.SelectedItem);
+                }
             });
         }
 
@@ -782,6 +792,19 @@ namespace KLCProxy {
                 menuSettingsToastTest.Visibility = Visibility.Collapsed;
             }
 
+            try {
+                using (RegistryKey view32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
+                    RegistryKey subkey = view32.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\X86"); //Actually in WOW6432Node
+                    if (subkey != null) {
+                        int vcRuntimeBld = (int)subkey.GetValue("Bld");
+                        if (vcRuntimeBld >= 23026) //2015
+                            borderVcRedist.Visibility = Visibility.Collapsed;
+                    }
+                    subkey.Close();
+                }
+            } catch (Exception) {
+            }
+
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1) {
                 if (args[1].Contains("liveconnect:///")) {
@@ -855,6 +878,10 @@ namespace KLCProxy {
                     notifyIcon.Visible = true;
                 }
             }
+        }
+
+        private void hyperlinkVcRedist_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e) {
+            Process.Start(new ProcessStartInfo(e.Uri.ToString()) { UseShellExecute = true });
         }
     }
 }
