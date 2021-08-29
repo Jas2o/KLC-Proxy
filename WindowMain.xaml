@@ -117,6 +117,10 @@
                     Header="Add by GUID" />
                 <Separator />
                 <MenuItem Header="Live Connect:" IsEnabled="False" />
+                <MenuItem
+                    x:Name="menuToolsLCDownload"
+                    Click="MenuToolsLCDownload_Click"
+                    Header="Check for update" />
                 <!--<MenuItem x:Name="menuToolsLCReconnect" Header="Reconnect Current" Click="menuToolsLCReconnect_Click"/>-->
                 <MenuItem
                     x:Name="menuToolsLCKillAll"

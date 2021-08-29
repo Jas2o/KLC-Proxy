@@ -883,5 +883,38 @@ namespace KLCProxy {
         private void hyperlinkVcRedist_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e) {
             Process.Start(new ProcessStartInfo(e.Uri.ToString()) { UseShellExecute = true });
         }
+
+        private void MenuToolsLCDownload_Click(object sender, RoutedEventArgs e) {
+            string versionLocal = "";
+            string versionOnline = "";
+
+            string klc = @"C:\Program Files\Kaseya Live Connect\KaseyaLiveConnect.exe";
+            if (File.Exists(klc)) {
+                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(klc);
+                versionLocal = versionInfo.FileVersion;
+            }
+
+            RestClient client = new RestClient("https://vsa-web.company.com.au/vsapres/api/session/AppVersions/1");
+            IRestResponse response = client.Execute(new RestRequest());
+            if (response.ResponseStatus == ResponseStatus.Completed) {
+                try {
+                    string unescaped = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(response.Content);
+                    dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(unescaped);
+                    foreach (dynamic key in json["data"].Children()) {
+                        if (key["platform"] == "KaseyaLiveConnect-Win64") {
+                            versionOnline = (string)key["version"];
+                        }
+                    }
+                } catch (Exception) {
+                    //e.g. Cloudflare error
+                }
+            }
+
+            if (versionOnline.Length > 0 && versionOnline != versionLocal) {
+                Process.Start("https://vsa-web.company.com.au/ManagedFiles/VSAHiddenFiles/KaseyaLiveConnect/win64/LiveConnect.exe");
+            } else {
+                System.Windows.MessageBox.Show("Your KLC version matches VSA-WEB's!", "KLCProxy");
+            }
+        }
     }
 }
