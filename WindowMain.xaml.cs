@@ -88,21 +88,25 @@ namespace KLCProxy {
 
             Kaseya.Start();
 
-            pipeListener = new NamedPipeListener<string>("KLCProxy2");
-            pipeListener.MessageReceived += (sender, e) => {
-                if (e.Message == "focus") {
-                    Dispatcher.Invoke((Action)delegate {
-                        ShowMe();
-                    });
-                } else if (e.Message.Contains("liveconnect:///"))
-                    LaunchFromArgument(e.Message.Replace("liveconnect:///", ""));
-                else if (e.Message.Contains("klcproxy:"))
-                    CheckAndLoadToken(string.Join("", e.Message.ToCharArray().Where(Char.IsDigit)));
-                else
-                    AddAgentToList(e.Message);
-            };
-            pipeListener.Error += (sender, e) => System.Windows.MessageBox.Show(string.Format("Error ({0}): {1}", e.ErrorType, e.Exception.ToString()));
-            pipeListener.Start();
+            try {
+                pipeListener = new NamedPipeListener<string>("KLCProxy2", true);
+                pipeListener.MessageReceived += (sender, e) => {
+                    if (e.Message == "focus") {
+                        Dispatcher.Invoke((Action)delegate {
+                            ShowMe();
+                        });
+                    } else if (e.Message.Contains("liveconnect:///"))
+                        LaunchFromArgument(e.Message.Replace("liveconnect:///", ""));
+                    else if (e.Message.Contains("klcproxy:"))
+                        CheckAndLoadToken(string.Join("", e.Message.ToCharArray().Where(Char.IsDigit)));
+                    else
+                        AddAgentToList(e.Message);
+                };
+                pipeListener.Error += (sender, e) => System.Windows.MessageBox.Show(string.Format("Error ({0}): {1}", e.ErrorType, e.Exception.ToString()));
+                pipeListener.Start();
+            } catch(Exception ex) {
+                new WindowException(ex, "Named Pipe Setup").ShowDialog();
+            }
         }
 
         private void AddAgentToList(KLCCommand command) {
@@ -139,7 +143,12 @@ namespace KLCProxy {
         }
 
         private void BtnRemove_Click(object sender, RoutedEventArgs e) {
-            if (listAgent.SelectedIndex > -1) {
+            if(listAgent.SelectedItems.Count > 1) {
+                for(int i = listAgent.SelectedItems.Count; i > 0; i--) {
+                    mainData.ListAgent.Remove((Agent)listAgent.SelectedItems[i-1]);
+                }
+                RefreshAgentsList(false);
+            } else if (listAgent.SelectedIndex > -1) {
                 int index = listAgent.SelectedIndex;
                 if (index == listAgent.Items.Count - 1)
                     index--;
@@ -151,6 +160,17 @@ namespace KLCProxy {
         }
 
         private void BtnWatch_Click(object sender, RoutedEventArgs e) {
+            foreach (Agent agent in listAgent.SelectedItems) {
+                agent.Watch = !agent.Watch;
+                if (!agent.Watch) {
+                    agent.WaitLabel = "";
+                    agent.WaitCommand = null;
+                }
+                agent.Refresh(lastAuthToken);
+            }
+            RefreshAgentsList(false);
+
+            /*
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
                 agent.Watch = !agent.Watch;
@@ -162,6 +182,7 @@ namespace KLCProxy {
 
                 RefreshAgentsList(false);
             }
+            */
         }
 
         private bool CheckAndLoadToken(string token) {

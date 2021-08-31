@@ -227,7 +227,8 @@
                 ItemsSource="{Binding ListAgent, Mode=OneWay}"
                 MouseDoubleClick="listAgent_MouseDoubleClick"
                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                SelectionChanged="listAgent_SelectionChanged" />
+                SelectionChanged="listAgent_SelectionChanged"
+                SelectionMode="Extended" />
             <StackPanel Grid.Column="2" Margin="0">
                 <Grid Margin="0,0,0,5" VerticalAlignment="Top">
                     <Button

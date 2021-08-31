@@ -103,6 +103,9 @@
     <Compile Include="WindowAuthToken.xaml.cs">
       <DependentUpon>WindowAuthToken.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WindowException.xaml.cs">
+      <DependentUpon>WindowException.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowJsonViewTable.xaml.cs">
       <DependentUpon>WindowJsonViewTable.xaml</DependentUpon>
     </Compile>
@@ -117,6 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WindowAuthToken.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WindowException.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
