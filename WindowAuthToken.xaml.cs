@@ -19,6 +19,7 @@ namespace KLCProxy {
             if (result == true) {
                 string token = form.txtAuthToken.Password.Trim();
                 //Save the token until the computer is logged out
+                Kaseya.LoadToken(token);
                 KaseyaAuth.SetCredentials(token);
                 return token;
             } else

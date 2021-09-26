@@ -9,8 +9,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Interop;
 
 namespace KLCProxy {
@@ -48,7 +50,7 @@ namespace KLCProxy {
         private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseLC;
         private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseAlt;
         private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseLC;
-        private string lastAuthToken = "";
+        //private string Kaseya.Token = "";
         public MainWindow() {
             InitializeComponent();
 
@@ -114,7 +116,7 @@ namespace KLCProxy {
 
             if (agent == null) {
                 Dispatcher.Invoke((Action)delegate {
-                    mainData.ListAgent.Add(new Agent(command.payload.agentId, command.payload.auth.Token, new Agent.StatusChange(NotifyForAgent)));
+                    mainData.ListAgent.Add(new Agent(command.payload.agentId, new Agent.StatusChange(NotifyForAgent)));
                     RefreshAgentsList(true);
 
                     if (mainData.ListAgent.Count == 1)
@@ -124,13 +126,15 @@ namespace KLCProxy {
         }
 
         private void AddAgentToList(string agentID) {
-            IRestResponse responseTV = Kaseya.GetRequest(lastAuthToken, "api/v1.0/assetmgmt/agents?$filter=AgentId eq " + agentID + "M");
-            dynamic resultTV = JsonConvert.DeserializeObject(responseTV.Content);
+            IRestResponse responseTV = Kaseya.GetRequest("api/v1.0/assetmgmt/agents?$filter=AgentId eq " + agentID + "M");
+            if (responseTV.StatusCode == System.Net.HttpStatusCode.OK) {
+                dynamic resultTV = JsonConvert.DeserializeObject(responseTV.Content);
 
-            if (resultTV["TotalRecords"] != null && (int)resultTV["TotalRecords"] == 1) {
-                KLCCommand command = KLCCommand.Example(resultTV["Result"][0]["AgentId"].ToString(), lastAuthToken);
-                command.SetForRemoteControl(false, true);
-                AddAgentToList(command);
+                if (resultTV["TotalRecords"] != null && (int)resultTV["TotalRecords"] == 1) {
+                    KLCCommand command = KLCCommand.Example(resultTV["Result"][0]["AgentId"].ToString(), Kaseya.Token);
+                    command.SetForRemoteControl(false, true);
+                    AddAgentToList(command);
+                }
             }
         }
 
@@ -166,7 +170,7 @@ namespace KLCProxy {
                     agent.WaitLabel = "";
                     agent.WaitCommand = null;
                 }
-                agent.Refresh(lastAuthToken);
+                agent.Refresh();
             }
             RefreshAgentsList(false);
 
@@ -178,7 +182,7 @@ namespace KLCProxy {
                     agent.WaitLabel = "";
                     agent.WaitCommand = null;
                 }
-                agent.Refresh(lastAuthToken);
+                agent.Refresh(Kaseya.Token);
 
                 RefreshAgentsList(false);
             }
@@ -188,8 +192,8 @@ namespace KLCProxy {
         private bool CheckAndLoadToken(string token) {
             if (token != null) {
                 try {
+                    Kaseya.LoadToken(token);
                     KaseyaAuth auth = KaseyaAuth.ApiAuthX(token);
-                    lastAuthToken = token;
 
                     menuToolsAddThis.IsEnabled = true;
                     menuToolsAddJumpBox.IsEnabled = true;
@@ -203,7 +207,7 @@ namespace KLCProxy {
         }
 
         private bool ConnectPromptWithAdminBypass(Agent agent) {
-            dynamic agentApi = agent.GetAgentInfoFromAPI(lastAuthToken);
+            dynamic agentApi = agent.GetAgentInfoFromAPI();
 
             string agentName = agentApi["Result"]["AgentName"];
             string agentDWG = agentApi["Result"]["DomainWorkgroup"];
@@ -248,7 +252,7 @@ namespace KLCProxy {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
-                KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
                 command.SetForLiveConnect();
 
                 if (agent.Watch && agent.Online == 0) {
@@ -264,7 +268,7 @@ namespace KLCProxy {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = listAgent.SelectedItem as Agent;
 
-                KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
                 command.SetForRemoteControl(true, true);
 
                 if (agent.Watch && agent.Online == 0) {
@@ -280,7 +284,7 @@ namespace KLCProxy {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
-                KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
                 command.SetForRemoteControl(false, true);
 
                 if (agent.Watch && agent.Online == 0) {
@@ -297,7 +301,7 @@ namespace KLCProxy {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = listAgent.SelectedItem as Agent;
 
-                KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
                 command.SetForLiveConnect();
 
                 if (agent.Watch && agent.Online == 0) {
@@ -313,7 +317,7 @@ namespace KLCProxy {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = listAgent.SelectedItem as Agent;
 
-                KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
                 command.SetForRemoteControl(true, true);
 
                 if (agent.Watch && agent.Online == 0) {
@@ -329,7 +333,7 @@ namespace KLCProxy {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
 
-                KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
                 command.SetForRemoteControl(false, true);
 
                 if (agent.Watch && agent.Online == 0) {
@@ -346,7 +350,7 @@ namespace KLCProxy {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = listAgent.SelectedItem as Agent;
 
-                KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
                 command.SetForTerminal(agent.OSType.Contains("Mac OS"));
 
                 if (agent.Watch && agent.Online == 0) {
@@ -360,8 +364,8 @@ namespace KLCProxy {
 
         private void LaunchFromArgument(string base64) {
             KLCCommand command = KLCCommand.NewFromBase64(base64);
-            lastAuthToken = command.payload.auth.Token;
-            Kaseya.LaunchNotify(lastAuthToken, command.launchNotifyUrl);
+            Kaseya.LoadToken(command.payload.auth.Token);
+            Kaseya.LaunchNotify(command.launchNotifyUrl);
             AddAgentToList(command);
 
             if (command.payload.navId == "dashboard") {
@@ -414,8 +418,8 @@ namespace KLCProxy {
             if (File.Exists(pathKLCEx)) {
                 Process process = new Process();
                 process.StartInfo.FileName = pathKLCEx;
-                KaseyaAuth.SetCredentials(lastAuthToken);
-                //process.StartInfo.Arguments = "klcex:" + lastAuthToken;
+                KaseyaAuth.SetCredentials(Kaseya.Token);
+                //process.StartInfo.Arguments = "klcex:" + Kaseya.Token;
                 process.Start();
             }
         }
@@ -432,10 +436,10 @@ namespace KLCProxy {
 
         private void MenuAppsAuth_Click(object sender, RoutedEventArgs e) {
             Topmost = false;
-            string newToken = WindowAuthToken.GetInput(lastAuthToken, this);
-            if (lastAuthToken != newToken) {
+            string newToken = WindowAuthToken.GetInput(Kaseya.Token, this);
+            if (Kaseya.Token != newToken) {
                 if (CheckAndLoadToken(newToken))
-                    KaseyaAuth.SetCredentials(lastAuthToken);
+                    KaseyaAuth.SetCredentials(Kaseya.Token);
             }
             Topmost = Settings.AlwaysOnTop;
         }
@@ -622,7 +626,7 @@ namespace KLCProxy {
                     string match = k.Substring(0, k.IndexOf(":"));
                     Agent agent = agents.FirstOrDefault(a => a.Name == match);
                     if (agent != null) {
-                        KLCCommand command = KLCCommand.Example(agent.ID, lastAuthToken);
+                        KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
                         command.SetForRemoteControl(k.Contains(":Private"), true);// Old: rcOnly=!Settings.ForceLiveConnect
                         Debug.WriteLine("Relaunching");
                         command.Launch(false, Settings.Extra);
@@ -636,7 +640,7 @@ namespace KLCProxy {
         private void MenuToolsViewAgentInfo_Click(object sender, RoutedEventArgs e) {
             if (listAgent.SelectedIndex > -1) {
                 Agent agent = (listAgent.SelectedItem as Agent);
-                Newtonsoft.Json.Linq.JObject agentApi = agent.GetAgentInfoFromAPI(lastAuthToken);
+                Newtonsoft.Json.Linq.JObject agentApi = agent.GetAgentInfoFromAPI();
                 new WindowJsonViewTable(agentApi.ToString()).Show();
             }
         }
@@ -726,7 +730,7 @@ namespace KLCProxy {
                 });
 
                 if (agent != null) {
-                    string theText = agent.GetAgentRemoteControlLogs(lastAuthToken);
+                    string theText = agent.GetAgentRemoteControlLogsRecent();
                     Dispatcher.Invoke((Action)delegate {
                         txtSelectedLogs.Text = theText;
                     });
@@ -754,7 +758,7 @@ namespace KLCProxy {
             bool changes = false;
             foreach (Agent agent in listAgent.Items) {
                 if (agent.Watch) {
-                    agent.Refresh(lastAuthToken);
+                    agent.Refresh();
                     changes = true;
                 }
             }
@@ -867,7 +871,7 @@ namespace KLCProxy {
 
             if (File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\..\..\KLC-Wolf\bin\Debug\KLC-Wolf.exe")) {
             } else {
-                menuSettingsUseWolf.IsEnabled = false;
+                menuSettingsUseWolf.Visibility = Visibility.Collapsed;
                 if (Settings.Extra == LaunchExtra.Wolf)
                     Settings.Extra = LaunchExtra.None;
             }
@@ -935,6 +939,19 @@ namespace KLCProxy {
                 Process.Start("https://vsa-web.company.com.au/ManagedFiles/VSAHiddenFiles/KaseyaLiveConnect/win64/LiveConnect.exe");
             } else {
                 System.Windows.MessageBox.Show("Your KLC version matches VSA-WEB's!", "KLCProxy");
+            }
+        }
+
+        private void listAgent_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e) {
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl) {
+                if (e.Key == Key.C) {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (Agent agent in listAgent.SelectedItems) {
+                        sb.Append(agent.ComputerName + "\r\n");
+                    }
+                    if(sb.Length > 0)
+                        System.Windows.Clipboard.SetDataObject(sb.ToString().Trim());
+                }
             }
         }
     }
