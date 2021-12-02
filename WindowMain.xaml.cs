@@ -40,16 +40,18 @@ namespace KLCProxy {
         private readonly NotifyIcon notifyIcon;
         private readonly NamedPipeListener<string> pipeListener;
         //private List<Agent> agents = new List<Agent>();
-        private readonly Settings Settings;
+        private Settings Settings;
 
         private readonly Timer timerAuto;
         private readonly System.Windows.Controls.ContextMenu trayMenu;
+        /*
         private readonly System.Windows.Controls.MenuItem traySettingsOnLC_Ask;
         private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseAlt;
         private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseDefault;
         private readonly System.Windows.Controls.MenuItem traySettingsOnLC_UseLC;
         private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseAlt;
         private readonly System.Windows.Controls.MenuItem traySettingsOnRC_UseLC;
+        */
         //private string Kaseya.Token = "";
         public MainWindow() {
             InitializeComponent();
@@ -58,12 +60,14 @@ namespace KLCProxy {
             DataContext = mainData;
 
             trayMenu = (System.Windows.Controls.ContextMenu)this.FindResource("trayMenu");
+            /*
             traySettingsOnRC_UseAlt = (System.Windows.Controls.MenuItem)LogicalTreeHelper.FindLogicalNode(trayMenu, "traySettingsOnRC_UseAlt");
             traySettingsOnRC_UseLC = (System.Windows.Controls.MenuItem)LogicalTreeHelper.FindLogicalNode(trayMenu, "traySettingsOnRC_UseLC");
             traySettingsOnLC_UseDefault = (System.Windows.Controls.MenuItem)LogicalTreeHelper.FindLogicalNode(trayMenu, "traySettingsOnLC_UseDefault");
             traySettingsOnLC_UseAlt = (System.Windows.Controls.MenuItem)LogicalTreeHelper.FindLogicalNode(trayMenu, "traySettingsOnLC_UseAlt");
             traySettingsOnLC_UseLC = (System.Windows.Controls.MenuItem)LogicalTreeHelper.FindLogicalNode(trayMenu, "traySettingsOnLC_UseLC");
             traySettingsOnLC_Ask = (System.Windows.Controls.MenuItem)LogicalTreeHelper.FindLogicalNode(trayMenu, "traySettingsOnLC_Ask");
+            */
             notifyIcon = new NotifyIcon {
                 BalloonTipIcon = ToolTipIcon.Info,
                 Text = "KLCProxy",
@@ -85,7 +89,6 @@ namespace KLCProxy {
             else {
                 Settings = JsonSettings.Construct<Settings>(pathSettings);
             }
-
             MoveToSettingsScreenCorner();
 
             Kaseya.Start();
@@ -93,6 +96,8 @@ namespace KLCProxy {
             try {
                 pipeListener = new NamedPipeListener<string>("KLCProxy2", true);
                 pipeListener.MessageReceived += (sender, e) => {
+                    //System.Windows.MessageBox.Show(e.Message);
+
                     if (e.Message == "focus") {
                         Dispatcher.Invoke((Action)delegate {
                             ShowMe();
@@ -368,6 +373,9 @@ namespace KLCProxy {
             Kaseya.LaunchNotify(command.launchNotifyUrl);
             AddAgentToList(command);
 
+            if(Settings.OverrideRCSharedtoLC && command.payload.navId == "remotecontrol/shared")
+                command.SetForLiveConnect();
+
             if (command.payload.navId == "dashboard") {
                 switch (Settings.OnLiveConnect) {
                     case Settings.OnLiveConnectAction.Default:
@@ -391,12 +399,32 @@ namespace KLCProxy {
                             WindowAskMe winAskMe = new WindowAskMe();
                             result = winAskMe.ShowDialog();
                             if (result == true) {
-                                if(winAskMe.ReturnUseAlternative)
+                                if (winAskMe.ReturnUseAlternative)
                                     command.Launch(true, LaunchExtra.None);
                                 else
                                     command.Launch(false, Settings.Extra);
                             }
                         });
+                        break;
+                }
+            } else if(command.payload.navId == "remotecontrol/1-click") {
+                switch (Settings.OnOneClick)
+                {
+                    case Settings.OnLiveConnectAction.UseLiveConnect:
+                        command.Launch(false, Settings.Extra);
+                        break;
+
+                    case Settings.OnLiveConnectAction.UseAlternative:
+                        command.Launch(true, LaunchExtra.None);
+                        break;
+
+                    //case Settings.OnLiveConnectAction.Default:
+                    //case Settings.OnLiveConnectAction.Prompt:
+                    default:
+                        if (Settings.RedirectToAlternative)
+                            command.Launch(true, LaunchExtra.None);
+                        else
+                            command.Launch(false, Settings.Extra);
                         break;
                 }
             } else {
@@ -470,29 +498,11 @@ namespace KLCProxy {
         }
 
         private void MenuSettingsAlwaysOnTop_Click(object sender, RoutedEventArgs e) {
-            Settings.AlwaysOnTop = menuSettingsAlwaysOnTop.IsChecked;
+            this.Topmost = Settings.AlwaysOnTop = menuSettingsAlwaysOnTop.IsChecked;
         }
 
         private void MenuSettingsMinimizeToTray_Click(object sender, RoutedEventArgs e) {
-            Settings.AddToSystemTray = menuSettingsMinimizeToTray.IsChecked;
-        }
-
-        private void MenuSettingsOnLC_Click(object sender, RoutedEventArgs e) {
-            if (sender == menuSettingsOnLC_UseDefault || sender == traySettingsOnLC_UseDefault)
-                Settings.OnLiveConnect = Settings.OnLiveConnectAction.Default;
-            else if (sender == menuSettingsOnLC_UseAlt || sender == traySettingsOnLC_UseAlt)
-                Settings.OnLiveConnect = Settings.OnLiveConnectAction.UseAlternative;
-            else if (sender == menuSettingsOnLC_UseLC || sender == traySettingsOnLC_UseLC)
-                Settings.OnLiveConnect = Settings.OnLiveConnectAction.UseLiveConnect;
-            else if (sender == menuSettingsOnLC_Ask || sender == traySettingsOnLC_Ask)
-                Settings.OnLiveConnect = Settings.OnLiveConnectAction.Prompt;
-
-            UpdateOnRCandLC();
-        }
-
-        private void MenuSettingsOnRC_Click(object sender, RoutedEventArgs e) {
-            Settings.RedirectToAlternative = (sender == menuSettingsOnRC_UseAlt || sender == traySettingsOnRC_UseAlt);
-            UpdateOnRCandLC();
+            notifyIcon.Visible = Settings.AddToSystemTray = menuSettingsMinimizeToTray.IsChecked;
         }
 
         private void MenuSettingsStartPos_Click(object sender, RoutedEventArgs e) {
@@ -517,12 +527,6 @@ namespace KLCProxy {
             Settings.ToastWhenOnline = menuSettingsToastWhenOnline.IsChecked;
         }
 
-        private void MenuSettingsUseBypass_Click(object sender, RoutedEventArgs e) {
-            menuSettingsUseProxy.IsChecked = ConfigureHandler.ToggleProxy(false);
-            menuSettingsUseProxy.Header = "Use KLCProxy"; //This gets rid of the "(updates path)"
-            ConfigureHandler.ToggleProxy(menuSettingsUseBypass.IsChecked, true);
-        }
-
         private void MenuSettingsUseHawk_Click(object sender, RoutedEventArgs e) {
             if (Settings.Extra == LaunchExtra.Hawk)
                 Settings.Extra = LaunchExtra.None;
@@ -531,13 +535,6 @@ namespace KLCProxy {
 
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
-        }
-
-        private void MenuSettingsUseProxy_Click(object sender, RoutedEventArgs e) {
-            ConfigureHandler.ToggleProxy(menuSettingsUseProxy.IsChecked);
-            if (menuSettingsUseProxy.IsChecked)
-                menuSettingsUseBypass.IsChecked = false;
-            menuSettingsUseProxy.Header = "Use KLCProxy"; //This gets rid of the "(updates path)"
         }
 
         private void MenuSettingsUseWolf_Click(object sender, RoutedEventArgs e) {
@@ -691,14 +688,13 @@ namespace KLCProxy {
 
         private void NotifyIcon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e) {
             if (e.Button == MouseButtons.Left) {
-                if (this.WindowState == WindowState.Normal) {
-                    Hide();
+                if (this.WindowState == WindowState.Normal)
                     this.WindowState = WindowState.Minimized;
-                } else {
-                    ShowMe();
-                }
+                else
+                    SystemCommands.RestoreWindow(this);
+                trayMenu.IsOpen = false;
             } else {
-                trayMenu.IsOpen = true;
+                trayMenu.IsOpen = !trayMenu.IsOpen;
             }
         }
 
@@ -746,7 +742,7 @@ namespace KLCProxy {
 
         private void ShowMe() {
             Show();
-            this.WindowState = WindowState.Normal;
+            //this.WindowState = WindowState.Normal;
             this.Activate();
             this.Focus();
 
@@ -772,21 +768,11 @@ namespace KLCProxy {
         }
 
         private void TrayAppProxy_Click(object sender, RoutedEventArgs e) {
-            ShowMe();
+            NotifyIcon_MouseClick(sender, new System.Windows.Forms.MouseEventArgs(MouseButtons.Left, 0, 0, 0, 0));
         }
 
         private void TrayExit_Click(object sender, RoutedEventArgs e) {
             Close();
-        }
-
-        private void UpdateOnRCandLC() {
-            menuSettingsOnRC_UseAlt.IsChecked = traySettingsOnRC_UseAlt.IsChecked = Settings.RedirectToAlternative;
-            menuSettingsOnRC_UseLC.IsChecked = traySettingsOnRC_UseLC.IsChecked = !Settings.RedirectToAlternative;
-
-            menuSettingsOnLC_UseDefault.IsChecked = traySettingsOnLC_UseDefault.IsChecked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Default);
-            menuSettingsOnLC_UseAlt.IsChecked = traySettingsOnLC_UseAlt.IsChecked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseAlternative);
-            menuSettingsOnLC_UseLC.IsChecked = traySettingsOnLC_UseLC.IsChecked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.UseLiveConnect);
-            menuSettingsOnLC_Ask.IsChecked = traySettingsOnLC_Ask.IsChecked = (Settings.OnLiveConnect == Settings.OnLiveConnectAction.Prompt);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e) {
@@ -796,24 +782,13 @@ namespace KLCProxy {
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             //Something in here is slow
 
-            ConfigureHandler.ProxyState proxyState = ConfigureHandler.IsProxyEnabled();
-            if (proxyState == ConfigureHandler.ProxyState.Enabled)
-                menuSettingsUseProxy.IsChecked = true;
-            else if (proxyState == ConfigureHandler.ProxyState.BypassToFinch)
-                menuSettingsUseBypass.IsChecked = true;
+            Settings.ProxyState = ConfigureHandler.IsProxyEnabled();
 
-            DebuggingService ds = new DebuggingService();
-            if (ds.RunningInDebugMode()) {
+            bool isDebug = new DebuggingService().RunningInDebugMode();
+            if (isDebug) {
                 Title += " [Debug]";
                 KLCCommand.UseDebugAlternativeFirst = true;
-
-                if (proxyState == ConfigureHandler.ProxyState.EnabledButDifferent)
-                    menuSettingsUseProxy.Header = "Use KLCProxy (update path)";
             } else {
-                if (proxyState == ConfigureHandler.ProxyState.EnabledButDifferent) {
-                    ConfigureHandler.ToggleProxy(true);
-                    menuSettingsUseProxy.IsChecked = true;
-                }
                 menuSettingsToastTest.Visibility = Visibility.Collapsed;
             }
 
@@ -823,12 +798,34 @@ namespace KLCProxy {
                     if (subkey != null) {
                         int vcRuntimeBld = (int)subkey.GetValue("Bld");
                         if (vcRuntimeBld >= 23026) //2015
-                            borderVcRedist.Visibility = Visibility.Collapsed;
+                            tbIssueVisualC.Visibility = Visibility.Collapsed;
                     }
                     subkey.Close();
                 }
             } catch (Exception) {
             }
+
+            tbIssuePath.Visibility = Visibility.Collapsed;
+            switch (Settings.ProxyState)
+            {
+                case ConfigureHandler.ProxyState.Enabled:
+                    break;
+                case ConfigureHandler.ProxyState.EnabledButDifferent:
+                    if (isDebug)
+                        tbIssuePath.Visibility = Visibility.Collapsed;
+                    else
+                    {
+                        ConfigureHandler.ToggleProxy(true);
+                        Settings.ProxyState = ConfigureHandler.ProxyState.Enabled;
+                    }
+                    break;
+                case ConfigureHandler.ProxyState.BypassToFinch:
+                    break;
+                default:
+                    break;
+            }
+
+            UpdateIssueBoxVisibility();
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1) {
@@ -849,16 +846,11 @@ namespace KLCProxy {
 
             txtSelectedLogs.Clear();
 
-            if (File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCAlt.exe") || File.Exists(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Finch.exe")) {
+            if (File.Exists(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Finch.exe")) {
             } else {
-                menuSettingsOnRC_UseAlt.IsEnabled = false;
-                menuSettingsOnRC_UseLC.IsEnabled = false;
-                menuSettingsOnLC_UseAlt.IsEnabled = false;
-                menuSettingsOnLC_UseLC.IsEnabled = false;
-                menuSettingsOnLC_Ask.IsEnabled = false;
-
                 Settings.RedirectToAlternative = false;
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.Default;
+                Settings.OnOneClick = Settings.OnLiveConnectAction.Default;
             }
 
             if (File.Exists(@"C:\Program Files\Kaseya Live Connect-MITM\KaseyaLiveConnect.exe")) {
@@ -881,9 +873,17 @@ namespace KLCProxy {
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
             menuSettingsToastWhenOnline.IsChecked = Settings.ToastWhenOnline;
-            UpdateOnRCandLC();
 
             //menuToolsAHKAutotype.IsEnabled = File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk");
+
+        }
+
+        private void UpdateIssueBoxVisibility()
+        {
+            if (tbIssuePath.Visibility == Visibility.Collapsed && tbIssueVisualC.Visibility == Visibility.Collapsed)
+                borderIssue.Visibility = Visibility.Collapsed;
+            else
+                borderIssue.Visibility = Visibility.Visible;
         }
 
         private void Window_SourceInitialized(object sender, EventArgs e) {
@@ -897,16 +897,25 @@ namespace KLCProxy {
             //In WPF if we want to enable resize without Maximize we can't set the Window to NoResize
             if (WindowState == WindowState.Maximized)
                 WindowState = WindowState.Normal;
-            else if (WindowState == WindowState.Minimized) {
-                if (Settings.AddToSystemTray) {
-                    Hide();
-                    notifyIcon.Visible = true;
+            else {
+                //Console.WriteLine("Window_StateChanged: " + WindowState);
+                if(WindowState == WindowState.Normal)
+                {
+                    ShowMe();
+                } else if (WindowState == WindowState.Minimized) {
+                    if (Settings.AddToSystemTray)
+                    {
+                        Hide();
+                        notifyIcon.Visible = true;
+                    }
                 }
             }
         }
 
         private void hyperlinkVcRedist_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e) {
             Process.Start(new ProcessStartInfo(e.Uri.ToString()) { UseShellExecute = true });
+            tbIssueVisualC.Visibility = Visibility.Collapsed;
+            UpdateIssueBoxVisibility();
         }
 
         private void MenuToolsLCDownload_Click(object sender, RoutedEventArgs e) {
@@ -953,6 +962,62 @@ namespace KLCProxy {
                         System.Windows.Clipboard.SetDataObject(sb.ToString().Trim());
                 }
             }
+        }
+
+        private void ContextOriginalOneClick_Click(object sender, RoutedEventArgs e)
+        {
+            if (listAgent.SelectedIndex > -1)
+            {
+                Agent agent = listAgent.SelectedItem as Agent;
+
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
+                command.SetForRemoteControl_OneClick();
+
+                if (agent.Watch && agent.Online == 0)
+                {
+                    agent.WaitLabel = "RC-1C";
+                    agent.WaitCommand = command;
+                    RefreshAgentsList(false);
+                }
+                else
+                    command.Launch(false, Settings.Extra);
+            }
+        }
+
+        private void ContextAlternativeOneClick_Click(object sender, RoutedEventArgs e)
+        {
+            if (listAgent.SelectedIndex > -1)
+            {
+                Agent agent = listAgent.SelectedItem as Agent;
+
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
+                command.SetForRemoteControl_OneClick();
+
+                if (agent.Watch && agent.Online == 0)
+                {
+                    agent.WaitLabel = "Fi-1C";
+                    agent.WaitCommand = command;
+                    RefreshAgentsList(false);
+                }
+                else
+                    command.Launch(true, LaunchExtra.None);
+            }
+        }
+
+        private void MenuSettings_Click(object sender, RoutedEventArgs e)
+        {
+            WindowSettings winSettings = new WindowSettings(ref Settings)
+            {
+                Owner = this
+            };
+            winSettings.ShowDialog();
+        }
+
+        private void hyperlinkPathUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            ConfigureHandler.ToggleProxy(true);
+            tbIssuePath.Visibility = Visibility.Collapsed;
+            UpdateIssueBoxVisibility();
         }
     }
 }

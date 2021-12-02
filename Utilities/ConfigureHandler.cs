@@ -4,7 +4,7 @@ using System.IO;
 
 namespace KLCProxy
 {
-    class ConfigureHandler
+    public class ConfigureHandler
     {
         public enum ProxyState { Disabled, Enabled, EnabledButDifferent, BypassToFinch };
 
@@ -40,8 +40,10 @@ namespace KLCProxy
             return string.Format("\"{0}\" \"%1\"", Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\KLC-Finch.exe");
         }
 
-        public static bool ToggleProxy(bool enabled, bool bypass=false)
+        public static ProxyState ToggleProxy(bool enabled, bool bypass=false)
         {
+            ProxyState value = ProxyState.Disabled;
+
             InitializeCurrentUserValue();
 
             RegistryKey subkey = Registry.ClassesRoot.OpenSubKey(@"liveconnect\shell\open\command", false);
@@ -49,16 +51,22 @@ namespace KLCProxy
 
             if (enabled) {
                 if (bypass)
+                {
                     subkeyCU.SetValue("", ExpectedValueFinch());
+                    value = ProxyState.BypassToFinch;
+                }
                 else
+                {
                     subkeyCU.SetValue("", ExpectedValue());
+                    value = ProxyState.Enabled;
+                }
             } else
                 Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\liveconnect\shell\open");
 
             subkey.Close();
             subkeyCU.Close();
 
-            return enabled;
+            return value;
         }
 
         private static void InitializeCurrentUserValue()

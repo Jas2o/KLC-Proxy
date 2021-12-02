@@ -43,7 +43,7 @@
             Grid.Column="1"
             Grid.ColumnSpan="2"
             Height="23"
-            Margin="0,0,0,5"
+            Margin="5,0,0,5"
             VerticalAlignment="Center" />
         <Button
             x:Name="btnAuthSave"
@@ -64,7 +64,18 @@
             Margin="0"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
+            Click="btnAuthCopy_Click"
             Content="Copy"
-            Opacity="0.5" Click="btnAuthCopy_Click" />
+            Opacity="0.5" />
+
+        <Button
+            x:Name="btnAuthGetFromKLC"
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="5,0,0,0"
+            HorizontalAlignment="Left"
+            Click="btnAuthGetFromKLC_Click"
+            Content="Get from running KLC"
+            Opacity="0.5" />
     </Grid>
 </Window>

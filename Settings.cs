@@ -22,15 +22,18 @@ namespace KLCProxy {
 
         //--
 
-        //public bool UseMITM { get; set; } = false;
         public LaunchExtra Extra { get; set; } = LaunchExtra.None;
         public bool RedirectToAlternative { get; set; } = false;
         public OnLiveConnectAction OnLiveConnect { get; set; } = OnLiveConnectAction.Default;
+        public OnLiveConnectAction OnOneClick { get; set; } = OnLiveConnectAction.Default;
+        public bool OverrideRCSharedtoLC { get; set; } = false;
         public bool ToastWhenOnline = false;
         public bool AddToSystemTray = false;
         public bool AlwaysOnTop = false;
         public string StartDisplay = "Default";
         public string StartDisplayFallback = "";
         public int StartCorner = 0;
+
+        [JsonIgnore] public ConfigureHandler.ProxyState ProxyState = ConfigureHandler.ProxyState.Disabled;
     }
 }

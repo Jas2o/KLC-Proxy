@@ -1,0 +1,110 @@
+﻿<Window
+    x:Class="KLCProxy.WindowSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:KLCProxy"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="KLCProxy Settings"
+    Width="300"
+    MinHeight="100"
+    Closing="Window_Closing"
+    Foreground="White"
+    Loaded="Window_Loaded"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+    <Border x:Name="rcBorderBG" Background="#303030">
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Label
+                Margin="0,0,0,5"
+                Padding="5,0"
+                VerticalContentAlignment="Center"
+                Content="From VSA"
+                Foreground="White" />
+            <ComboBox
+                x:Name="cmbFromVSA"
+                Grid.Column="1"
+                Margin="0,0,0,5"
+                SelectionChanged="cmbFromVSA_SelectionChanged">
+                <ComboBoxItem Content="Default (Live Connect)" />
+                <ComboBoxItem Content="Use KLCProxy" />
+                <ComboBoxItem Content="Use KLC-Finch (bypass KLCProxy)" />
+            </ComboBox>
+
+            <Label
+                Grid.Row="1"
+                Margin="0,0,0,5"
+                Padding="5,0"
+                VerticalContentAlignment="Center"
+                Content="On Remote Control"
+                Foreground="White" />
+            <ComboBox
+                x:Name="cmbOnRemoteControl"
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="0,0,0,5">
+                <ComboBoxItem Content="Original" />
+                <ComboBoxItem Content="Alternative" />
+            </ComboBox>
+
+            <Label
+                Grid.Row="2"
+                Margin="0,0,0,5"
+                Padding="5,0"
+                VerticalContentAlignment="Center"
+                Content="On Live Connect"
+                Foreground="White" />
+            <ComboBox
+                x:Name="cmbOnLiveConnect"
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="0,0,0,5">
+                <ComboBoxItem Content="Same as Remote Control" />
+                <ComboBoxItem Content="Original" />
+                <ComboBoxItem Content="Alternative" />
+                <ComboBoxItem Content="Ask Me" />
+            </ComboBox>
+
+            <Label
+                Grid.Row="3"
+                Margin="0,0,0,5"
+                Padding="5,0"
+                VerticalContentAlignment="Center"
+                Content="On 1-Click"
+                Foreground="White" />
+            <ComboBox
+                x:Name="cmbOnOneClick"
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="0,0,0,5">
+                <ComboBoxItem Content="Same as Remote Control" />
+                <ComboBoxItem Content="Original" />
+                <ComboBoxItem Content="Alternative" />
+            </ComboBox>
+
+            <CheckBox
+                x:Name="chkOverrideRCSharedtoLC"
+                Grid.Row="4"
+                Grid.ColumnSpan="2"
+                Margin="3,0"
+                HorizontalAlignment="Left"
+                Content="Override RC Shared to Live Connect action."
+                Foreground="White" />
+        </Grid>
+    </Border>
+</Window>

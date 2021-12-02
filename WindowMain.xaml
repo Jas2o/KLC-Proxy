@@ -18,6 +18,7 @@
     mc:Ignorable="d">
     <Window.Resources>
         <ContextMenu x:Key="trayMenu" Placement="MousePoint">
+            <!--
             <MenuItem Header="On Remote Control..." IsEnabled="False" />
             <MenuItem
                 x:Name="traySettingsOnRC_UseAlt"
@@ -52,6 +53,12 @@
                 Header="Ask Me"
                 IsCheckable="True" />
             <Separator />
+            <MenuItem
+                x:Name="traySettings"
+                Click="MenuSettings_Click"
+                Header="Settings" />
+            <Separator />
+            -->
             <MenuItem
                 x:Name="trayAppProxy"
                 Click="TrayAppProxy_Click"
@@ -129,17 +136,12 @@
                     Header="Kill All Live Connect" />
             </MenuItem>
 
-            <MenuItem Header="Settings">
-                <MenuItem
-                    x:Name="menuSettingsUseProxy"
-                    Click="MenuSettingsUseProxy_Click"
-                    Header="Use KLCProxy"
-                    IsCheckable="True" />
-                <MenuItem
-                    x:Name="menuSettingsUseBypass"
-                    Click="MenuSettingsUseBypass_Click"
-                    Header="Bypass KLCProxy, always use Finch"
-                    IsCheckable="True" />
+            <MenuItem
+                x:Name="menuSettings"
+                Click="MenuSettings_Click"
+                Header="Settings" />
+
+            <MenuItem Header="More">
                 <MenuItem
                     x:Name="menuSettingsUseHawk"
                     Click="MenuSettingsUseHawk_Click"
@@ -149,40 +151,6 @@
                     x:Name="menuSettingsUseWolf"
                     Click="MenuSettingsUseWolf_Click"
                     Header="Use Wolf MITM"
-                    IsCheckable="True" />
-                <Separator />
-                <MenuItem Header="On Remote Control..." IsEnabled="False" />
-                <MenuItem
-                    x:Name="menuSettingsOnRC_UseAlt"
-                    Click="MenuSettingsOnRC_Click"
-                    Header="Use Alternative"
-                    IsCheckable="True" />
-                <MenuItem
-                    x:Name="menuSettingsOnRC_UseLC"
-                    Click="MenuSettingsOnRC_Click"
-                    Header="Use Live Connect"
-                    IsCheckable="True" />
-                <Separator />
-                <MenuItem Header="On 'Live Connect'..." IsEnabled="False" />
-                <MenuItem
-                    x:Name="menuSettingsOnLC_UseDefault"
-                    Click="MenuSettingsOnLC_Click"
-                    Header="Same as Remote Control"
-                    IsCheckable="True" />
-                <MenuItem
-                    x:Name="menuSettingsOnLC_UseAlt"
-                    Click="MenuSettingsOnLC_Click"
-                    Header="Use Alternative"
-                    IsCheckable="True" />
-                <MenuItem
-                    x:Name="menuSettingsOnLC_UseLC"
-                    Click="MenuSettingsOnLC_Click"
-                    Header="Use Live Connect"
-                    IsCheckable="True" />
-                <MenuItem
-                    x:Name="menuSettingsOnLC_Ask"
-                    Click="MenuSettingsOnLC_Click"
-                    Header="Ask Me"
                     IsCheckable="True" />
                 <Separator />
                 <MenuItem
@@ -258,6 +226,10 @@
                                     x:Name="contextAlternativePrivate"
                                     Click="ContextAlternativePrivate_Click"
                                     Header="RC Private" />
+                                <MenuItem
+                                    x:Name="contextAlternativeOneClick"
+                                    Click="ContextAlternativeOneClick_Click"
+                                    Header="1-Click Access" />
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
@@ -310,6 +282,10 @@
                                     x:Name="contextOriginalPrivate"
                                     Click="ContextOriginalPrivate_Click"
                                     Header="Private Remote Control" />
+                                <MenuItem
+                                    x:Name="contextOriginalOneClick"
+                                    Click="ContextOriginalOneClick_Click"
+                                    Header="1-Click Access" />
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
@@ -368,7 +344,7 @@
                 TextWrapping="Wrap"
                 VerticalScrollBarVisibility="Auto" />
             <Border
-                x:Name="borderVcRedist"
+                x:Name="borderIssue"
                 Grid.Row="2"
                 Grid.ColumnSpan="3"
                 Margin="0,5,0,0"
@@ -376,15 +352,23 @@
                 Background="#FFFFE8B6"
                 BorderBrush="#FFFFCA6F"
                 BorderThickness="2">
-                <TextBlock>
-                    <Run Text="Visual C++ Redist x86 2015-2019" />
-                    <Hyperlink
-                        x:Name="hyperlinkVcRedist"
-                        NavigateUri="https://support.microsoft.com/en-us/topic/the-latest-supported-visual-c-downloads-2647da03-1eea-4433-9aff-95f26a218cc0"
-                        RequestNavigate="hyperlinkVcRedist_RequestNavigate">
-                        Download
-                    </Hyperlink>
-                </TextBlock>
+                <StackPanel>
+                    <TextBlock x:Name="tbIssuePath">
+                        <Hyperlink x:Name="hyperlinkPathUpdate" Click="hyperlinkPathUpdate_Click">
+                            Update
+                        </Hyperlink>
+                        <Run Text="registry with this KLCProxy path." />
+                    </TextBlock>
+                    <TextBlock x:Name="tbIssueVisualC">
+                        <Hyperlink
+                            x:Name="hyperlinkVcRedist"
+                            NavigateUri="https://support.microsoft.com/en-us/topic/the-latest-supported-visual-c-downloads-2647da03-1eea-4433-9aff-95f26a218cc0"
+                            RequestNavigate="hyperlinkVcRedist_RequestNavigate">
+                            Download
+                        </Hyperlink>
+                        <Run Text="Visual C++ Redist x86 2015-2019" />
+                    </TextBlock>
+                </StackPanel>
             </Border>
         </Grid>
     </DockPanel>
