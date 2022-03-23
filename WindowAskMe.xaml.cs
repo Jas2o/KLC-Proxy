@@ -27,14 +27,19 @@ namespace KLCProxy {
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private extern static bool DestroyIcon(IntPtr handle);
 
+        private const string path1 = @"C:\Program Files\Kaseya Live Connect\KaseyaLiveConnect.exe";
+        private string path2 = Environment.ExpandEnvironmentVariables(@"%localappdata%\Apps\Kaseya Live Connect\KaseyaLiveConnect.exe");
+
         public bool ReturnUseAlternative;
 
         public WindowAskMe() {
             InitializeComponent();
 
+            string path = System.IO.File.Exists(path1) ? path1 : path2;
+
             IntPtr hiconLarge = default;
             IntPtr hiconSmall = default;
-            int kResult = SHDefExtractIcon(@"C:\Program Files\Kaseya Live Connect\KaseyaLiveConnect.exe", 0, 0, ref hiconLarge, ref hiconSmall, 64);
+            int kResult = SHDefExtractIcon(path, 0, 0, ref hiconLarge, ref hiconSmall, 64);
             if (kResult == 0) {
                 Icon ico = System.Drawing.Icon.FromHandle(hiconLarge);
                 imgOriginal.Source = Imaging.CreateBitmapSourceFromHIcon(

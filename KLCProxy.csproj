@@ -90,18 +90,24 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Configuration\WindowBookmarks.xaml.cs">
+      <DependentUpon>WindowBookmarks.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DropdownButton.cs" />
     <Compile Include="JExtensions.cs" />
     <Compile Include="MainData.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Utilities\ConfigureHandler.cs" />
     <Compile Include="Utilities\DebuggingService.cs" />
     <Compile Include="Utilities\FunWithNamedPipes.cs" />
+    <Compile Include="Utilities\WindowSaaS.xaml.cs">
+      <DependentUpon>WindowSaaS.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\WindowUtilities.cs" />
     <Compile Include="WindowAskMe.xaml.cs">
       <DependentUpon>WindowAskMe.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WindowAuthToken.xaml.cs">
+    <Compile Include="Configuration\WindowAuthToken.xaml.cs">
       <DependentUpon>WindowAuthToken.xaml</DependentUpon>
     </Compile>
     <Compile Include="WindowException.xaml.cs">
@@ -113,17 +119,25 @@
     <Compile Include="WindowGenericEntry.xaml.cs">
       <DependentUpon>WindowGenericEntry.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WindowSettings.xaml.cs">
+    <Compile Include="Configuration\WindowSettings.xaml.cs">
       <DependentUpon>WindowSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WindowStartPos.xaml.cs">
+    <Compile Include="Configuration\WindowStartPos.xaml.cs">
       <DependentUpon>WindowStartPos.xaml</DependentUpon>
     </Compile>
+    <Page Include="Configuration\WindowBookmarks.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Utilities\WindowSaaS.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WindowAskMe.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WindowAuthToken.xaml">
+    <Page Include="Configuration\WindowAuthToken.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -151,11 +165,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="WindowSettings.xaml">
+    <Page Include="Configuration\WindowSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WindowStartPos.xaml">
+    <Page Include="Configuration\WindowStartPos.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

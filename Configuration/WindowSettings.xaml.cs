@@ -49,6 +49,7 @@ namespace KLCProxy
             cmbOnLiveConnect.SelectedIndex = (int)settings.OnLiveConnect;
             cmbOnOneClick.SelectedIndex = (int)settings.OnOneClick;
             chkOverrideRCSharedtoLC.IsChecked = settings.OverrideRCSharedtoLC;
+            //chkOverrideAltCanary.IsChecked = settings.OverrideAltCanary;
             UpdateDisplay();
         }
 
@@ -67,6 +68,7 @@ namespace KLCProxy
                 settings.OnLiveConnect = (Settings.OnLiveConnectAction)cmbOnLiveConnect.SelectedIndex;
                 settings.OnOneClick = (Settings.OnLiveConnectAction)cmbOnOneClick.SelectedIndex;
                 settings.OverrideRCSharedtoLC = (bool)chkOverrideRCSharedtoLC.IsChecked;
+                //settings.OverrideAltCanary = (bool)chkOverrideAltCanary.IsChecked;
             }
         }
 

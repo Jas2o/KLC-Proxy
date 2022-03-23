@@ -86,6 +86,14 @@
                     Click="MenuAppsFinch_Click"
                     Header="Finch" />
                 <MenuItem
+                    x:Name="menuAppsFinchCharm"
+                    Click="MenuAppsFinchCharm_Click"
+                    Header="Finch+ Charm" />
+                <MenuItem
+                    x:Name="menuAppsCanary"
+                    Click="MenuAppsCanary_Click"
+                    Header="Canary" />
+                <MenuItem
                     x:Name="menuAppsHawk"
                     Click="MenuAppsHawk_Click"
                     Header="Hawk/Shark" />
@@ -96,39 +104,37 @@
                     Header="Auth Token" />
             </MenuItem>
 
-            <MenuItem Header="Tools">
+            <MenuItem
+                x:Name="menuTools"
+                Header="Tools"
+                SubmenuOpened="menuTools_SubmenuOpened">
                 <MenuItem
                     x:Name="menuToolsViewAgentInfo"
                     Click="MenuToolsViewAgentInfo_Click"
                     Header="View Agent Info" />
-                <!--<MenuItem
-                    x:Name="menuToolsAHKAutotype"
-                    Click="MenuToolsAHKAutotype_Click"
-                    Header="AHK Autotype" />-->
                 <Separator />
                 <MenuItem
-                    x:Name="menuToolsAddJumpBox"
-                    Click="MenuToolsAddJumpBox_Click"
-                    Header="Add: JumpBox" />
-                <MenuItem
-                    x:Name="menuToolsITGlueJumpBox"
-                    Click="MenuToolsITGlueJumpBox_Click"
-                    Header="IT Glue TeamV" />
-                <Separator />
+                    x:Name="menuToolsBookmarks"
+                    Click="MenuToolsBookmarks_Click"
+                    Header="Bookmarks" />
                 <MenuItem
                     x:Name="menuToolsAddThis"
                     Click="MenuToolsAddThis_Click"
-                    Header="Add this computer" />
+                    Header="Add this Computer" />
                 <MenuItem
                     x:Name="menuToolsAddGUID"
                     Click="MenuToolsAddGUID_Click"
-                    Header="Add by GUID" />
+                    Header="Add by Agent GUID" />
                 <Separator />
                 <MenuItem Header="Live Connect:" IsEnabled="False" />
                 <MenuItem
                     x:Name="menuToolsLCDownload"
                     Click="MenuToolsLCDownload_Click"
                     Header="Check for update" />
+                <MenuItem
+                    x:Name="menuToolsLCSaaS"
+                    Click="MenuToolsLCSaaS_Click"
+                    Header="Check SaaS for KLC" />
                 <!--<MenuItem x:Name="menuToolsLCReconnect" Header="Reconnect Current" Click="menuToolsLCReconnect_Click"/>-->
                 <MenuItem
                     x:Name="menuToolsLCKillAll"
@@ -151,6 +157,16 @@
                     x:Name="menuSettingsUseWolf"
                     Click="MenuSettingsUseWolf_Click"
                     Header="Use Wolf MITM"
+                    IsCheckable="True" />
+                <MenuItem
+                    x:Name="menuSettingsUseCanary"
+                    Click="MenuSettingsUseCanary_Click"
+                    Header="Use Canary"
+                    IsCheckable="True" />
+                <MenuItem
+                    x:Name="menuSettingsUseCharm"
+                    Click="MenuSettingsUseCharm_Click"
+                    Header="Use Charm"
                     IsCheckable="True" />
                 <Separator />
                 <MenuItem

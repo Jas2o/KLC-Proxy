@@ -36,7 +36,7 @@ namespace KLCProxy {
 
         #endregion Disable Maximize Box
 
-        private readonly MainData mainData;
+        public readonly MainData mainData;
         private readonly NotifyIcon notifyIcon;
         private readonly NamedPipeListener<string> pipeListener;
         //private List<Agent> agents = new List<Agent>();
@@ -130,7 +130,7 @@ namespace KLCProxy {
             }
         }
 
-        private void AddAgentToList(string agentID) {
+        public void AddAgentToList(string agentID) {
             IRestResponse responseTV = Kaseya.GetRequest("api/v1.0/assetmgmt/agents?$filter=AgentId eq " + agentID + "M");
             if (responseTV.StatusCode == System.Net.HttpStatusCode.OK) {
                 dynamic resultTV = JsonConvert.DeserializeObject(responseTV.Content);
@@ -144,10 +144,18 @@ namespace KLCProxy {
         }
 
         private void BtnAlternative_Click(object sender, RoutedEventArgs e) {
+            Agent agent = listAgent.SelectedItem as Agent;
+            contextOriginalOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
+            contextAlternativeOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
+
             btnAlternative.ContextMenu.IsOpen = true;
         }
 
         private void BtnOriginal_Click(object sender, RoutedEventArgs e) {
+            Agent agent = listAgent.SelectedItem as Agent;
+            contextOriginalOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
+            contextAlternativeOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
+
             btnOriginal.ContextMenu.IsOpen = true;
         }
 
@@ -200,8 +208,8 @@ namespace KLCProxy {
                     Kaseya.LoadToken(token);
                     KaseyaAuth auth = KaseyaAuth.ApiAuthX(token);
 
+                    menuToolsBookmarks.IsEnabled = true;
                     menuToolsAddThis.IsEnabled = true;
-                    menuToolsAddJumpBox.IsEnabled = true;
                     menuToolsAddGUID.IsEnabled = true;
                     return true;
                 } catch (Exception) {
@@ -261,11 +269,14 @@ namespace KLCProxy {
                 command.SetForLiveConnect();
 
                 if (agent.Watch && agent.Online == 0) {
-                    agent.WaitLabel = "Alt";
+                    if(Settings.Extra == LaunchExtra.Canary)
+                        agent.WaitLabel = "CAN";
+                    else
+                        agent.WaitLabel = "Alt";
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 } else
-                    command.Launch(true, LaunchExtra.None);
+                    command.Launch(true, Settings.Extra);
             }
         }
 
@@ -277,11 +288,14 @@ namespace KLCProxy {
                 command.SetForRemoteControl(true, true);
 
                 if (agent.Watch && agent.Online == 0) {
-                    agent.WaitLabel = "Fi-P";
+                    if (Settings.Extra == LaunchExtra.Canary)
+                        agent.WaitLabel = "CAN-P";
+                    else
+                        agent.WaitLabel = "Alt-P";
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 } else
-                    command.Launch(true, LaunchExtra.None);
+                    command.Launch(true, Settings.Extra);
             }
         }
 
@@ -293,11 +307,14 @@ namespace KLCProxy {
                 command.SetForRemoteControl(false, true);
 
                 if (agent.Watch && agent.Online == 0) {
-                    agent.WaitLabel = "Fi";
+                    if (Settings.Extra == LaunchExtra.Canary)
+                        agent.WaitLabel = "CAN-S";
+                    else
+                        agent.WaitLabel = "Alt-S";
                     agent.WaitCommand = command;
                 } else {
                     if (ConnectPromptWithAdminBypass(agent))
-                        command.Launch(true, LaunchExtra.None);
+                        command.Launch(true, Settings.Extra);
                 }
             }
         }
@@ -342,7 +359,7 @@ namespace KLCProxy {
                 command.SetForRemoteControl(false, true);
 
                 if (agent.Watch && agent.Online == 0) {
-                    agent.WaitLabel = "RC";
+                    agent.WaitLabel = "RC-S";
                     agent.WaitCommand = command;
                 } else {
                     if (ConnectPromptWithAdminBypass(agent))
@@ -380,7 +397,7 @@ namespace KLCProxy {
                 switch (Settings.OnLiveConnect) {
                     case Settings.OnLiveConnectAction.Default:
                         if (Settings.RedirectToAlternative)
-                            command.Launch(true, LaunchExtra.None);
+                            command.Launch(true, Settings.Extra);
                         else
                             command.Launch(false, Settings.Extra);
                         break;
@@ -390,7 +407,7 @@ namespace KLCProxy {
                         break;
 
                     case Settings.OnLiveConnectAction.UseAlternative:
-                        command.Launch(true, LaunchExtra.None);
+                        command.Launch(true, Settings.Extra);
                         break;
 
                     case Settings.OnLiveConnectAction.Prompt:
@@ -400,7 +417,7 @@ namespace KLCProxy {
                             result = winAskMe.ShowDialog();
                             if (result == true) {
                                 if (winAskMe.ReturnUseAlternative)
-                                    command.Launch(true, LaunchExtra.None);
+                                    command.Launch(true, Settings.Extra);
                                 else
                                     command.Launch(false, Settings.Extra);
                             }
@@ -415,28 +432,28 @@ namespace KLCProxy {
                         break;
 
                     case Settings.OnLiveConnectAction.UseAlternative:
-                        command.Launch(true, LaunchExtra.None);
+                        command.Launch(true, Settings.Extra);
                         break;
 
                     //case Settings.OnLiveConnectAction.Default:
                     //case Settings.OnLiveConnectAction.Prompt:
                     default:
                         if (Settings.RedirectToAlternative)
-                            command.Launch(true, LaunchExtra.None);
+                            command.Launch(true, Settings.Extra);
                         else
                             command.Launch(false, Settings.Extra);
                         break;
                 }
             } else {
                 if (Settings.RedirectToAlternative)
-                    command.Launch(true, LaunchExtra.None);
+                    command.Launch(true, Settings.Extra);
                 else
                     command.Launch(false, Settings.Extra);
             }
 
             Dispatcher.Invoke((Action)delegate {
+                menuToolsBookmarks.IsEnabled = true;
                 menuToolsAddThis.IsEnabled = true;
-                menuToolsAddJumpBox.IsEnabled = true;
                 menuToolsAddGUID.IsEnabled = true;
             });
         }
@@ -481,6 +498,30 @@ namespace KLCProxy {
             if (File.Exists(pathKLCFinch)) {
                 Process process = new Process();
                 process.StartInfo.FileName = pathKLCFinch;
+                process.Start();
+            }
+        }
+
+        private void MenuAppsFinchCharm_Click(object sender, RoutedEventArgs e)
+        {
+            //string pathKLCFinch = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Finch.exe";
+            string pathKLCFinch = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Canary.exe";
+            if (File.Exists(pathKLCFinch))
+            {
+                Process process = new Process();
+                process.StartInfo.FileName = pathKLCFinch;
+                process.StartInfo.Arguments = "-charm";
+                process.Start();
+            }
+        }
+
+        private void MenuAppsCanary_Click(object sender, RoutedEventArgs e)
+        {
+            string pathKLCCanary = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Canary.exe";
+            if (File.Exists(pathKLCCanary))
+            {
+                Process process = new Process();
+                process.StartInfo.FileName = pathKLCCanary;
                 process.Start();
             }
         }
@@ -535,6 +576,7 @@ namespace KLCProxy {
 
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
+            menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
         }
 
         private void MenuSettingsUseWolf_Click(object sender, RoutedEventArgs e) {
@@ -545,6 +587,19 @@ namespace KLCProxy {
 
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
+            menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
+        }
+
+        private void MenuSettingsUseCanary_Click(object sender, RoutedEventArgs e)
+        {
+            if (Settings.Extra == LaunchExtra.Canary)
+                Settings.Extra = LaunchExtra.None;
+            else
+                Settings.Extra = LaunchExtra.Canary;
+
+            menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
+            menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
+            menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
         }
 
         private void MenuToolsAddGUID_Click(object sender, RoutedEventArgs e) {
@@ -558,9 +613,11 @@ namespace KLCProxy {
             Topmost = Settings.AlwaysOnTop;
         }
 
+        /*
         private void MenuToolsAddJumpBox_Click(object sender, RoutedEventArgs e) {
             AddAgentToList("111111111111111"); //EIT Teamviewer
         }
+        */
 
         private void MenuToolsAddThis_Click(object sender, RoutedEventArgs e) {
             string val = "";
@@ -853,7 +910,18 @@ namespace KLCProxy {
                 Settings.OnOneClick = Settings.OnLiveConnectAction.Default;
             }
 
-            if (File.Exists(@"C:\Program Files\Kaseya Live Connect-MITM\KaseyaLiveConnect.exe")) {
+            if (File.Exists(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Canary.exe")) {
+            } else
+            {
+                menuSettingsUseCanary.IsEnabled = false;
+                menuSettingsUseCharm.IsEnabled = false;
+                menuSettingsUseCanary.Visibility = Visibility.Collapsed;
+                menuSettingsUseCharm.Visibility = Visibility.Collapsed;
+                menuAppsFinchCharm.Visibility = Visibility.Collapsed;
+                menuAppsCanary.Visibility = Visibility.Collapsed;
+            }
+
+            if (File.Exists(@"C:\Program Files\Kaseya Live Connect-MITM\KaseyaLiveConnect.exe") || File.Exists(Environment.ExpandEnvironmentVariables(@"%localappdata%\Apps\Kaseya Live Connect-MITM\KaseyaLiveConnect.exe"))) {
                 //useMITMToolStripMenuItem.Checked = true;
             } else {
                 menuSettingsUseHawk.IsEnabled = false;
@@ -872,6 +940,8 @@ namespace KLCProxy {
             notifyIcon.Visible = menuSettingsMinimizeToTray.IsChecked = Settings.AddToSystemTray;
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
+            menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
+
             menuSettingsToastWhenOnline.IsChecked = Settings.ToastWhenOnline;
 
             //menuToolsAHKAutotype.IsEnabled = File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk");
@@ -922,9 +992,14 @@ namespace KLCProxy {
             string versionLocal = "";
             string versionOnline = "";
 
-            string klc = @"C:\Program Files\Kaseya Live Connect\KaseyaLiveConnect.exe";
-            if (File.Exists(klc)) {
-                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(klc);
+            string klc1 = @"C:\Program Files\Kaseya Live Connect\KaseyaLiveConnect.exe";
+            string klc2 = Environment.ExpandEnvironmentVariables(@"%localappdata%\Apps\Kaseya Live Connect-MITM\KaseyaLiveConnect.exe");
+            if (File.Exists(klc1)) {
+                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(klc1);
+                versionLocal = versionInfo.FileVersion;
+            } else if (File.Exists(klc2))
+            {
+                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(klc2);
                 versionLocal = versionInfo.FileVersion;
             }
 
@@ -995,7 +1070,7 @@ namespace KLCProxy {
 
                 if (agent.Watch && agent.Online == 0)
                 {
-                    agent.WaitLabel = "Fi-1C";
+                    agent.WaitLabel = "Alt-1C";
                     agent.WaitCommand = command;
                     RefreshAgentsList(false);
                 }
@@ -1018,6 +1093,28 @@ namespace KLCProxy {
             ConfigureHandler.ToggleProxy(true);
             tbIssuePath.Visibility = Visibility.Collapsed;
             UpdateIssueBoxVisibility();
+        }
+
+        private void menuTools_SubmenuOpened(object sender, RoutedEventArgs e)
+        {
+            menuToolsLCSaaS.Visibility = (Control.ModifierKeys == Keys.Shift) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void MenuToolsLCSaaS_Click(object sender, RoutedEventArgs e)
+        {
+            WindowSaaS winSaaS = new WindowSaaS();
+            winSaaS.ShowDialog();
+        }
+
+        private void MenuSettingsUseCharm_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.OverrideAltCharm = !Settings.OverrideAltCharm;
+        }
+
+        private void MenuToolsBookmarks_Click(object sender, RoutedEventArgs e)
+        {
+            WindowBookmarks winBookmarks = new WindowBookmarks(this, Settings.StartCorner);
+            winBookmarks.ShowDialog();
         }
     }
 }

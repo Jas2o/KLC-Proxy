@@ -24,6 +24,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -101,10 +102,19 @@
                 x:Name="chkOverrideRCSharedtoLC"
                 Grid.Row="4"
                 Grid.ColumnSpan="2"
-                Margin="3,0"
+                Margin="3,0,3,0"
                 HorizontalAlignment="Left"
                 Content="Override RC Shared to Live Connect action."
                 Foreground="White" />
+            <CheckBox
+                x:Name="chkOverrideAltCanary"
+                Grid.Row="5"
+                Grid.ColumnSpan="2"
+                Margin="3,5,3,0"
+                HorizontalAlignment="Left"
+                Content="Alternative: Use Canary"
+                Foreground="White"
+                Visibility="Collapsed" />
         </Grid>
     </Border>
 </Window>

@@ -27,6 +27,10 @@ namespace KLCProxy {
         public OnLiveConnectAction OnLiveConnect { get; set; } = OnLiveConnectAction.Default;
         public OnLiveConnectAction OnOneClick { get; set; } = OnLiveConnectAction.Default;
         public bool OverrideRCSharedtoLC { get; set; } = false;
+        //public bool OverrideAltCanary { get; set; } = false;
+
+        public bool OverrideAltCharm { get; set; } = false;
+
         public bool ToastWhenOnline = false;
         public bool AddToSystemTray = false;
         public bool AlwaysOnTop = false;
