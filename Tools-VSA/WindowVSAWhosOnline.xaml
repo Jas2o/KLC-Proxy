@@ -1,0 +1,56 @@
+﻿<Window
+    x:Class="KLCProxy.WindowVSAWhosOnline"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:KLCProxy"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="WindowVSAWhosOnline"
+    Width="700"
+    Height="350"
+    Loaded="Window_Loaded"
+    mc:Ignorable="d">
+    <Grid Background="#FFE5E5E5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Padding="5"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            TextWrapping="Wrap">
+            <Run Text="The IP/seconds/last activity do not appear accurate." />
+        </TextBlock>
+        <StackPanel
+            Grid.Row="1"
+            Margin="0,0,0,5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <Button
+                x:Name="btnCheck"
+                Padding="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Click="btnCheck_Click"
+                Content="Check who's online" />
+            <Label x:Name="lblTokenNotLoaded" Content="(VSA token not loaded!)" />
+        </StackPanel>
+
+        <DataGrid
+            x:Name="dataGrid"
+            Grid.Row="2"
+            AutoGenerateColumns="False"
+            IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding AdminName}" Header="User" />
+                <DataGridTextColumn Binding="{Binding AdminIP}" Header="IP" />
+                <DataGridTextColumn Binding="{Binding SecondsUntilExpiration}" Header="SecondsUntilExpiration" />
+                <DataGridTextColumn Binding="{Binding SecondsWithoutActivity}" Header="SecondsWithoutActivity" />
+                <DataGridTextColumn Binding="{Binding LastActivity}" Header="LastActivity" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

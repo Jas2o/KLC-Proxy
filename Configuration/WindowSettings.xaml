@@ -105,7 +105,19 @@
                 Margin="3,0,3,0"
                 HorizontalAlignment="Left"
                 Content="Override RC Shared to Live Connect action."
-                Foreground="White" />
+                Foreground="White"
+                ToolTip="Clicking 'orbs' in VSA will instead act as clicking 'Live Connect'."
+                ToolTipService.InitialShowDelay="0"
+                ToolTipService.Placement="Bottom">
+                <CheckBox.Resources>
+                    <Style BasedOn="{StaticResource {x:Type ToolTip}}" TargetType="ToolTip">
+                        <Setter Property="Foreground" Value="#000000" />
+                        <Setter Property="Background" Value="#fde792" />
+                        <Setter Property="FontSize" Value="20" />
+                        <Setter Property="Margin" Value="0" />
+                    </Style>
+                </CheckBox.Resources>
+            </CheckBox>
             <CheckBox
                 x:Name="chkOverrideAltCanary"
                 Grid.Row="5"

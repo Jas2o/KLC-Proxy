@@ -62,11 +62,15 @@
     <Reference Include="nucs.JsonSettings, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\nucs.JsonSettings.1.0.7\lib\net47\nucs.JsonSettings.dll</HintPath>
     </Reference>
+    <Reference Include="Ookii.Dialogs.Wpf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ookii.Dialogs.Wpf.3.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Security" />
@@ -97,13 +101,19 @@
     <Compile Include="JExtensions.cs" />
     <Compile Include="MainData.cs" />
     <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Tools-VSA\WindowVSAWhosOnline.xaml.cs">
+      <DependentUpon>WindowVSAWhosOnline.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\ConfigureHandler.cs" />
     <Compile Include="Utilities\DebuggingService.cs" />
     <Compile Include="Utilities\FunWithNamedPipes.cs" />
-    <Compile Include="Utilities\WindowSaaS.xaml.cs">
+    <Compile Include="Tools-VSA\WindowSaaS.xaml.cs">
       <DependentUpon>WindowSaaS.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\WindowUtilities.cs" />
+    <Compile Include="Tools-VSA\WindowVSANavigation.xaml.cs">
+      <DependentUpon>WindowVSANavigation.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowAskMe.xaml.cs">
       <DependentUpon>WindowAskMe.xaml</DependentUpon>
     </Compile>
@@ -129,7 +139,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Utilities\WindowSaaS.xaml">
+    <Page Include="Tools-VSA\WindowSaaS.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Tools-VSA\WindowVSANavigation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Tools-VSA\WindowVSAWhosOnline.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -222,6 +240,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\LibKaseya\LibKaseya.projitems" Label="Shared" />
   <Import Project="..\LibKaseyaAuth\LibKaseyaAuth.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

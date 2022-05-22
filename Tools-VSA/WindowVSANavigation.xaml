@@ -1,0 +1,69 @@
+﻿<Window
+    x:Class="KLCProxy.WindowVSANavigation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:KLCProxy"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="KLCProxy: VSA Navigation"
+    Width="420"
+    Height="350"
+    Loaded="Window_Loaded"
+    mc:Ignorable="d">
+    <Grid Background="#FFE5E5E5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Padding="5"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            TextWrapping="Wrap">
+            <Run Text="This tool allows you to dump the VSA Modules navigation, export to a Bookmarks HTML file which can then be imported into a web browser's bookmarks manager." />
+        </TextBlock>
+        <StackPanel
+            Grid.Row="1"
+            Margin="0,0,0,5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+            <Button
+                x:Name="btnImport"
+                Padding="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Click="btnImport_Click"
+                Content="Import Main" />
+            <Label Content="or" />
+            <Button
+                x:Name="btnImport2"
+                Padding="5"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Click="btnImport2_Click"
+                Content="Import Extras" />
+            <Label x:Name="lblTokenNotLoaded" Content="(VSA token not loaded!)" />
+        </StackPanel>
+        <TextBox
+            Name="txtInput"
+            Grid.Row="2"
+            Margin="5,0,5,5"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            AcceptsReturn="True"
+            VerticalScrollBarVisibility="Auto" />
+        <Button
+            x:Name="btnConvert"
+            Grid.Row="3"
+            Margin="0,0,0,5"
+            Padding="5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Click="btnConvert_Click"
+            Content="Save as Bookmarks HTML" />
+    </Grid>
+</Window>

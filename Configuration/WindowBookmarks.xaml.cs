@@ -65,7 +65,8 @@ namespace KLCProxy
         {
             if(dataGrid.IsReadOnly)
             {
-                border.Background = Brushes.Transparent;
+                menuBar.ClearValue(Menu.BackgroundProperty);
+                dataGrid.HeadersVisibility = DataGridHeadersVisibility.None;
                 lblInstructions.Visibility = Visibility.Visible;
                 btnAddAllFromList.Visibility = Visibility.Collapsed;
                 btnDelete.Visibility = Visibility.Collapsed;
@@ -76,7 +77,8 @@ namespace KLCProxy
                 groupAdd.Visibility = Visibility.Collapsed;
             } else
             {
-                border.Background = Brushes.PeachPuff;
+                menuBar.Background = Brushes.PeachPuff;
+                dataGrid.HeadersVisibility = DataGridHeadersVisibility.Column;
                 lblInstructions.Visibility = Visibility.Collapsed;
                 btnAddAllFromList.Visibility = Visibility.Visible;
                 btnDelete.Visibility = Visibility.Visible;
@@ -155,12 +157,22 @@ namespace KLCProxy
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            Bookmark selected = (Bookmark)dataGrid.SelectedItem;
-
-            if (selected == null)
-                return;
-
-            bookmarks.ObservableList.Remove(selected);
+            if (dataGrid.SelectedItems.Count > 1)
+            {
+                for (int i = dataGrid.SelectedItems.Count; i > 0; i--)
+                {
+                    bookmarks.ObservableList.Remove((Bookmark)dataGrid.SelectedItems[i - 1]);
+                }
+            }
+            else if (dataGrid.SelectedIndex > -1)
+            {
+                int index = dataGrid.SelectedIndex;
+                if (index == dataGrid.Items.Count - 1)
+                    index--;
+                bookmarks.ObservableList.Remove(dataGrid.SelectedItem as Bookmark);
+                dataGrid.SelectedIndex = index;
+                dataGrid.Focus();
+            }
         }
 
         private void btnMoveUp_Click(object sender, RoutedEventArgs e)
@@ -177,6 +189,8 @@ namespace KLCProxy
                 bookmarks.ObservableList.Insert(newIndex, selected);
                 dataGrid.SelectedIndex = newIndex;
             }
+
+            dataGrid.Focus();
         }
 
         private void btnMoveDown_Click(object sender, RoutedEventArgs e)
@@ -193,6 +207,8 @@ namespace KLCProxy
                 bookmarks.ObservableList.Insert(newIndex, selected);
                 dataGrid.SelectedIndex = newIndex;
             }
+
+            dataGrid.Focus();
         }
 
         private void btnAddAllFromList_Click(object sender, RoutedEventArgs e)
@@ -200,6 +216,26 @@ namespace KLCProxy
             List<LibKaseya.Agent> listMain = ((MainWindow)Owner).mainData.ListAgent.ToList();
             foreach (LibKaseya.Agent agent in listMain) {
                 bookmarks.ObservableList.Add(new Bookmark("Agent", agent.Name, agent.ID));
+            }
+        }
+
+        private void dataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (dataGrid.IsReadOnly)
+                return;
+
+            if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+            {
+                if (e.SystemKey == Key.Up)
+                {
+                    btnMoveUp_Click(sender, e);
+                    e.Handled = true;
+                }
+                else if (e.SystemKey == Key.Down)
+                {
+                    btnMoveDown_Click(sender, e);
+                    e.Handled = true;
+                }
             }
         }
     }

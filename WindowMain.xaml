@@ -131,15 +131,28 @@
                     x:Name="menuToolsLCDownload"
                     Click="MenuToolsLCDownload_Click"
                     Header="Check for update" />
-                <MenuItem
-                    x:Name="menuToolsLCSaaS"
-                    Click="MenuToolsLCSaaS_Click"
-                    Header="Check SaaS for KLC" />
                 <!--<MenuItem x:Name="menuToolsLCReconnect" Header="Reconnect Current" Click="menuToolsLCReconnect_Click"/>-->
                 <MenuItem
                     x:Name="menuToolsLCKillAll"
                     Click="MenuToolsLCKillAll_Click"
                     Header="Kill All Live Connect" />
+                <Separator Name="sepToolsVSA" />
+                <MenuItem
+                    x:Name="menuToolsVSA"
+                    Header="VSA:"
+                    IsEnabled="False" />
+                <MenuItem
+                    x:Name="menuToolsVSANav"
+                    Click="menuToolsVSANav_Click"
+                    Header="Navigation" />
+                <MenuItem
+                    x:Name="menuToolsVSAWhosOnline"
+                    Click="menuToolsVSAWhosOnline_Click"
+                    Header="Who's Online" />
+                <MenuItem
+                    x:Name="menuToolsLCSaaS"
+                    Click="MenuToolsLCSaaS_Click"
+                    Header="Check SaaS for KLC" />
             </MenuItem>
 
             <MenuItem

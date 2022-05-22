@@ -11,9 +11,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Ookii.Dialogs.Wpf;
 
 namespace KLCProxy {
 
@@ -37,12 +38,12 @@ namespace KLCProxy {
         #endregion Disable Maximize Box
 
         public readonly MainData mainData;
-        private readonly NotifyIcon notifyIcon;
+        private readonly System.Windows.Forms.NotifyIcon notifyIcon;
         private readonly NamedPipeListener<string> pipeListener;
         //private List<Agent> agents = new List<Agent>();
         private Settings Settings;
 
-        private readonly Timer timerAuto;
+        private readonly System.Windows.Forms.Timer timerAuto;
         private readonly System.Windows.Controls.ContextMenu trayMenu;
         /*
         private readonly System.Windows.Controls.MenuItem traySettingsOnLC_Ask;
@@ -68,8 +69,9 @@ namespace KLCProxy {
             traySettingsOnLC_UseLC = (System.Windows.Controls.MenuItem)LogicalTreeHelper.FindLogicalNode(trayMenu, "traySettingsOnLC_UseLC");
             traySettingsOnLC_Ask = (System.Windows.Controls.MenuItem)LogicalTreeHelper.FindLogicalNode(trayMenu, "traySettingsOnLC_Ask");
             */
-            notifyIcon = new NotifyIcon {
-                BalloonTipIcon = ToolTipIcon.Info,
+            notifyIcon = new System.Windows.Forms.NotifyIcon
+            {
+                BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info,
                 Text = "KLCProxy",
                 Icon = Properties.Resources.Split45
             };
@@ -78,7 +80,8 @@ namespace KLCProxy {
 
             txtVersion.Text = Properties.Resources.BuildDate.Trim();
 
-            timerAuto = new Timer {
+            timerAuto = new System.Windows.Forms.Timer
+            {
                 Interval = 10000
             };
             timerAuto.Tick += TimerAuto_Tick;
@@ -249,16 +252,29 @@ namespace KLCProxy {
             if (agentApi["Result"]["OSType"] != "Mac OS X")
                 displayGWG = (agentDWG.Contains("(d") ? "Domain: " : "Workgroup: ") + agentDWG.Substring(0, agentDWG.IndexOf(" ("));
 
-            System.Windows.Forms.DialogResult result;
             string[] arrAdmins = new string[] { "administrator", "brandadmin", "adminc", "company" };
             if (arrAdmins.Contains(displayUser.ToLower()))
-                result = System.Windows.Forms.DialogResult.Yes;
-            else {
-                string textConfirm = string.Format("Agent: {0}\r\nUser: {1}\r\n{2}", agentName, displayUser, displayGWG);
-                result = System.Windows.Forms.MessageBox.Show("Connect to:\r\n\r\n" + textConfirm, "Connecting to " + agentName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                return true;
+
+            using (TaskDialog dialog = new TaskDialog())
+            {
+                dialog.WindowTitle = "KLCProxy";
+                dialog.MainInstruction = "Confirm connection";
+                dialog.Content = string.Format("Agent: {0}\r\nUser: {1}\r\n{2}", agentName, displayUser, displayGWG);
+                dialog.MainIcon = TaskDialogIcon.Information;
+                dialog.CenterParent = true;
+
+                TaskDialogButton tdbYes = new TaskDialogButton(ButtonType.Yes);
+                TaskDialogButton tdbCancel = new TaskDialogButton(ButtonType.Cancel);
+                dialog.Buttons.Add(tdbYes);
+                dialog.Buttons.Add(tdbCancel);
+
+                TaskDialogButton button = dialog.ShowDialog(this);
+                if (button == tdbYes)
+                    return true;
             }
 
-            return (result == System.Windows.Forms.DialogResult.Yes);
+            return false;
         }
 
         private void ContextAlternativeLaunch_Click(object sender, RoutedEventArgs e) {
@@ -561,7 +577,7 @@ namespace KLCProxy {
 
         private void MenuSettingsToastTest_Click(object sender, RoutedEventArgs e) {
             notifyIcon.Visible = true;
-            notifyIcon.ShowBalloonTip(3000, "Toast Test", "This is an example toast.", ToolTipIcon.None);
+            notifyIcon.ShowBalloonTip(3000, "Toast Test", "This is an example toast.", System.Windows.Forms.ToolTipIcon.None);
         }
 
         private void MenuSettingsToastWhenOnline_Click(object sender, RoutedEventArgs e) {
@@ -647,9 +663,22 @@ namespace KLCProxy {
         }
 
         private void MenuToolsLCKillAll_Click(object sender, RoutedEventArgs e) {
-            System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show("Do you really want to kill Kaseya Live Connect?", "KLCProxy", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-            if (dialogResult == System.Windows.Forms.DialogResult.Yes)
-                KLCCommand.LaunchFromBase64("");
+            using (TaskDialog dialog = new TaskDialog())
+            {
+                dialog.WindowTitle = "KLCProxy";
+                dialog.Content = "Do you really want to kill Kaseya Live Connect?";
+                dialog.MainIcon = TaskDialogIcon.Information;
+                dialog.CenterParent = true;
+
+                TaskDialogButton tdbYes = new TaskDialogButton(ButtonType.Yes);
+                TaskDialogButton tdbCancel = new TaskDialogButton(ButtonType.Cancel);
+                dialog.Buttons.Add(tdbYes);
+                dialog.Buttons.Add(tdbCancel);
+
+                TaskDialogButton button = dialog.ShowDialog(this);
+                if (button == tdbYes)
+                    KLCCommand.LaunchFromBase64("");
+            }
         }
 
         /*
@@ -700,9 +729,9 @@ namespace KLCProxy {
         }
 
         private void MoveToSettingsScreenCorner() {
-            Screen screen = Screen.PrimaryScreen;
+            System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.PrimaryScreen;
             if (Settings.StartDisplay != "Default") {
-                foreach (Screen scr in Screen.AllScreens) {
+                foreach (System.Windows.Forms.Screen scr in System.Windows.Forms.Screen.AllScreens) {
                     if (scr.DeviceName == Settings.StartDisplay || scr.Bounds.ToString() == Settings.StartDisplayFallback) {
                         screen = scr;
                         break;
@@ -735,7 +764,7 @@ namespace KLCProxy {
 
         private void NotifyForAgent(string agentName) {
             notifyIcon.Visible = true;
-            notifyIcon.ShowBalloonTip(3000, "Agent Online", agentName + " is now online.", ToolTipIcon.None);
+            notifyIcon.ShowBalloonTip(3000, "Agent Online", agentName + " is now online.", System.Windows.Forms.ToolTipIcon.None);
         }
 
         private void NotifyIcon_BalloonTipClosed(object sender, EventArgs e) {
@@ -744,7 +773,7 @@ namespace KLCProxy {
         }
 
         private void NotifyIcon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e) {
-            if (e.Button == MouseButtons.Left) {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left) {
                 if (this.WindowState == WindowState.Normal)
                     this.WindowState = WindowState.Minimized;
                 else
@@ -768,7 +797,7 @@ namespace KLCProxy {
             try {
                 Settings.Save();
             } catch (Exception) {
-                System.Windows.Forms.MessageBox.Show("Seems we don't have permission to write to " + Settings.FileName, "KLCProxy: Save Settings");
+                MessageBox.Show("Seems we don't have permission to write to " + Settings.FileName, "KLCProxy: Save Settings");
             }
         }
 
@@ -825,7 +854,7 @@ namespace KLCProxy {
         }
 
         private void TrayAppProxy_Click(object sender, RoutedEventArgs e) {
-            NotifyIcon_MouseClick(sender, new System.Windows.Forms.MouseEventArgs(MouseButtons.Left, 0, 0, 0, 0));
+            NotifyIcon_MouseClick(sender, new System.Windows.Forms.MouseEventArgs(System.Windows.Forms.MouseButtons.Left, 0, 0, 0, 0));
         }
 
         private void TrayExit_Click(object sender, RoutedEventArgs e) {
@@ -1022,7 +1051,18 @@ namespace KLCProxy {
             if (versionOnline.Length > 0 && versionOnline != versionLocal) {
                 Process.Start("https://vsa-web.company.com.au/ManagedFiles/VSAHiddenFiles/KaseyaLiveConnect/win64/LiveConnect.exe");
             } else {
-                System.Windows.MessageBox.Show("Your KLC version matches VSA-WEB's!", "KLCProxy");
+                using (TaskDialog dialog = new TaskDialog())
+                {
+                    dialog.WindowTitle = "KLCProxy";
+                    dialog.Content = "Your KLC version matches VSA-WEB's!";
+                    //dialog.MainIcon = TaskDialogIcon.Information;
+                    dialog.CenterParent = true;
+
+                    TaskDialogButton tdbOk = new TaskDialogButton(ButtonType.Ok);
+                    dialog.Buttons.Add(tdbOk);
+
+                    dialog.ShowDialog(this);
+                }
             }
         }
 
@@ -1097,7 +1137,12 @@ namespace KLCProxy {
 
         private void menuTools_SubmenuOpened(object sender, RoutedEventArgs e)
         {
-            menuToolsLCSaaS.Visibility = (Control.ModifierKeys == Keys.Shift) ? Visibility.Visible : Visibility.Collapsed;
+            Visibility vis = (System.Windows.Forms.Control.ModifierKeys == System.Windows.Forms.Keys.Shift) ? Visibility.Visible : Visibility.Collapsed;
+            sepToolsVSA.Visibility = vis;
+            menuToolsVSA.Visibility = vis;
+            menuToolsVSANav.Visibility = vis;
+            menuToolsVSAWhosOnline.Visibility = vis;
+            menuToolsLCSaaS.Visibility = vis;
         }
 
         private void MenuToolsLCSaaS_Click(object sender, RoutedEventArgs e)
@@ -1115,6 +1160,18 @@ namespace KLCProxy {
         {
             WindowBookmarks winBookmarks = new WindowBookmarks(this, Settings.StartCorner);
             winBookmarks.ShowDialog();
+        }
+
+        private void menuToolsVSANav_Click(object sender, RoutedEventArgs e)
+        {
+            WindowVSANavigation winNavigation = new WindowVSANavigation();
+            winNavigation.ShowDialog();
+        }
+
+        private void menuToolsVSAWhosOnline_Click(object sender, RoutedEventArgs e)
+        {
+            WindowVSAWhosOnline winWhoOnline = new WindowVSAWhosOnline();
+            winWhoOnline.ShowDialog();
         }
     }
 }
