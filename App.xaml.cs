@@ -18,7 +18,7 @@ namespace KLCProxy {
                 //Setup exception handling rather than closing rudely.
                 AppDomain.CurrentDomain.UnhandledException += (sender, args) => ShowUnhandledException(args.ExceptionObject as Exception, "AppDomain.CurrentDomain.UnhandledException");
                 TaskScheduler.UnobservedTaskException += (sender, args) => {
-                    ShowUnhandledExceptionFromSrc(args.Exception, "TaskScheduler.UnobservedTaskException");
+                    //ShowUnhandledExceptionFromSrc(args.Exception, "TaskScheduler.UnobservedTaskException");
                     args.SetObserved();
                 };
 
@@ -33,9 +33,9 @@ namespace KLCProxy {
             if (!createdNew) {
                 string[] args = Environment.GetCommandLineArgs();
                 if (args.Length > 1) {
-                    NamedPipeListener<string>.SendMessage("KLCProxy2", true, args[1]);
+                    NamedPipeListener.SendMessage("KLCProxy2", true, args[1]);
                 } else {
-                    NamedPipeListener<string>.SendMessage("KLCProxy2", true, "focus");
+                    NamedPipeListener.SendMessage("KLCProxy2", true, "focus");
                 }
 
                 Current.Shutdown();

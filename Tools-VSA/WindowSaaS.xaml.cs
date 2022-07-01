@@ -23,7 +23,7 @@ namespace KLCProxy
     public partial class WindowSaaS : Window
     {
         private static string[] fieldSplit = new string[] { " - " };
-        private static string urlEIT = @"https://vsa-web.company.com.au";
+        private static string urlEIT = @"https://" + LibKaseya.Kaseya.DefaultServer;
         private BackgroundWorker bw;
 
         public WindowSaaS()
@@ -70,7 +70,7 @@ namespace KLCProxy
             //bw.WorkerReportsProgress = true;
             bw.DoWork += new DoWorkEventHandler(
             delegate (object o, DoWorkEventArgs args) {
-                DataItemSaaS disEIT = new DataItemSaaS("VSA-WEB", "EIT", urlEIT, GetKLCversion(urlEIT));
+                DataItemSaaS disEIT = new DataItemSaaS("DEFAULT", "", urlEIT, GetKLCversion(urlEIT));
                 Dispatcher.Invoke((Action)delegate {
                     dataGrid.Items.Add(disEIT);
                 });
@@ -104,11 +104,17 @@ namespace KLCProxy
 
         private string GetKLCversion(string url)
         {
-            RestClient client = new RestClient(url + "/vsapres/api/session/AppVersions/1");
+            RestClient client = new RestClient(url + "/vsapres/api/session/AppVersions/1")
+            {
+                Timeout = 5000
+            };
             IRestResponse response = client.Execute(new RestRequest());
             if (response.ResponseStatus == ResponseStatus.Error)
             {
-                client = new RestClient(url.Replace("0", ""));
+                client = new RestClient(url.Replace("0", ""))
+                {
+                    Timeout = 5000
+                };
                 response = client.Execute(new RestRequest());
             }
 

@@ -25,9 +25,6 @@ namespace KLCProxy
     /// </summary>
     public partial class WindowVSANavigation : Window
     {
-        // https://vsa-web.company.com.au/api/v1.5/navigation/modules
-        //Needs bearer token
-
         public WindowVSANavigation()
         {
             InitializeComponent();

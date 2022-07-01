@@ -39,7 +39,7 @@ namespace KLCProxy {
 
         public readonly MainData mainData;
         private readonly System.Windows.Forms.NotifyIcon notifyIcon;
-        private readonly NamedPipeListener<string> pipeListener;
+        private readonly NamedPipeListener pipeListener;
         //private List<Agent> agents = new List<Agent>();
         private Settings Settings;
 
@@ -86,7 +86,7 @@ namespace KLCProxy {
             };
             timerAuto.Tick += TimerAuto_Tick;
 
-            string pathSettings = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCProxy-config.json";
+            string pathSettings = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLCProxy-config.json";
             if (File.Exists(pathSettings))
                 Settings = JsonSettings.Load<Settings>(pathSettings);
             else {
@@ -97,7 +97,7 @@ namespace KLCProxy {
             Kaseya.Start();
 
             try {
-                pipeListener = new NamedPipeListener<string>("KLCProxy2", true);
+                pipeListener = new NamedPipeListener("KLCProxy2", true);
                 pipeListener.MessageReceived += (sender, e) => {
                     //System.Windows.MessageBox.Show(e.Message);
 
@@ -148,16 +148,16 @@ namespace KLCProxy {
 
         private void BtnAlternative_Click(object sender, RoutedEventArgs e) {
             Agent agent = listAgent.SelectedItem as Agent;
-            contextOriginalOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
-            contextAlternativeOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
+            contextAlternativeOneClick.IsEnabled = contextOriginalOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
+            contextAlternativeNativeRDP.IsEnabled = contextOriginalNativeRDP.IsEnabled = (agent != null && agent.OSTypeProfile != Agent.OSProfile.Mac);
 
             btnAlternative.ContextMenu.IsOpen = true;
         }
 
         private void BtnOriginal_Click(object sender, RoutedEventArgs e) {
             Agent agent = listAgent.SelectedItem as Agent;
-            contextOriginalOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
-            contextAlternativeOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
+            contextAlternativeOneClick.IsEnabled = contextOriginalOneClick.IsEnabled = (agent != null && agent.OneClickAccess);
+            contextAlternativeNativeRDP.IsEnabled = contextOriginalNativeRDP.IsEnabled = (agent != null && agent.OSTypeProfile != Agent.OSProfile.Mac);
 
             btnOriginal.ContextMenu.IsOpen = true;
         }
@@ -209,7 +209,7 @@ namespace KLCProxy {
             if (token != null) {
                 try {
                     Kaseya.LoadToken(token);
-                    KaseyaAuth auth = KaseyaAuth.ApiAuthX(token);
+                    KaseyaAuth auth = KaseyaAuth.ApiAuthX(token, Kaseya.DefaultServer);
 
                     menuToolsBookmarks.IsEnabled = true;
                     menuToolsAddThis.IsEnabled = true;
@@ -440,8 +440,28 @@ namespace KLCProxy {
                         });
                         break;
                 }
-            } else if(command.payload.navId == "remotecontrol/1-click") {
+            } else if (command.payload.navId == "remotecontrol/1-click") {
                 switch (Settings.OnOneClick)
+                {
+                    case Settings.OnLiveConnectAction.UseLiveConnect:
+                        command.Launch(false, Settings.Extra);
+                        break;
+
+                    case Settings.OnLiveConnectAction.UseAlternative:
+                        command.Launch(true, Settings.Extra);
+                        break;
+
+                    //case Settings.OnLiveConnectAction.Default:
+                    //case Settings.OnLiveConnectAction.Prompt:
+                    default:
+                        if (Settings.RedirectToAlternative)
+                            command.Launch(true, Settings.Extra);
+                        else
+                            command.Launch(false, Settings.Extra);
+                        break;
+                }
+            } else if(command.payload.navId.StartsWith("remotecontrol/private/#")) {
+                switch (Settings.OnNativeRDP)
                 {
                     case Settings.OnLiveConnectAction.UseLiveConnect:
                         command.Launch(false, Settings.Extra);
@@ -475,7 +495,7 @@ namespace KLCProxy {
         }
 
         private void LaunchKLCEx() {
-            string pathKLCEx = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLCEx.exe";
+            string pathKLCEx = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLCEx.exe";
             if (File.Exists(pathKLCEx)) {
                 Process process = new Process();
                 process.StartInfo.FileName = pathKLCEx;
@@ -510,7 +530,7 @@ namespace KLCProxy {
         }
 
         private void MenuAppsFinch_Click(object sender, RoutedEventArgs e) {
-            string pathKLCFinch = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Finch.exe";
+            string pathKLCFinch = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Finch.exe";
             if (File.Exists(pathKLCFinch)) {
                 Process process = new Process();
                 process.StartInfo.FileName = pathKLCFinch;
@@ -520,8 +540,8 @@ namespace KLCProxy {
 
         private void MenuAppsFinchCharm_Click(object sender, RoutedEventArgs e)
         {
-            //string pathKLCFinch = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Finch.exe";
-            string pathKLCFinch = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Canary.exe";
+            //string pathKLCFinch = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Finch.exe";
+            string pathKLCFinch = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Canary.exe";
             if (File.Exists(pathKLCFinch))
             {
                 Process process = new Process();
@@ -533,7 +553,7 @@ namespace KLCProxy {
 
         private void MenuAppsCanary_Click(object sender, RoutedEventArgs e)
         {
-            string pathKLCCanary = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Canary.exe";
+            string pathKLCCanary = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Canary.exe";
             if (File.Exists(pathKLCCanary))
             {
                 Process process = new Process();
@@ -543,15 +563,27 @@ namespace KLCProxy {
         }
 
         private void MenuAppsHawk_Click(object sender, RoutedEventArgs e) {
-            string pathKLCHawk = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Hawk.exe";
-            if (!File.Exists(pathKLCHawk))
-                pathKLCHawk = pathKLCHawk.Replace(@"\Build\", @"\KLC-Hawk\bin\");
 
-            if (File.Exists(pathKLCHawk)) {
-                Process process = new Process();
-                process.StartInfo.FileName = pathKLCHawk;
-                process.Start();
+            string pathKLCHawk = string.Empty;
+            string[] files = new string[] {
+                @"C:\Program Files\Kaseya Live Connect-MITM\Kaseya.AdminEndpoint.exe",
+                Environment.ExpandEnvironmentVariables(@"%localappdata%\Apps\Kaseya Live Connect-MITM\Kaseya.AdminEndpoint.exe"),
+                Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Hawk.exe"
+            };
+            foreach (string file in files)
+            {
+                if (File.Exists(file))
+                {
+                    pathKLCHawk = file;
+                    break;
+                }
             }
+
+            Process process = new Process();
+            if (pathKLCHawk.Length == 0)
+                throw new FileNotFoundException("Kaseya.AdminEndpoint.exe (MITM) or KLC-Hawk.exe");
+            process.StartInfo.FileName = pathKLCHawk;
+            process.Start();
         }
 
         private void MenuSettingsAlwaysOnTop_Click(object sender, RoutedEventArgs e) {
@@ -654,12 +686,13 @@ namespace KLCProxy {
 
         private void MenuToolsAHKAutotype_Click(object sender, RoutedEventArgs e) {
             Process process = new Process();
-            process.StartInfo.FileName = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk";
+            process.StartInfo.FileName = Path.GetDirectoryName(Environment.ProcessPath) + @"\AutoType.ahk";
             process.Start();
         }
 
         private void MenuToolsITGlueJumpBox_Click(object sender, RoutedEventArgs e) {
-            Process.Start("https://company.itglue.com/1432194/passwords/11018769"); //TeamV
+            //TeamV
+            Process.Start(new ProcessStartInfo("https://company.itglue.com/1432194/passwords/11018769") { UseShellExecute = true });
         }
 
         private void MenuToolsLCKillAll_Click(object sender, RoutedEventArgs e) {
@@ -932,14 +965,15 @@ namespace KLCProxy {
 
             txtSelectedLogs.Clear();
 
-            if (File.Exists(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Finch.exe")) {
+            if (File.Exists(System.IO.Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Finch.exe")) {
             } else {
                 Settings.RedirectToAlternative = false;
                 Settings.OnLiveConnect = Settings.OnLiveConnectAction.Default;
                 Settings.OnOneClick = Settings.OnLiveConnectAction.Default;
+                Settings.OnNativeRDP = Settings.OnLiveConnectAction.Default;
             }
 
-            if (File.Exists(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\KLC-Canary.exe")) {
+            if (File.Exists(System.IO.Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Canary.exe")) {
             } else
             {
                 menuSettingsUseCanary.IsEnabled = false;
@@ -958,7 +992,7 @@ namespace KLCProxy {
                     Settings.Extra = LaunchExtra.None;
             }
 
-            if (File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\..\..\KLC-Wolf\bin\Debug\KLC-Wolf.exe")) {
+            if (File.Exists(Path.GetDirectoryName(Environment.ProcessPath) + @"\..\..\KLC-Wolf\bin\Debug\KLC-Wolf.exe")) {
             } else {
                 menuSettingsUseWolf.Visibility = Visibility.Collapsed;
                 if (Settings.Extra == LaunchExtra.Wolf)
@@ -973,7 +1007,7 @@ namespace KLCProxy {
 
             menuSettingsToastWhenOnline.IsChecked = Settings.ToastWhenOnline;
 
-            //menuToolsAHKAutotype.IsEnabled = File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AutoType.ahk");
+            //menuToolsAHKAutotype.IsEnabled = File.Exists(Path.GetDirectoryName(Environment.ProcessPath) + @"\AutoType.ahk");
 
         }
 
@@ -1032,7 +1066,10 @@ namespace KLCProxy {
                 versionLocal = versionInfo.FileVersion;
             }
 
-            RestClient client = new RestClient("https://vsa-web.company.com.au/vsapres/api/session/AppVersions/1");
+            RestClient client = new RestClient("https://" + Kaseya.DefaultServer + "/vsapres/api/session/AppVersions/1")
+            {
+                Timeout = 5000
+            };
             IRestResponse response = client.Execute(new RestRequest());
             if (response.ResponseStatus == ResponseStatus.Completed) {
                 try {
@@ -1049,12 +1086,12 @@ namespace KLCProxy {
             }
 
             if (versionOnline.Length > 0 && versionOnline != versionLocal) {
-                Process.Start("https://vsa-web.company.com.au/ManagedFiles/VSAHiddenFiles/KaseyaLiveConnect/win64/LiveConnect.exe");
+                Process.Start(new ProcessStartInfo("https://" + Kaseya.DefaultServer + "/ManagedFiles/VSAHiddenFiles/KaseyaLiveConnect/win64/LiveConnect.exe") { UseShellExecute = true });
             } else {
                 using (TaskDialog dialog = new TaskDialog())
                 {
                     dialog.WindowTitle = "KLCProxy";
-                    dialog.Content = "Your KLC version matches VSA-WEB's!";
+                    dialog.Content = "Your KLC version matches " + Kaseya.DefaultServer + " !";
                     //dialog.MainIcon = TaskDialogIcon.Information;
                     dialog.CenterParent = true;
 
@@ -1119,6 +1156,46 @@ namespace KLCProxy {
             }
         }
 
+        private void ContextOriginalNativeRDP_Click(object sender, RoutedEventArgs e)
+        {
+            if (listAgent.SelectedIndex > -1)
+            {
+                Agent agent = listAgent.SelectedItem as Agent;
+
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
+                command.SetForRemoteControl_NativeRDP();
+
+                if (agent.Watch && agent.Online == 0)
+                {
+                    agent.WaitLabel = "RC-RDP";
+                    agent.WaitCommand = command;
+                    RefreshAgentsList(false);
+                }
+                else
+                    command.Launch(false, Settings.Extra);
+            }
+        }
+
+        private void ContextAlternativeNativeRDP_Click(object sender, RoutedEventArgs e)
+        {
+            if (listAgent.SelectedIndex > -1)
+            {
+                Agent agent = listAgent.SelectedItem as Agent;
+
+                KLCCommand command = KLCCommand.Example(agent.ID, Kaseya.Token);
+                command.SetForRemoteControl_NativeRDP();
+
+                if (agent.Watch && agent.Online == 0)
+                {
+                    agent.WaitLabel = "Alt-RDP";
+                    agent.WaitCommand = command;
+                    RefreshAgentsList(false);
+                }
+                else
+                    command.Launch(true, LaunchExtra.None);
+            }
+        }
+
         private void MenuSettings_Click(object sender, RoutedEventArgs e)
         {
             WindowSettings winSettings = new WindowSettings(ref Settings)
@@ -1173,5 +1250,6 @@ namespace KLCProxy {
             WindowVSAWhosOnline winWhoOnline = new WindowVSAWhosOnline();
             winWhoOnline.ShowDialog();
         }
+
     }
 }

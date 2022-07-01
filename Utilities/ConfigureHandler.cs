@@ -33,11 +33,11 @@ namespace KLCProxy
         }
 
         private static string ExpectedValue() {
-            return string.Format("\"{0}\" \"%1\"", System.Reflection.Assembly.GetExecutingAssembly().Location);
+            return string.Format("\"{0}\" \"%1\"", Environment.ProcessPath);
         }
 
         private static string ExpectedValueFinch() {
-            return string.Format("\"{0}\" \"%1\"", Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\KLC-Finch.exe");
+            return string.Format("\"{0}\" \"%1\"", Path.GetDirectoryName(Environment.ProcessPath) + "\\KLC-Finch.exe");
         }
 
         public static ProxyState ToggleProxy(bool enabled, bool bypass=false)

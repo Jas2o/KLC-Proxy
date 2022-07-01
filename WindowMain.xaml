@@ -259,6 +259,10 @@
                                     x:Name="contextAlternativeOneClick"
                                     Click="ContextAlternativeOneClick_Click"
                                     Header="1-Click Access" />
+                                <MenuItem
+                                    x:Name="contextAlternativeNativeRDP"
+                                    Click="ContextAlternativeNativeRDP_Click"
+                                    Header="Native RDP" />
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
@@ -315,6 +319,10 @@
                                     x:Name="contextOriginalOneClick"
                                     Click="ContextOriginalOneClick_Click"
                                     Header="1-Click Access" />
+                                <MenuItem
+                                    x:Name="contextOriginalNativeRDP"
+                                    Click="ContextOriginalNativeRDP_Click"
+                                    Header="Native RDP" />
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>

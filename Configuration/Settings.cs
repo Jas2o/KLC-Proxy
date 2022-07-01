@@ -26,6 +26,7 @@ namespace KLCProxy {
         public bool RedirectToAlternative { get; set; } = false;
         public OnLiveConnectAction OnLiveConnect { get; set; } = OnLiveConnectAction.Default;
         public OnLiveConnectAction OnOneClick { get; set; } = OnLiveConnectAction.Default;
+        public OnLiveConnectAction OnNativeRDP { get; set; } = OnLiveConnectAction.Default;
         public bool OverrideRCSharedtoLC { get; set; } = false;
         //public bool OverrideAltCanary { get; set; } = false;
 

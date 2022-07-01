@@ -48,6 +48,7 @@ namespace KLCProxy
             cmbOnRemoteControl.SelectedIndex = (settings.RedirectToAlternative ? 1 : 0);
             cmbOnLiveConnect.SelectedIndex = (int)settings.OnLiveConnect;
             cmbOnOneClick.SelectedIndex = (int)settings.OnOneClick;
+            cmbOnNativeRDP.SelectedIndex = (int)settings.OnNativeRDP;
             chkOverrideRCSharedtoLC.IsChecked = settings.OverrideRCSharedtoLC;
             //chkOverrideAltCanary.IsChecked = settings.OverrideAltCanary;
             UpdateDisplay();
@@ -67,6 +68,7 @@ namespace KLCProxy
                 settings.RedirectToAlternative = (cmbOnRemoteControl.SelectedIndex == 1);
                 settings.OnLiveConnect = (Settings.OnLiveConnectAction)cmbOnLiveConnect.SelectedIndex;
                 settings.OnOneClick = (Settings.OnLiveConnectAction)cmbOnOneClick.SelectedIndex;
+                settings.OnNativeRDP = (Settings.OnLiveConnectAction)cmbOnNativeRDP.SelectedIndex;
                 settings.OverrideRCSharedtoLC = (bool)chkOverrideRCSharedtoLC.IsChecked;
                 //settings.OverrideAltCanary = (bool)chkOverrideAltCanary.IsChecked;
             }

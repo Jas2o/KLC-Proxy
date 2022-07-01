@@ -1,5 +1,4 @@
 ﻿using LibKaseya;
-using System.Management;
 using System.Windows;
 
 namespace KLCProxy {
@@ -42,6 +41,7 @@ namespace KLCProxy {
 
         private void btnAuthGetFromKLC_Click(object sender, RoutedEventArgs e)
         {
+            /* //This requires compatibility package since upgrade to .NET 6.
             ManagementClass mngmtClass = new ManagementClass("Win32_Process");
             foreach (ManagementObject o in mngmtClass.GetInstances())
             {
@@ -59,6 +59,7 @@ namespace KLCProxy {
                     }
                 }
             }
+            */
         }
     }
 }
