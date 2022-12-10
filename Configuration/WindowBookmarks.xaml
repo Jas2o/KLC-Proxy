@@ -50,21 +50,18 @@
                 GridLinesVisibility="All"
                 HorizontalGridLinesBrush="#eeeeff"
                 IsReadOnly="True"
-                ItemsSource="{Binding ObservableList, Mode=TwoWay}"
                 MouseDoubleClick="dataGrid_MouseDoubleClick"
                 PreviewKeyDown="dataGrid_PreviewKeyDown"
                 VerticalGridLinesBrush="#eeeeff">
                 <DataGrid.Columns>
-                    <DataGridTextColumn
-                        Binding="{Binding Type}"
-                        Header="Type"
-                        IsReadOnly="True" />
                     <DataGridTextColumn Binding="{Binding Display}" Header="Display" />
-                    <DataGridTextColumn Binding="{Binding Value}" Header="Value" />
+                    <DataGridTextColumn Binding="{Binding AgentGUID}" Header="Agent GUID" />
+                    <DataGridTextColumn Binding="{Binding VSA}" Header="VSA" />
+                    <DataGridTextColumn Binding="{Binding Note}" Header="Note" />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Label Name="lblInstructions" Content="Double-click to add to KLCProxy list or open URL." />
+            <Label Name="lblInstructions" Content="Double-click to add to KLCProxy list." />
             <Button
                 x:Name="btnAddAllFromList"
                 Margin="10,5,10,0"
@@ -80,45 +77,68 @@
                         <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <ComboBox
-                        Name="cmbNewType"
-                        Grid.Column="0"
-                        Width="70"
-                        Margin="0,0,0,5"
-                        VerticalAlignment="Center"
-                        SelectedIndex="0"
-                        SelectionChanged="cmbNewType_SelectionChanged">
-                        <ComboBoxItem Content="Agent" />
-                        <ComboBoxItem Content="URL" />
-                    </ComboBox>
+
+                    <Label
+                        x:Name="lblNewVDisplay"
+                        Grid.Row="0"
+                        Padding="5,0"
+                        Content="Display:" />
                     <TextBox
                         x:Name="txtNewDisplay"
                         Grid.Column="1"
                         Margin="5,0,0,5"
                         VerticalContentAlignment="Center"
                         Text="Display Name" />
+
                     <Label
-                        x:Name="lblNewValue"
+                        x:Name="lblNewVSA"
                         Grid.Row="1"
                         Padding="5,0"
-                        VerticalAlignment="Center"
-                        Content="Value:" />
+                        Content="Agent VSA:" />
                     <TextBox
-                        x:Name="txtNewValue"
+                        x:Name="txtNewVSA"
                         Grid.Row="1"
                         Grid.Column="1"
-                        Height="22"
+                        Margin="5,0,0,5"
+                        VerticalContentAlignment="Center"
+                        Text="" />
+
+                    <Label
+                        x:Name="lblNewValue"
+                        Grid.Row="2"
+                        Padding="5,0"
+                        Content="Agent GUID:" />
+                    <TextBox
+                        x:Name="txtNewGUID"
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="5,0,0,5"
+                        VerticalContentAlignment="Center"
+                        Text="" />
+
+                    <Label
+                        x:Name="lblNewNote"
+                        Grid.Row="3"
+                        Padding="5,0"
+                        Content="Note:" />
+                    <TextBox
+                        x:Name="txtNewNote"
+                        Grid.Row="3"
+                        Grid.Column="1"
                         Margin="5,0,0,0"
                         VerticalContentAlignment="Center"
                         Text="" />
+
                     <Button
                         x:Name="btnNewAdd"
-                        Grid.Row="2"
+                        Grid.Row="4"
                         Grid.ColumnSpan="2"
                         Margin="0,5,0,0"
                         Click="btnNewAdd_Click"

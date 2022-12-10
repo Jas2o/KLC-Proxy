@@ -38,6 +38,7 @@ namespace KLCProxy {
         public string StartDisplay = "Default";
         public string StartDisplayFallback = "";
         public int StartCorner = 0;
+        public bool ShowAgentsVSA = false;
 
         [JsonIgnore] public ConfigureHandler.ProxyState ProxyState = ConfigureHandler.ProxyState.Disabled;
     }

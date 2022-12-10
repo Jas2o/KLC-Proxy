@@ -211,7 +211,7 @@ namespace KLCProxy {
                 pipeName = pipeName + "-" + System.Security.Principal.WindowsIdentity.GetCurrent().Name.Replace("\\", "-");
 
             using (var pipeClient = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.None)) {
-                pipeClient.Connect();
+                pipeClient.Connect(5000);
 
                 byte[] messageBytes = Encoding.UTF8.GetBytes(message);
                 pipeClient.Write(messageBytes, 0, messageBytes.Length);

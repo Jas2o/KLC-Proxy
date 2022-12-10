@@ -23,7 +23,7 @@ namespace KLCProxy
     public partial class WindowSaaS : Window
     {
         private static string[] fieldSplit = new string[] { " - " };
-        private static string urlEIT = @"https://" + LibKaseya.Kaseya.DefaultServer;
+        //private static string urlEIT = @"https://" + LibKaseya.Kaseya.DefaultServer;
         private BackgroundWorker bw;
 
         public WindowSaaS()
@@ -70,10 +70,14 @@ namespace KLCProxy
             //bw.WorkerReportsProgress = true;
             bw.DoWork += new DoWorkEventHandler(
             delegate (object o, DoWorkEventArgs args) {
-                DataItemSaaS disEIT = new DataItemSaaS("DEFAULT", "", urlEIT, GetKLCversion(urlEIT));
-                Dispatcher.Invoke((Action)delegate {
-                    dataGrid.Items.Add(disEIT);
-                });
+                foreach (KeyValuePair<string, LibKaseya.KaseyaVSA> vsa in LibKaseya.Kaseya.VSA)
+                {
+                    DataItemSaaS disKnown = new DataItemSaaS(vsa.Key, "", vsa.Key, GetKLCversion(vsa.Value.Client));
+                    Dispatcher.Invoke((Action)delegate
+                    {
+                        dataGrid.Items.Add(disKnown);
+                    });
+                }
 
                 string[] lines = temp.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string line in lines)
@@ -102,13 +106,10 @@ namespace KLCProxy
             bw.RunWorkerAsync();
         }
 
-        private string GetKLCversion(string url)
+        private string GetKLCversion(RestClient client)
         {
-            RestClient client = new RestClient(url + "/vsapres/api/session/AppVersions/1")
-            {
-                Timeout = 5000
-            };
-            IRestResponse response = client.Execute(new RestRequest());
+            IRestResponse response = client.Execute(new RestRequest("/vsapres/api/session/AppVersions/1"));
+            /*
             if (response.ResponseStatus == ResponseStatus.Error)
             {
                 client = new RestClient(url.Replace("0", ""))
@@ -117,6 +118,7 @@ namespace KLCProxy
                 };
                 response = client.Execute(new RestRequest());
             }
+            */
 
             if (response.ResponseStatus == ResponseStatus.Completed)
             {
@@ -139,6 +141,18 @@ namespace KLCProxy
             }
 
             return "?";
+        }
+
+        private string GetKLCversion(string url)
+        {
+            if (!url.StartsWith("https://"))
+                url = "https://" + url;
+
+            RestClient client = new RestClient(url)
+            {
+                Timeout = 5000
+            };
+            return GetKLCversion(client);
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)

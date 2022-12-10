@@ -1,7 +1,10 @@
 ﻿using LibKaseya;
+using nucs.JsonSettings;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +25,7 @@ namespace KLCProxy
     public partial class WindowBookmarks : Window
     {
         private int startCorner;
-        private Bookmarks bookmarks;
+        private ObservableCollection<Bookmark> ObservableList { get; set; }
 
         public WindowBookmarks()
         {
@@ -33,9 +36,10 @@ namespace KLCProxy
         {
             InitializeComponent();
 
-            Bookmarks.Load();
-            bookmarks = new Bookmarks();
-            DataContext = bookmarks;
+            ObservableList = new ObservableCollection<Bookmark>();
+            foreach (Bookmark bookmark in App.Shared.Bookmarks)
+                ObservableList.Add(bookmark);
+            dataGrid.ItemsSource = ObservableList;
 
             Owner = mainWindow;
             this.startCorner = startCorner;
@@ -73,7 +77,8 @@ namespace KLCProxy
                 btnMoveUp.Visibility = Visibility.Collapsed;
                 btnMoveDown.Visibility = Visibility.Collapsed;
                 btnSave.Visibility = Visibility.Collapsed;
-                dataGrid.Columns[2].Visibility = Visibility.Collapsed;
+                dataGrid.Columns[1].Visibility = Visibility.Collapsed;
+                dataGrid.Columns[3].Visibility = Visibility.Collapsed;
                 groupAdd.Visibility = Visibility.Collapsed;
             } else
             {
@@ -85,7 +90,8 @@ namespace KLCProxy
                 btnMoveUp.Visibility = Visibility.Visible;
                 btnMoveDown.Visibility = Visibility.Visible;
                 btnSave.Visibility = Visibility.Visible;
-                dataGrid.Columns[2].Visibility = Visibility.Visible;
+                dataGrid.Columns[1].Visibility = Visibility.Visible;
+                dataGrid.Columns[3].Visibility = Visibility.Visible;
                 groupAdd.Visibility = Visibility.Visible;
             }
         }
@@ -99,15 +105,11 @@ namespace KLCProxy
 
             if (selected != null)
             {
-                if (selected.Type == "URL")
-                {
-                    if (selected.Value.StartsWith("https://"))
-                        Process.Start(selected.Value);
-                }
-                else if (selected.Type == "Agent")
-                    ((MainWindow)Owner).AddAgentToList(selected.Value);
-                else
-                    Console.WriteLine("Unexpected bookmark type '" + selected.Type + "' with value: " + selected.Value);
+                //if (selected.Note.StartsWith("https://"))
+                    //Process.Start(selected.Note);
+                //}
+
+                ((MainWindow)Owner).AddAgentToList(selected);
             }
         }
 
@@ -119,40 +121,36 @@ namespace KLCProxy
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
+            dataGrid.CommitEdit(DataGridEditingUnit.Row, true);
+            dataGrid.IsReadOnly = true;
+            App.Shared.Bookmarks.Clear();
+            foreach (Bookmark bookmark in ObservableList)
+                App.Shared.Bookmarks.Add(bookmark);
+            App.Shared.Save();
+            UpdateVisibility();
+
+            /*
             dataGrid.IsReadOnly = true;
             Bookmarks.List = bookmarks.ObservableList.ToList();
             Bookmarks.Save();
             UpdateVisibility();
-        }
-
-        private void cmbNewType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (txtNewValue == null)
-                return;
-
-            string text = ((ComboBoxItem)cmbNewType.SelectedItem).Content.ToString();
-
-            if (text == "Agent")
-                txtNewValue.Text = "(Agent GUID here)";
-            if (text == "URL")
-                txtNewValue.Text = "https://";
+            */
         }
 
         private void btnNewAdd_Click(object sender, RoutedEventArgs e)
         {
-            string text = ((ComboBoxItem)cmbNewType.SelectedItem).Content.ToString();
-
-            if (text == "Agent" && !long.TryParse(txtNewValue.Text, out _))
+            if (!long.TryParse(txtNewGUID.Text, out _))
             {
                 MessageBox.Show("Agent GUIDs only contain numeric digits.");
                 return;
             }
-            if (text == "URL" && txtNewValue.Text.StartsWith("https://")) {
+            /*
+            if (txtNewNote.Text.StartsWith("https://")) {
                 MessageBox.Show("URL should start with https://");
                 return;
             }
-
-            bookmarks.ObservableList.Add(new Bookmark("Agent", txtNewDisplay.Text, txtNewValue.Text));
+            */
+            ObservableList.Add(new Bookmark(txtNewDisplay.Text, txtNewVSA.Text, txtNewGUID.Text, txtNewNote.Text));
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -161,7 +159,7 @@ namespace KLCProxy
             {
                 for (int i = dataGrid.SelectedItems.Count; i > 0; i--)
                 {
-                    bookmarks.ObservableList.Remove((Bookmark)dataGrid.SelectedItems[i - 1]);
+                    ObservableList.Remove((Bookmark)dataGrid.SelectedItems[i - 1]);
                 }
             }
             else if (dataGrid.SelectedIndex > -1)
@@ -169,7 +167,8 @@ namespace KLCProxy
                 int index = dataGrid.SelectedIndex;
                 if (index == dataGrid.Items.Count - 1)
                     index--;
-                bookmarks.ObservableList.Remove(dataGrid.SelectedItem as Bookmark);
+                ObservableList.Remove(dataGrid.SelectedItem as Bookmark);
+                
                 dataGrid.SelectedIndex = index;
                 dataGrid.Focus();
             }
@@ -182,11 +181,11 @@ namespace KLCProxy
             if (selected == null)
                 return;
 
-            int newIndex = bookmarks.ObservableList.IndexOf(selected) - 1;
+            int newIndex = dataGrid.Items.IndexOf(selected) - 1;
             if(newIndex > -1)
             {
-                bookmarks.ObservableList.Remove(selected);
-                bookmarks.ObservableList.Insert(newIndex, selected);
+                ObservableList.Remove(selected);
+                ObservableList.Insert(newIndex, selected);
                 dataGrid.SelectedIndex = newIndex;
             }
 
@@ -200,11 +199,11 @@ namespace KLCProxy
             if (selected == null)
                 return;
 
-            int newIndex = bookmarks.ObservableList.IndexOf(selected) + 1;
-            if (newIndex < bookmarks.ObservableList.Count)
+            int newIndex = dataGrid.Items.IndexOf(selected) + 1;
+            if (newIndex < dataGrid.Items.Count)
             {
-                bookmarks.ObservableList.Remove(selected);
-                bookmarks.ObservableList.Insert(newIndex, selected);
+                ObservableList.Remove(selected);
+                ObservableList.Insert(newIndex, selected);
                 dataGrid.SelectedIndex = newIndex;
             }
 
@@ -213,9 +212,9 @@ namespace KLCProxy
 
         private void btnAddAllFromList_Click(object sender, RoutedEventArgs e)
         {
-            List<LibKaseya.Agent> listMain = ((MainWindow)Owner).mainData.ListAgent.ToList();
-            foreach (LibKaseya.Agent agent in listMain) {
-                bookmarks.ObservableList.Add(new Bookmark("Agent", agent.Name, agent.ID));
+            List<Agent> listMain = ((MainWindow)Owner).mainData.ListAgent.ToList();
+            foreach (Agent agent in listMain) {
+                ObservableList.Add(new Bookmark(agent.Name, agent.VSA, agent.ID, ""));
             }
         }
 

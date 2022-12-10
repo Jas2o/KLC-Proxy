@@ -23,6 +23,8 @@ namespace KLCProxy
     /// </summary>
     public partial class WindowVSAWhosOnline : Window
     {
+        private string vsa;
+
         public WindowVSAWhosOnline()
         {
             InitializeComponent();
@@ -30,7 +32,9 @@ namespace KLCProxy
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (Kaseya.Token == null)
+            vsa = Kaseya.VSA.FirstOrDefault(x => x.Value.Token != null).Key;
+
+            if (Kaseya.VSA[vsa].Token == null)
                 btnCheck.IsEnabled = false;
             else
                 lblTokenNotLoaded.Visibility = Visibility.Collapsed;
@@ -42,7 +46,7 @@ namespace KLCProxy
 
             try
             {
-                IRestResponse response = Kaseya.GetRequest("api/v1.5/navigation/header/onlineadmins");
+                IRestResponse response = Kaseya.GetRequest(vsa, "api/v1.5/navigation/header/onlineadmins");
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     dynamic json = JsonConvert.DeserializeObject(response.Content);

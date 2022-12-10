@@ -61,7 +61,7 @@ namespace KLCProxy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2022-06-26 
+        ///   Looks up a localized string similar to 2022-07-18 
         ///.
         /// </summary>
         public static string BuildDate {

@@ -25,6 +25,8 @@ namespace KLCProxy
     /// </summary>
     public partial class WindowVSANavigation : Window
     {
+        private string vsa;
+
         public WindowVSANavigation()
         {
             InitializeComponent();
@@ -32,7 +34,9 @@ namespace KLCProxy
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if(Kaseya.Token == null)
+            vsa = Kaseya.VSA.FirstOrDefault(x => x.Value.Token != null).Key;
+
+            if (Kaseya.VSA[vsa].Token == null)
                 btnImport.IsEnabled = btnImport2.IsEnabled = false;
             else
                 lblTokenNotLoaded.Visibility = Visibility.Collapsed;
@@ -40,7 +44,7 @@ namespace KLCProxy
 
         private void btnImport_Click(object sender, RoutedEventArgs e)
         {
-            IRestResponse response = Kaseya.GetRequest("api/v1.5/navigation/modules");
+            IRestResponse response = Kaseya.GetRequest(vsa, "api/v1.5/navigation/modules");
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 txtInput.Text = response.Content;
@@ -49,7 +53,7 @@ namespace KLCProxy
 
         private void btnImport2_Click(object sender, RoutedEventArgs e)
         {
-            IRestResponse response = Kaseya.GetRequest("api/v1.5/navigation/modulestap");
+            IRestResponse response = Kaseya.GetRequest(vsa, "api/v1.5/navigation/modulestap");
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 txtInput.Text = response.Content;

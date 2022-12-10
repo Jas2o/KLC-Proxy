@@ -1,4 +1,6 @@
 ﻿using LibKaseya;
+using System;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace KLCProxy {
@@ -6,33 +8,40 @@ namespace KLCProxy {
     /// Interaction logic for WindowAuthToken.xaml
     /// </summary>
     public partial class WindowAuthToken : Window {
+
+        public string ReturnAddress;
+        public string ReturnToken;
+
         public WindowAuthToken() {
             InitializeComponent();
+
+            foreach (KeyValuePair<string, KaseyaVSA> vsa in Kaseya.VSA)
+            {
+                cmbAddress.Items.Add(vsa.Key);
+            }
         }
 
-        public static string GetInput(string starter, Window owner) {
-            WindowAuthToken form = new WindowAuthToken();
-            form.Owner = owner;
-            form.txtAuthToken.Password = starter;
-
-            bool? result = form.ShowDialog();
-            if (result == true) {
-                string token = form.txtAuthToken.Password.Trim();
-                //Save the token until the computer is logged out
-                Kaseya.LoadToken(token);
-                KaseyaAuth.SetCredentials(token);
-                return token;
-            } else
-                return starter;
-        }
-
-        public string ResponseText {
-            get { return txtAuthToken.Password; }
-            set { txtAuthToken.Password = value; }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (cmbAddress.Items.Count > 0)
+            {
+                cmbAddress.SelectedIndex = 0;
+                RefreshToken();
+            }
         }
 
         private void OKButton_Click(object sender, System.Windows.RoutedEventArgs e) {
-            DialogResult = true;
+            //if (cmbAddress.SelectedIndex == -1)
+                //return;
+
+            ReturnAddress = cmbAddress.SelectedItem.ToString().Trim();
+            ReturnToken = txtAuthToken.Password.Trim();
+
+            if (ReturnAddress.Length > 0 && ReturnToken.Length > 0)
+            {
+                this.DialogResult = true;
+                this.Close();
+            }
         }
 
         private void btnAuthCopy_Click(object sender, RoutedEventArgs e) {
@@ -60,6 +69,30 @@ namespace KLCProxy {
                 }
             }
             */
+        }
+
+        private void RefreshToken()
+        {
+            foreach (KeyValuePair<string, KaseyaVSA> vsa in Kaseya.VSA)
+            {
+                if (vsa.Key == cmbAddress.Text)
+                {
+                    txtAuthToken.Password = vsa.Value.Token;
+                    return;
+                }
+            }
+
+            txtAuthToken.Password = "";
+        }
+
+        private void cmbAddress_DropDownClosed(object sender, EventArgs e)
+        {
+            RefreshToken();
+        }
+
+        private void cmbAddress_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            RefreshToken();
         }
     }
 }

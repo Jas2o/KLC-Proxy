@@ -1,5 +1,8 @@
-﻿using System;
+﻿using LibKaseya;
+using nucs.JsonSettings;
+using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +15,7 @@ namespace KLCProxy {
 
         private const string appName = "KLCProxy2";
         private static Mutex mutex = null;
+        public static KLCShared Shared;
 
         public App() : base() {
             if (!Debugger.IsAttached) {
@@ -40,6 +44,14 @@ namespace KLCProxy {
 
                 Current.Shutdown();
             }
+
+            string pathShared = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Shared.json";
+            if (File.Exists(pathShared))
+                Shared = JsonSettings.Load<KLCShared>(pathShared);
+            else
+                Shared = JsonSettings.Construct<KLCShared>(pathShared);
+            if(Shared.Bookmarks.Count == 0)
+                Shared.Bookmarks.Add(new Bookmark("JumpBox", "c-vsa.company.com.au", "111111111111111", "https://company.itglue.com/1432194/passwords/11018769"));
         }
 
         public static void ShowUnhandledExceptionFromSrc(Exception e, string source) {
@@ -48,7 +60,7 @@ namespace KLCProxy {
             });
         }
 
-        void ShowUnhandledException(Exception e, string unhandledExceptionType) {
+        static void ShowUnhandledException(Exception e, string unhandledExceptionType) {
             new WindowException(e, unhandledExceptionType).Show(); //, Debugger.IsAttached
         }
 

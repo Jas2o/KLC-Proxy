@@ -102,6 +102,10 @@
                     x:Name="menuAppsAuth"
                     Click="MenuAppsAuth_Click"
                     Header="Auth Token" />
+                <MenuItem
+                    x:Name="menuAppsLogin"
+                    Click="MenuAppsLogin_Click"
+                    Header="Login to VSA" />
             </MenuItem>
 
             <MenuItem
@@ -205,6 +209,11 @@
                     x:Name="menuSettingsStartPos"
                     Click="MenuSettingsStartPos_Click"
                     Header="Adjust start position" />
+                <MenuItem
+                    x:Name="menuSettingsShowAgentsVSA"
+                    Click="menuSettingsShowAgentsVSA_Click"
+                    Header="Show agent's VSA instead of logs"
+                    IsCheckable="True" />
             </MenuItem>
         </Menu>
         <Grid Margin="3">
