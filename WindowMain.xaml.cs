@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace KLCProxy {
 
@@ -437,90 +438,112 @@ namespace KLCProxy {
 
         private void LaunchFromArgument(string base64) {
             KLCCommand command = KLCCommand.NewFromBase64(base64);
-            Kaseya.LoadToken(command.VSA, command.payload.auth.Token);
-            Kaseya.LaunchNotify(command.VSA, command.launchNotifyUrl);
-            AddAgentToList(command);
 
-            if(Settings.OverrideRCSharedtoLC && command.payload.navId == "remotecontrol/shared")
-                command.SetForLiveConnect();
+            //Thread t1 = new Thread(() =>
+            //{
+                if (Settings.OverrideRCSharedtoLC && command.payload.navId == "remotecontrol/shared")
+                    command.SetForLiveConnect();
 
-            if (command.payload.navId == "dashboard") {
-                switch (Settings.OnLiveConnect) {
-                    case Settings.OnLiveConnectAction.Default:
-                        if (Settings.RedirectToAlternative)
-                            command.Launch(true, Settings.Extra);
-                        else
-                            command.Launch(false, Settings.Extra);
-                        break;
-
-                    case Settings.OnLiveConnectAction.UseLiveConnect:
-                        command.Launch(false, Settings.Extra);
-                        break;
-
-                    case Settings.OnLiveConnectAction.UseAlternative:
-                        command.Launch(true, Settings.Extra);
-                        break;
-
-                    case Settings.OnLiveConnectAction.Prompt:
-                        bool? result;
-                        Dispatcher.Invoke((Action)delegate {
-                            WindowAskMe winAskMe = new WindowAskMe();
-                            result = winAskMe.ShowDialog();
-                            if (result == true) {
-                                if (winAskMe.ReturnUseAlternative)
-                                    command.Launch(true, Settings.Extra);
-                                else
-                                    command.Launch(false, Settings.Extra);
-                            }
-                        });
-                        break;
-                }
-            } else if (command.payload.navId == "remotecontrol/1-click") {
-                switch (Settings.OnOneClick)
+                if (command.payload.navId == "dashboard")
                 {
-                    case Settings.OnLiveConnectAction.UseLiveConnect:
-                        command.Launch(false, Settings.Extra);
-                        break;
+                    switch (Settings.OnLiveConnect)
+                    {
+                        case Settings.OnLiveConnectAction.Default:
+                            if (Settings.RedirectToAlternative)
+                                command.Launch(true, Settings.Extra);
+                            else
+                                command.Launch(false, Settings.Extra);
+                            break;
 
-                    case Settings.OnLiveConnectAction.UseAlternative:
-                        command.Launch(true, Settings.Extra);
-                        break;
-
-                    //case Settings.OnLiveConnectAction.Default:
-                    //case Settings.OnLiveConnectAction.Prompt:
-                    default:
-                        if (Settings.RedirectToAlternative)
-                            command.Launch(true, Settings.Extra);
-                        else
+                        case Settings.OnLiveConnectAction.UseLiveConnect:
                             command.Launch(false, Settings.Extra);
-                        break;
+                            break;
+
+                        case Settings.OnLiveConnectAction.UseAlternative:
+                            command.Launch(true, Settings.Extra);
+                            break;
+
+                        case Settings.OnLiveConnectAction.Prompt:
+                            bool? result;
+                            Dispatcher.Invoke((Action)delegate
+                            {
+                                WindowAskMe winAskMe = new WindowAskMe();
+                                result = winAskMe.ShowDialog();
+                                if (result == true)
+                                {
+                                    if (winAskMe.ReturnUseAlternative)
+                                        command.Launch(true, Settings.Extra);
+                                    else
+                                        command.Launch(false, Settings.Extra);
+                                }
+                            });
+                            break;
+                    }
                 }
-            } else if(command.payload.navId.StartsWith("remotecontrol/private/#")) {
-                switch (Settings.OnNativeRDP)
+                else if (command.payload.navId == "remotecontrol/1-click")
                 {
-                    case Settings.OnLiveConnectAction.UseLiveConnect:
-                        command.Launch(false, Settings.Extra);
-                        break;
-
-                    case Settings.OnLiveConnectAction.UseAlternative:
-                        command.Launch(true, Settings.Extra);
-                        break;
-
-                    //case Settings.OnLiveConnectAction.Default:
-                    //case Settings.OnLiveConnectAction.Prompt:
-                    default:
-                        if (Settings.RedirectToAlternative)
-                            command.Launch(true, Settings.Extra);
-                        else
+                    switch (Settings.OnOneClick)
+                    {
+                        case Settings.OnLiveConnectAction.UseLiveConnect:
                             command.Launch(false, Settings.Extra);
-                        break;
+                            break;
+
+                        case Settings.OnLiveConnectAction.UseAlternative:
+                            command.Launch(true, Settings.Extra);
+                            break;
+
+                        //case Settings.OnLiveConnectAction.Default:
+                        //case Settings.OnLiveConnectAction.Prompt:
+                        default:
+                            if (Settings.RedirectToAlternative)
+                                command.Launch(true, Settings.Extra);
+                            else
+                                command.Launch(false, Settings.Extra);
+                            break;
+                    }
                 }
-            } else {
-                if (Settings.RedirectToAlternative)
-                    command.Launch(true, Settings.Extra);
+                else if (command.payload.navId.StartsWith("remotecontrol/private/#"))
+                {
+                    switch (Settings.OnNativeRDP)
+                    {
+                        case Settings.OnLiveConnectAction.UseLiveConnect:
+                            command.Launch(false, Settings.Extra);
+                            break;
+
+                        case Settings.OnLiveConnectAction.UseAlternative:
+                            command.Launch(true, Settings.Extra);
+                            break;
+
+                        //case Settings.OnLiveConnectAction.Default:
+                        //case Settings.OnLiveConnectAction.Prompt:
+                        default:
+                            if (Settings.RedirectToAlternative)
+                                command.Launch(true, Settings.Extra);
+                            else
+                                command.Launch(false, Settings.Extra);
+                            break;
+                    }
+                }
                 else
-                    command.Launch(false, Settings.Extra);
-            }
+                {
+                    if (Settings.RedirectToAlternative)
+                        command.Launch(true, Settings.Extra);
+                    else
+                        command.Launch(false, Settings.Extra);
+                }
+            //});
+
+            //Thread t2 = new Thread(() =>
+            //{
+                Kaseya.LoadToken(command.VSA, command.payload.auth.Token);
+                Kaseya.LaunchNotify(command.VSA, command.launchNotifyUrl);
+                AddAgentToList(command);
+            //});
+
+            //t1.Start();
+            //t2.Start();
+            //t1.Join(1000); //Launch app
+            //t2.Join(1000); //VSA API
 
             Dispatcher.Invoke((Action)delegate {
                 menuToolsBookmarks.IsEnabled = true;
@@ -1119,6 +1142,23 @@ namespace KLCProxy {
         }
 
         private void MenuToolsLCDownload_Click(object sender, RoutedEventArgs e) {
+            if (Kaseya.VSA.Count == 0)
+            {
+                using (TaskDialog dialog = new TaskDialog())
+                {
+                    dialog.WindowTitle = "KLCProxy";
+                    dialog.Content = "No known VSA to check, sources can be:\r\n- KLC-Shared.json \"VSA\" list.\r\n- Anything launched from VSA this session.";
+                    //dialog.MainIcon = TaskDialogIcon.Information;
+                    dialog.CenterParent = true;
+
+                    TaskDialogButton tdbOk = new TaskDialogButton(ButtonType.Ok);
+                    dialog.Buttons.Add(tdbOk);
+
+                    dialog.ShowDialog(this);
+                }
+                return;
+            }
+
             string versionLocal = "";
             string versionOnline = "";
 
@@ -1133,9 +1173,9 @@ namespace KLCProxy {
                 versionLocal = versionInfo.FileVersion;
             }
 
-            foreach (string vsa in App.Shared.VSA)
+            foreach (KeyValuePair<string, KaseyaVSA> vsa in Kaseya.VSA)
             {
-                RestClient client = new RestClient("https://" + vsa + "/vsapres/api/session/AppVersions/1")
+                RestClient client = new RestClient("https://" + vsa.Key + "/vsapres/api/session/AppVersions/1")
                 {
                     Timeout = 5000
                 };
@@ -1162,14 +1202,14 @@ namespace KLCProxy {
 
                 if (versionOnline.Length > 0 && versionOnline != versionLocal)
                 {
-                    Process.Start(new ProcessStartInfo("https://" + vsa + "/ManagedFiles/VSAHiddenFiles/KaseyaLiveConnect/win64/LiveConnect.exe") { UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo("https://" + vsa.Key + "/ManagedFiles/VSAHiddenFiles/KaseyaLiveConnect/win64/LiveConnect.exe") { UseShellExecute = true });
                 }
                 else
                 {
                     using (TaskDialog dialog = new TaskDialog())
                     {
                         dialog.WindowTitle = "KLCProxy";
-                        dialog.Content = "Your KLC version matches " + vsa + " !";
+                        dialog.Content = "Your KLC version matches " + vsa.Key + " !";
                         //dialog.MainIcon = TaskDialogIcon.Information;
                         dialog.CenterParent = true;
 
