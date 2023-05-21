@@ -32,6 +32,13 @@
     <ApplicationIcon>Split45.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Configuration\WindowLogin.xaml.cs" />
+    <Compile Remove="DropdownButton.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Configuration\WindowLogin.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Split45.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -51,6 +58,11 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Configuration\WindowLogin.xaml" />
+    <None Include="Configuration\WindowLogin.xaml.cs" />
+    <None Include="DropdownButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CredentialManagement.Standard" Version="1.0.4" />

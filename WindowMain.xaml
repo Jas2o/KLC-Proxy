@@ -145,6 +145,10 @@
                     Header="VSA:"
                     IsEnabled="False" />
                 <MenuItem
+                    x:Name="menuToolsVSAEcho"
+                    Click="menuToolsVSAEcho_Click"
+                    Header="Echo test" />
+                <MenuItem
                     x:Name="menuToolsVSANav"
                     Click="menuToolsVSANav_Click"
                     Header="Navigation" />
@@ -164,6 +168,11 @@
                 Header="Settings" />
 
             <MenuItem Header="More">
+                <MenuItem
+                    x:Name="menuSettingsRedirectDebug"
+                    Click="MenuSettingsRedirectDebug_Click"
+                    Header="[Debug] Redirect to text"
+                    IsCheckable="True" />
                 <MenuItem
                     x:Name="menuSettingsUseHawk"
                     Click="MenuSettingsUseHawk_Click"
@@ -214,6 +223,11 @@
                     Header="Show agent's VSA instead of logs"
                     IsCheckable="True" />
             </MenuItem>
+            <MenuItem
+                x:Name="txtVersion"
+                Grid.Column="2"
+                Header="DD/MM/YYYY"
+                IsEnabled="False" />
         </Menu>
         <Grid Margin="3">
             <Grid.RowDefinitions>
@@ -366,18 +380,17 @@
                     Content="Watch" />
                 <Button
                     x:Name="btnRemove"
-                    Margin="0"
+                    Margin="0,0,0,5"
                     Click="BtnRemove_Click"
                     Content="Remove" />
+                <CheckBox
+                    x:Name="chkOverride"
+                    Click="chkOverride_Changed"
+                    Content="Override"
+                    ToolTip="Clicking 'orbs' in VSA will instead act as clicking 'Live Connect'."
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.Placement="Bottom" />
             </StackPanel>
-            <TextBlock
-                x:Name="txtVersion"
-                Grid.Column="2"
-                VerticalAlignment="Bottom"
-                Foreground="Gray"
-                Text="DD/MM/YYYY"
-                TextAlignment="Center"
-                TextWrapping="Wrap" />
             <TextBox
                 x:Name="txtSelectedLogs"
                 Grid.Row="1"

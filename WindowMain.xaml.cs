@@ -11,12 +11,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
-//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace KLCProxy {
 
@@ -80,7 +78,7 @@ namespace KLCProxy {
             notifyIcon.BalloonTipClosed += NotifyIcon_BalloonTipClosed;
             notifyIcon.MouseClick += NotifyIcon_MouseClick;
 
-            txtVersion.Text = Properties.Resources.BuildDate.Trim();
+            txtVersion.Header = Properties.Resources.BuildDate.Trim();
 
             timerAuto = new System.Windows.Forms.Timer
             {
@@ -94,6 +92,7 @@ namespace KLCProxy {
             else {
                 Settings = JsonSettings.Construct<Settings>(pathSettings);
             }
+            chkOverride.IsChecked = Settings.OverrideRCSharedtoLC;
             MoveToSettingsScreenCorner();
 
             foreach(string vsa in App.Shared.VSA)
@@ -439,98 +438,106 @@ namespace KLCProxy {
         private void LaunchFromArgument(string base64) {
             KLCCommand command = KLCCommand.NewFromBase64(base64);
 
+#if DEBUG
+            if (Settings.Extra == LaunchExtra.Debug)
+            {
+                MessageBox.Show("Set a breakpoint on me!");
+                return;
+            }
+#endif
+
             //Thread t1 = new Thread(() =>
             //{
-                if (Settings.OverrideRCSharedtoLC && command.payload.navId == "remotecontrol/shared")
-                    command.SetForLiveConnect();
+            if (Settings.OverrideRCSharedtoLC && command.payload.navId == "remotecontrol/shared")
+                command.SetForLiveConnect();
 
-                if (command.payload.navId == "dashboard")
+            if (command.payload.navId == "dashboard")
+            {
+                switch (Settings.OnLiveConnect)
                 {
-                    switch (Settings.OnLiveConnect)
-                    {
-                        case Settings.OnLiveConnectAction.Default:
-                            if (Settings.RedirectToAlternative)
-                                command.Launch(true, Settings.Extra);
-                            else
-                                command.Launch(false, Settings.Extra);
-                            break;
-
-                        case Settings.OnLiveConnectAction.UseLiveConnect:
-                            command.Launch(false, Settings.Extra);
-                            break;
-
-                        case Settings.OnLiveConnectAction.UseAlternative:
+                    case Settings.OnLiveConnectAction.Default:
+                        if (Settings.RedirectToAlternative)
                             command.Launch(true, Settings.Extra);
-                            break;
-
-                        case Settings.OnLiveConnectAction.Prompt:
-                            bool? result;
-                            Dispatcher.Invoke((Action)delegate
-                            {
-                                WindowAskMe winAskMe = new WindowAskMe();
-                                result = winAskMe.ShowDialog();
-                                if (result == true)
-                                {
-                                    if (winAskMe.ReturnUseAlternative)
-                                        command.Launch(true, Settings.Extra);
-                                    else
-                                        command.Launch(false, Settings.Extra);
-                                }
-                            });
-                            break;
-                    }
-                }
-                else if (command.payload.navId == "remotecontrol/1-click")
-                {
-                    switch (Settings.OnOneClick)
-                    {
-                        case Settings.OnLiveConnectAction.UseLiveConnect:
+                        else
                             command.Launch(false, Settings.Extra);
-                            break;
+                        break;
 
-                        case Settings.OnLiveConnectAction.UseAlternative:
-                            command.Launch(true, Settings.Extra);
-                            break;
-
-                        //case Settings.OnLiveConnectAction.Default:
-                        //case Settings.OnLiveConnectAction.Prompt:
-                        default:
-                            if (Settings.RedirectToAlternative)
-                                command.Launch(true, Settings.Extra);
-                            else
-                                command.Launch(false, Settings.Extra);
-                            break;
-                    }
-                }
-                else if (command.payload.navId.StartsWith("remotecontrol/private/#"))
-                {
-                    switch (Settings.OnNativeRDP)
-                    {
-                        case Settings.OnLiveConnectAction.UseLiveConnect:
-                            command.Launch(false, Settings.Extra);
-                            break;
-
-                        case Settings.OnLiveConnectAction.UseAlternative:
-                            command.Launch(true, Settings.Extra);
-                            break;
-
-                        //case Settings.OnLiveConnectAction.Default:
-                        //case Settings.OnLiveConnectAction.Prompt:
-                        default:
-                            if (Settings.RedirectToAlternative)
-                                command.Launch(true, Settings.Extra);
-                            else
-                                command.Launch(false, Settings.Extra);
-                            break;
-                    }
-                }
-                else
-                {
-                    if (Settings.RedirectToAlternative)
-                        command.Launch(true, Settings.Extra);
-                    else
+                    case Settings.OnLiveConnectAction.UseLiveConnect:
                         command.Launch(false, Settings.Extra);
+                        break;
+
+                    case Settings.OnLiveConnectAction.UseAlternative:
+                        command.Launch(true, Settings.Extra);
+                        break;
+
+                    case Settings.OnLiveConnectAction.Prompt:
+                        bool? result;
+                        Dispatcher.Invoke((Action)delegate
+                        {
+                            WindowAskMe winAskMe = new WindowAskMe();
+                            result = winAskMe.ShowDialog();
+                            if (result == true)
+                            {
+                                if (winAskMe.ReturnUseAlternative)
+                                    command.Launch(true, Settings.Extra);
+                                else
+                                    command.Launch(false, Settings.Extra);
+                            }
+                        });
+                        break;
                 }
+            }
+            else if (command.payload.navId.StartsWith("remotecontrol/1-click"))
+            {
+                switch (Settings.OnOneClick)
+                {
+                    case Settings.OnLiveConnectAction.UseLiveConnect:
+                        command.Launch(false, Settings.Extra);
+                        break;
+
+                    case Settings.OnLiveConnectAction.UseAlternative:
+                        command.Launch(true, Settings.Extra);
+                        break;
+
+                    //case Settings.OnLiveConnectAction.Default:
+                    //case Settings.OnLiveConnectAction.Prompt:
+                    default:
+                        if (Settings.RedirectToAlternative)
+                            command.Launch(true, Settings.Extra);
+                        else
+                            command.Launch(false, Settings.Extra);
+                        break;
+                }
+            }
+            else if (command.payload.navId.StartsWith("remotecontrol/private/#"))
+            {
+                switch (Settings.OnNativeRDP)
+                {
+                    case Settings.OnLiveConnectAction.UseLiveConnect:
+                        command.Launch(false, Settings.Extra);
+                        break;
+
+                    case Settings.OnLiveConnectAction.UseAlternative:
+                        command.Launch(true, Settings.Extra);
+                        break;
+
+                    //case Settings.OnLiveConnectAction.Default:
+                    //case Settings.OnLiveConnectAction.Prompt:
+                    default:
+                        if (Settings.RedirectToAlternative)
+                            command.Launch(true, Settings.Extra);
+                        else
+                            command.Launch(false, Settings.Extra);
+                        break;
+                }
+            }
+            else
+            {
+                if (Settings.RedirectToAlternative)
+                    command.Launch(true, Settings.Extra);
+                else
+                    command.Launch(false, Settings.Extra);
+            }
             //});
 
             //Thread t2 = new Thread(() =>
@@ -694,12 +701,26 @@ namespace KLCProxy {
             Settings.ToastWhenOnline = menuSettingsToastWhenOnline.IsChecked;
         }
 
+        private void MenuSettingsRedirectDebug_Click(object sender, RoutedEventArgs e)
+        {
+            if (Settings.Extra == LaunchExtra.Debug)
+                Settings.Extra = LaunchExtra.None;
+            else
+                Settings.Extra = LaunchExtra.Debug;
+
+            menuSettingsRedirectDebug.IsChecked = (Settings.Extra == LaunchExtra.Debug);
+            menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
+            menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
+            menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
+        }
+
         private void MenuSettingsUseHawk_Click(object sender, RoutedEventArgs e) {
             if (Settings.Extra == LaunchExtra.Hawk)
                 Settings.Extra = LaunchExtra.None;
             else
                 Settings.Extra = LaunchExtra.Hawk;
 
+            menuSettingsRedirectDebug.IsChecked = (Settings.Extra == LaunchExtra.Debug);
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
             menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
@@ -711,6 +732,7 @@ namespace KLCProxy {
             else
                 Settings.Extra = LaunchExtra.Wolf;
 
+            menuSettingsRedirectDebug.IsChecked = (Settings.Extra == LaunchExtra.Debug);
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
             menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
@@ -723,6 +745,7 @@ namespace KLCProxy {
             else
                 Settings.Extra = LaunchExtra.Canary;
 
+            menuSettingsRedirectDebug.IsChecked = (Settings.Extra == LaunchExtra.Debug);
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
             menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
@@ -996,6 +1019,7 @@ namespace KLCProxy {
                 Title += " [Debug]";
                 KLCCommand.UseDebugAlternativeFirst = true;
             } else {
+                menuSettingsRedirectDebug.Visibility = Visibility.Collapsed;
                 menuSettingsToastTest.Visibility = Visibility.Collapsed;
             }
 
@@ -1335,6 +1359,7 @@ namespace KLCProxy {
         {
             Visibility vis = (System.Windows.Forms.Control.ModifierKeys == System.Windows.Forms.Keys.Shift) ? Visibility.Visible : Visibility.Collapsed;
             sepToolsVSA.Visibility = vis;
+            menuToolsVSAEcho.Visibility = vis;
             menuToolsVSA.Visibility = vis;
             menuToolsVSANav.Visibility = vis;
             menuToolsVSAWhosOnline.Visibility = vis;
@@ -1386,5 +1411,20 @@ namespace KLCProxy {
         {
             Settings.ShowAgentsVSA = menuSettingsShowAgentsVSA.IsChecked;
         }
+
+        private void menuToolsVSAEcho_Click(object sender, RoutedEventArgs e)
+        {
+            WindowEcho echo = new WindowEcho()
+            {
+                Owner = this
+            };
+            echo.Show();
+        }
+
+        private void chkOverride_Changed(object sender, RoutedEventArgs e)
+        {
+            chkOverride.IsChecked = Settings.OverrideRCSharedtoLC = !Settings.OverrideRCSharedtoLC;
+        }
+
     }
 }
