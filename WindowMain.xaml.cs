@@ -451,6 +451,11 @@ namespace KLCProxy {
             if (Settings.OverrideRCSharedtoLC && command.payload.navId == "remotecontrol/shared")
                 command.SetForLiveConnect();
 
+            if (command.payload.auth != null && command.payload.auth.Token != null)
+                Kaseya.LoadToken(command.VSA, command.payload.auth.Token);
+            else if (Kaseya.VSA.ContainsKey(command.VSA))
+                command.payload.auth = new KLCCommandAuth(Kaseya.VSA[command.VSA].Token);
+
             if (command.payload.navId == "dashboard")
             {
                 switch (Settings.OnLiveConnect)
@@ -542,9 +547,9 @@ namespace KLCProxy {
 
             //Thread t2 = new Thread(() =>
             //{
-                Kaseya.LoadToken(command.VSA, command.payload.auth.Token);
+            if(command.launchNotifyUrl != null)
                 Kaseya.LaunchNotify(command.VSA, command.launchNotifyUrl);
-                AddAgentToList(command);
+            AddAgentToList(command);
             //});
 
             //t1.Start();
