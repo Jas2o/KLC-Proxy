@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 
-namespace KLCProxy
+namespace KLC_Proxy
 {
     /// <summary>
     /// Interaction logic for WindowVSAWhosOnline.xaml
@@ -34,7 +34,7 @@ namespace KLCProxy
         {
             vsa = Kaseya.VSA.FirstOrDefault(x => x.Value.Token != null).Key;
 
-            if (Kaseya.VSA[vsa].Token == null)
+            if (vsa == null || Kaseya.VSA[vsa].Token == null)
                 btnCheck.IsEnabled = false;
             else
                 lblTokenNotLoaded.Visibility = Visibility.Collapsed;
@@ -61,7 +61,7 @@ namespace KLCProxy
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "KLCProxy: VSA Navigation");
+                MessageBox.Show(ex.ToString(), "KLC-Proxy: VSA Navigation");
             }
         }
 

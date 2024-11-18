@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace KLCProxy
+namespace KLC_Proxy
 {
     public class ConfigureHandler
     {
@@ -22,7 +22,7 @@ namespace KLCProxy
 
             if (val == ExpectedValue())
                 ret = ProxyState.Enabled;
-            else if (val.Contains("KLCProxy.exe"))
+            else if (val.Contains("KLC-Proxy.exe"))
                 ret = ProxyState.EnabledButDifferent;
             else if (val.Contains("KLC-Finch.exe"))
                 ret = ProxyState.BypassToFinch;

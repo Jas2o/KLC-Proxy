@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
 
-namespace KLCProxy {
+namespace KLC_Proxy {
 
     //This is supposed to fix the windows opening behind other apps
     //https://weblog.west-wind.com/posts/2020/Oct/12/Window-Activation-Headaches-in-WPF

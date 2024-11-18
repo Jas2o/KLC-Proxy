@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KLCProxy {
+namespace KLC_Proxy {
     public class MainData /*: INotifyPropertyChanged*/ {
 
         public ObservableCollection<Agent> ListAgent { get; set; }

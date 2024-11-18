@@ -17,7 +17,7 @@ using System.Windows.Interop;
 using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
 
-namespace KLCProxy {
+namespace KLC_Proxy {
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -73,7 +73,7 @@ namespace KLCProxy {
             notifyIcon = new System.Windows.Forms.NotifyIcon
             {
                 BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info,
-                Text = "KLCProxy",
+                Text = "KLC-Proxy",
                 Icon = Properties.Resources.Split45
             };
             notifyIcon.BalloonTipClosed += NotifyIcon_BalloonTipClosed;
@@ -87,7 +87,7 @@ namespace KLCProxy {
             };
             timerAuto.Tick += TimerAuto_Tick;
 
-            string pathSettings = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLCProxy-config.json";
+            string pathSettings = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Proxy-config.json";
             if (File.Exists(pathSettings))
                 Settings = JsonSettings.Load<Settings>(pathSettings);
             else {
@@ -101,7 +101,7 @@ namespace KLCProxy {
             }
 
             try {
-                pipeListener = new NamedPipeListener("KLCProxy2", true);
+                pipeListener = new NamedPipeListener("KLC-Proxy2", true);
                 pipeListener.MessageReceived += (sender, e) => {
                     //System.Windows.MessageBox.Show(e.Message);
 
@@ -287,13 +287,13 @@ namespace KLCProxy {
             if (agentApi["Result"]["OSType"] != "Mac OS X")
                 displayGWG = (agentDWG.Contains("(d") ? "Domain: " : "Workgroup: ") + agentDWG.Substring(0, agentDWG.IndexOf(" ("));
 
-            string[] arrAdmins = new string[] { "administrator", "brandadmin", "adminc", "company" };
-            if (arrAdmins.Contains(displayUser.ToLower()))
-                return true;
+            //string[] arrAdmins = new string[] { "administrator" };
+            //if (arrAdmins.Contains(displayUser.ToLower()))
+                //return true;
 
             using (TaskDialog dialog = new TaskDialog())
             {
-                dialog.WindowTitle = "KLCProxy";
+                dialog.WindowTitle = "KLC-Proxy";
                 dialog.MainInstruction = "Confirm connection";
                 dialog.Content = string.Format("Agent: {0}\r\nUser: {1}\r\n{2}", agentName, displayUser, displayGWG);
                 dialog.MainIcon = TaskDialogIcon.Information;
@@ -530,7 +530,7 @@ namespace KLCProxy {
         }
 
         private void LaunchKLCEx() {
-            string pathKLCEx = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLCEx.exe";
+            string pathKLCEx = Path.GetDirectoryName(Environment.ProcessPath) + @"\KLC-Ex.exe";
             if (File.Exists(pathKLCEx)) {
                 Process process = new Process();
                 process.StartInfo.FileName = pathKLCEx;
@@ -540,7 +540,7 @@ namespace KLCProxy {
                     if(x.Value.Token != null)
                         KaseyaAuth.SetCredentials(x.Key, x.Value.Token);
                 }
-                //process.StartInfo.Arguments = "klcex:" + Kaseya.Token;
+                //process.StartInfo.Arguments = "KLC-Ex:" + Kaseya.Token;
                 process.Start();
             }
         }
@@ -716,12 +716,6 @@ namespace KLCProxy {
             Topmost = Settings.AlwaysOnTop;
         }
 
-        /*
-        private void MenuToolsAddJumpBox_Click(object sender, RoutedEventArgs e) {
-            AddAgentToList("111111111111111"); //EIT Teamviewer
-        }
-        */
-
         private void MenuToolsAddThis_Click(object sender, RoutedEventArgs e) {
             string valAddress = ""; 
             string valGUID = "";
@@ -755,15 +749,10 @@ namespace KLCProxy {
             process.Start();
         }
 
-        private void MenuToolsITGlueJumpBox_Click(object sender, RoutedEventArgs e) {
-            //TeamV
-            Process.Start(new ProcessStartInfo("https://company.itglue.com/1432194/passwords/11018769") { UseShellExecute = true });
-        }
-
         private void MenuToolsLCKillAll_Click(object sender, RoutedEventArgs e) {
             using (TaskDialog dialog = new TaskDialog())
             {
-                dialog.WindowTitle = "KLCProxy";
+                dialog.WindowTitle = "KLC-Proxy";
                 dialog.Content = "Do you really want to kill Kaseya Live Connect?";
                 dialog.MainIcon = TaskDialogIcon.Information;
                 dialog.CenterParent = true;
@@ -781,7 +770,7 @@ namespace KLCProxy {
 
         /*
         private void menuToolsLCReconnect_Click(object sender, RoutedEventArgs e) {
-            //Part of KLCProxy Classic
+            //Part of KLC-Proxy Classic
 
             List<string> listKaseya = new List<string>();
             WindowSnapCollection windows = WindowSnap.GetAllWindows(true, true);
@@ -895,7 +884,7 @@ namespace KLCProxy {
             try {
                 Settings.Save();
             } catch (Exception) {
-                MessageBox.Show("Seems we don't have permission to write to " + Settings.FileName, "KLCProxy: Save Settings");
+                MessageBox.Show("Seems we don't have permission to write to " + Settings.FileName, "KLC-Proxy: Save Settings");
             }
         }
 
@@ -1168,7 +1157,7 @@ namespace KLCProxy {
                 {
                     using (TaskDialog dialog = new TaskDialog())
                     {
-                        dialog.WindowTitle = "KLCProxy";
+                        dialog.WindowTitle = "KLC-Proxy";
                         dialog.Content = "Your KLC version matches " + vsa + " !";
                         //dialog.MainIcon = TaskDialogIcon.Information;
                         dialog.CenterParent = true;

@@ -1,11 +1,11 @@
 ﻿<Window
-    x:Class="KLCProxy.WindowAskMe"
+    x:Class="KLC_Proxy.WindowAskMe"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:KLCProxy"
+    xmlns:local="clr-namespace:KLC_Proxy"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="KLCProxy: Ask on Live Connect"
+    Title="KLC-Proxy: Ask on Live Connect"
     Width="335"
     MinHeight="160"
     ResizeMode="NoResize"
@@ -35,7 +35,7 @@
             Margin="5"
             Padding="5"
             Click="BtnAlternative_Click">
-            <Image Source="/KLCProxy;component/Resources/Finch.png" StretchDirection="DownOnly" />
+            <Image Source="/KLC-Proxy;component/Resources/Finch.png" StretchDirection="DownOnly" />
         </Button>
         <Button
             x:Name="btnCancel"
@@ -43,7 +43,7 @@
             Margin="5"
             Padding="5"
             Click="BtnCancel_Click">
-            <Image Source="/KLCProxy;component/Resources/Close.png" StretchDirection="DownOnly" />
+            <Image Source="/KLC-Proxy;component/Resources/Close.png" StretchDirection="DownOnly" />
         </Button>
         <TextBlock
             Grid.Row="1"

@@ -18,7 +18,7 @@ using RestSharp;
 using Microsoft.Win32;
 using System.IO;
 
-namespace KLCProxy
+namespace KLC_Proxy
 {
     /// <summary>
     /// Interaction logic for WindowVSANavigation.xaml
@@ -36,7 +36,7 @@ namespace KLCProxy
         {
             vsa = Kaseya.VSA.FirstOrDefault(x => x.Value.Token != null).Key;
 
-            if (Kaseya.VSA[vsa].Token == null)
+            if (vsa == null || Kaseya.VSA[vsa].Token == null)
                 btnImport.IsEnabled = btnImport2.IsEnabled = false;
             else
                 lblTokenNotLoaded.Visibility = Visibility.Collapsed;
@@ -120,7 +120,7 @@ namespace KLCProxy
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "KLCProxy: VSA Navigation");
+                MessageBox.Show(ex.ToString(), "KLC-Proxy: VSA Navigation");
             }
         }
 

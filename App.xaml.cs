@@ -7,13 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace KLCProxy {
+namespace KLC_Proxy {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application {
 
-        private const string appName = "KLCProxy2";
+        private const string appName = "KLC-Proxy2";
         private static Mutex mutex = null;
         public static KLCShared Shared;
 
@@ -37,9 +37,9 @@ namespace KLCProxy {
             if (!createdNew) {
                 string[] args = Environment.GetCommandLineArgs();
                 if (args.Length > 1) {
-                    NamedPipeListener.SendMessage("KLCProxy2", true, args[1]);
+                    NamedPipeListener.SendMessage("KLC-Proxy2", true, args[1]);
                 } else {
-                    NamedPipeListener.SendMessage("KLCProxy2", true, "focus");
+                    NamedPipeListener.SendMessage("KLC-Proxy2", true, "focus");
                 }
 
                 Current.Shutdown();
@@ -50,8 +50,6 @@ namespace KLCProxy {
                 Shared = JsonSettings.Load<KLCShared>(pathShared);
             else
                 Shared = JsonSettings.Construct<KLCShared>(pathShared);
-            if(Shared.Bookmarks.Count == 0)
-                Shared.Bookmarks.Add(new Bookmark("JumpBox", "c-vsa.company.com.au", "111111111111111", "https://company.itglue.com/1432194/passwords/11018769"));
         }
 
         public static void ShowUnhandledExceptionFromSrc(Exception e, string source) {

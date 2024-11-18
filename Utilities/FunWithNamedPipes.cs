@@ -3,7 +3,7 @@ using System.IO.Pipes;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace KLCProxy {
+namespace KLC_Proxy {
 
     /// <summary>Contains event data for <see cref="NamedPipeMessageReceiveHandler{TMessage}" /> events.</summary>
     /// <typeparam name="TMessage"></typeparam>

@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KLCProxy {
+namespace KLC_Proxy {
     public class Settings : JsonSettings {
-        public override string FileName { get; set; } = "KLCProxy-config.json"; //for loading and saving.
+        public override string FileName { get; set; } = "KLC-Proxy-config.json"; //for loading and saving.
         public Settings() { }
         public Settings(string fileName) : base(fileName) { }
 

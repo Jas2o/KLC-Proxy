@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KLCProxy.Properties {
+namespace KLC_Proxy.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace KLCProxy.Properties {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KLCProxy.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KLC_Proxy.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,7 @@ namespace KLCProxy.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2022-07-18 
+        ///   Looks up a localized string similar to 2024-11-18 
         ///.
         /// </summary>
         public static string BuildDate {

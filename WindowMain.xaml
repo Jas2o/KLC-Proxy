@@ -1,13 +1,13 @@
 ﻿<Window
-    x:Class="KLCProxy.MainWindow"
+    x:Class="KLC_Proxy.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ext="clr-namespace:System.Windows.Controls.Extensions"
-    xmlns:local="clr-namespace:KLCProxy"
+    xmlns:local="clr-namespace:KLC_Proxy"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    Title="KLCProxy"
+    Title="KLC-Proxy"
     Width="300"
     Height="240"
     MinHeight="240"
@@ -62,11 +62,11 @@
             <MenuItem
                 x:Name="trayAppProxy"
                 Click="TrayAppProxy_Click"
-                Header="KLCProxy" />
+                Header="KLC-Proxy" />
             <MenuItem
                 x:Name="trayAppExplorer"
                 Click="TrayAppExplorer_Click"
-                Header="KLCExplorer" />
+                Header="KLC-Explorer" />
             <Separator />
             <MenuItem
                 x:Name="trayExit"
@@ -102,10 +102,6 @@
                     x:Name="menuAppsAuth"
                     Click="MenuAppsAuth_Click"
                     Header="Auth Token" />
-                <MenuItem
-                    x:Name="menuAppsLogin"
-                    Click="MenuAppsLogin_Click"
-                    Header="Login to VSA" />
             </MenuItem>
 
             <MenuItem
@@ -403,7 +399,7 @@
                         <Hyperlink x:Name="hyperlinkPathUpdate" Click="hyperlinkPathUpdate_Click">
                             Update
                         </Hyperlink>
-                        <Run Text="registry with this KLCProxy path." />
+                        <Run Text="registry with this KLC-Proxy path." />
                     </TextBlock>
                     <TextBlock x:Name="tbIssueVisualC">
                         <Hyperlink

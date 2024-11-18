@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace KLCProxy
+namespace KLC_Proxy
 {
     /// <summary>
     /// Interaction logic for WindowSettings.xaml

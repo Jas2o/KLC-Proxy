@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace KLCProxy {
+namespace KLC_Proxy {
     /// <summary>
     /// Interaction logic for WindowJsonViewTable.xaml
     /// </summary>

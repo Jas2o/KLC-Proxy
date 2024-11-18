@@ -1,9 +1,9 @@
 ﻿<Window
-    x:Class="KLCProxy.WindowStartPos"
+    x:Class="KLC_Proxy.WindowStartPos"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:KLCProxy"
+    xmlns:local="clr-namespace:KLC_Proxy"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Set Start Position"
     Width="300"
@@ -60,7 +60,7 @@
         <TextBlock
             Grid.ColumnSpan="2"
             Margin="0,0,0,5"
-            Text="Move this window to the screen corner you want KLCProxy to start in, then press Detect."
+            Text="Move this window to the screen corner you want KLC-Proxy to start in, then press Detect."
             TextAlignment="Center"
             TextWrapping="Wrap" />
         <Label

@@ -15,7 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace KLCProxy
+namespace KLC_Proxy
 {
     /// <summary>
     /// Interaction logic for WindowSaaS.xaml
@@ -23,7 +23,6 @@ namespace KLCProxy
     public partial class WindowSaaS : Window
     {
         private static string[] fieldSplit = new string[] { " - " };
-        //private static string urlEIT = @"https://" + LibKaseya.Kaseya.DefaultServer;
         private BackgroundWorker bw;
 
         public WindowSaaS()

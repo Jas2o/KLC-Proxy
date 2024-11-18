@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
 
-namespace KLCProxy
+namespace KLC_Proxy
 {
 
     public static class JExtensions

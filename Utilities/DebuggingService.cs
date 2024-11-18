@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace KLCProxy
+namespace KLC_Proxy
 {
     public interface IDebuggingService
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace KLCProxy {
+namespace KLC_Proxy {
     /// <summary>
     /// Interaction logic for WindowAuthToken.xaml
     /// </summary>

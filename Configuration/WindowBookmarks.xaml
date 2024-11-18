@@ -1,11 +1,11 @@
 ﻿<Window
-    x:Class="KLCProxy.WindowBookmarks"
+    x:Class="KLC_Proxy.WindowBookmarks"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:KLCProxy"
+    xmlns:local="clr-namespace:KLC_Proxy"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="KLCProxy Bookmarks"
+    Title="KLC-Proxy Bookmarks"
     MinWidth="300"
     MinHeight="100"
     Loaded="Window_Loaded"
@@ -61,7 +61,7 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Label Name="lblInstructions" Content="Double-click to add to KLCProxy list." />
+            <Label Name="lblInstructions" Content="Double-click to add to KLC-Proxy list." />
             <Button
                 x:Name="btnAddAllFromList"
                 Margin="10,5,10,0"
