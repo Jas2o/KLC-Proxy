@@ -32,6 +32,13 @@
     <ApplicationIcon>Split45.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Configuration\WindowLogin.xaml.cs" />
+    <Compile Remove="DropdownButton.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Configuration\WindowLogin.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Split45.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +60,11 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Configuration\WindowLogin.xaml" />
+    <None Include="Configuration\WindowLogin.xaml.cs" />
+    <None Include="DropdownButton.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="CredentialManagement.Standard" Version="1.0.4" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
@@ -60,8 +72,8 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="nucs.JsonSettings" Version="1.0.7" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
-    <PackageReference Include="RestSharp" Version="106.12.0" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
+    <PackageReference Include="RestSharp" Version="106.15.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

@@ -11,7 +11,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
-//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Ookii.Dialogs.Wpf;
@@ -79,7 +78,7 @@ namespace KLC_Proxy {
             notifyIcon.BalloonTipClosed += NotifyIcon_BalloonTipClosed;
             notifyIcon.MouseClick += NotifyIcon_MouseClick;
 
-            txtVersion.Text = Properties.Resources.BuildDate.Trim();
+            txtVersion.Header = Properties.Resources.BuildDate.Trim();
 
             timerAuto = new System.Windows.Forms.Timer
             {
@@ -93,6 +92,7 @@ namespace KLC_Proxy {
             else {
                 Settings = JsonSettings.Construct<Settings>(pathSettings);
             }
+            chkOverride.IsChecked = Settings.OverrideRCSharedtoLC;
             MoveToSettingsScreenCorner();
 
             foreach(string vsa in App.Shared.VSA)
@@ -437,15 +437,29 @@ namespace KLC_Proxy {
 
         private void LaunchFromArgument(string base64) {
             KLCCommand command = KLCCommand.NewFromBase64(base64);
-            Kaseya.LoadToken(command.VSA, command.payload.auth.Token);
-            Kaseya.LaunchNotify(command.VSA, command.launchNotifyUrl);
-            AddAgentToList(command);
 
-            if(Settings.OverrideRCSharedtoLC && command.payload.navId == "remotecontrol/shared")
+#if DEBUG
+            if (Settings.Extra == LaunchExtra.Debug)
+            {
+                MessageBox.Show("Set a breakpoint on me!");
+                return;
+            }
+#endif
+
+            //Thread t1 = new Thread(() =>
+            //{
+            if (Settings.OverrideRCSharedtoLC && command.payload.navId == "remotecontrol/shared")
                 command.SetForLiveConnect();
 
-            if (command.payload.navId == "dashboard") {
-                switch (Settings.OnLiveConnect) {
+            if (command.payload.auth != null && command.payload.auth.Token != null)
+                Kaseya.LoadToken(command.VSA, command.payload.auth.Token);
+            else if (Kaseya.VSA.ContainsKey(command.VSA))
+                command.payload.auth = new KLCCommandAuth(Kaseya.VSA[command.VSA].Token);
+
+            if (command.payload.navId == "dashboard")
+            {
+                switch (Settings.OnLiveConnect)
+                {
                     case Settings.OnLiveConnectAction.Default:
                         if (Settings.RedirectToAlternative)
                             command.Launch(true, Settings.Extra);
@@ -463,10 +477,12 @@ namespace KLC_Proxy {
 
                     case Settings.OnLiveConnectAction.Prompt:
                         bool? result;
-                        Dispatcher.Invoke((Action)delegate {
+                        Dispatcher.Invoke((Action)delegate
+                        {
                             WindowAskMe winAskMe = new WindowAskMe();
                             result = winAskMe.ShowDialog();
-                            if (result == true) {
+                            if (result == true)
+                            {
                                 if (winAskMe.ReturnUseAlternative)
                                     command.Launch(true, Settings.Extra);
                                 else
@@ -475,7 +491,9 @@ namespace KLC_Proxy {
                         });
                         break;
                 }
-            } else if (command.payload.navId == "remotecontrol/1-click") {
+            }
+            else if (command.payload.navId.StartsWith("remotecontrol/1-click"))
+            {
                 switch (Settings.OnOneClick)
                 {
                     case Settings.OnLiveConnectAction.UseLiveConnect:
@@ -495,7 +513,9 @@ namespace KLC_Proxy {
                             command.Launch(false, Settings.Extra);
                         break;
                 }
-            } else if(command.payload.navId.StartsWith("remotecontrol/private/#")) {
+            }
+            else if (command.payload.navId.StartsWith("remotecontrol/private/#"))
+            {
                 switch (Settings.OnNativeRDP)
                 {
                     case Settings.OnLiveConnectAction.UseLiveConnect:
@@ -515,12 +535,27 @@ namespace KLC_Proxy {
                             command.Launch(false, Settings.Extra);
                         break;
                 }
-            } else {
+            }
+            else
+            {
                 if (Settings.RedirectToAlternative)
                     command.Launch(true, Settings.Extra);
                 else
                     command.Launch(false, Settings.Extra);
             }
+            //});
+
+            //Thread t2 = new Thread(() =>
+            //{
+            if(command.launchNotifyUrl != null)
+                Kaseya.LaunchNotify(command.VSA, command.launchNotifyUrl);
+            AddAgentToList(command);
+            //});
+
+            //t1.Start();
+            //t2.Start();
+            //t1.Join(1000); //Launch app
+            //t2.Join(1000); //VSA API
 
             Dispatcher.Invoke((Action)delegate {
                 menuToolsBookmarks.IsEnabled = true;
@@ -671,12 +706,26 @@ namespace KLC_Proxy {
             Settings.ToastWhenOnline = menuSettingsToastWhenOnline.IsChecked;
         }
 
+        private void MenuSettingsRedirectDebug_Click(object sender, RoutedEventArgs e)
+        {
+            if (Settings.Extra == LaunchExtra.Debug)
+                Settings.Extra = LaunchExtra.None;
+            else
+                Settings.Extra = LaunchExtra.Debug;
+
+            menuSettingsRedirectDebug.IsChecked = (Settings.Extra == LaunchExtra.Debug);
+            menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
+            menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
+            menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
+        }
+
         private void MenuSettingsUseHawk_Click(object sender, RoutedEventArgs e) {
             if (Settings.Extra == LaunchExtra.Hawk)
                 Settings.Extra = LaunchExtra.None;
             else
                 Settings.Extra = LaunchExtra.Hawk;
 
+            menuSettingsRedirectDebug.IsChecked = (Settings.Extra == LaunchExtra.Debug);
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
             menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
@@ -688,6 +737,7 @@ namespace KLC_Proxy {
             else
                 Settings.Extra = LaunchExtra.Wolf;
 
+            menuSettingsRedirectDebug.IsChecked = (Settings.Extra == LaunchExtra.Debug);
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
             menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
@@ -700,6 +750,7 @@ namespace KLC_Proxy {
             else
                 Settings.Extra = LaunchExtra.Canary;
 
+            menuSettingsRedirectDebug.IsChecked = (Settings.Extra == LaunchExtra.Debug);
             menuSettingsUseHawk.IsChecked = (Settings.Extra == LaunchExtra.Hawk);
             menuSettingsUseWolf.IsChecked = (Settings.Extra == LaunchExtra.Wolf);
             menuSettingsUseCanary.IsChecked = (Settings.Extra == LaunchExtra.Canary);
@@ -962,6 +1013,7 @@ namespace KLC_Proxy {
                 Title += " [Debug]";
                 KLCCommand.UseDebugAlternativeFirst = true;
             } else {
+                menuSettingsRedirectDebug.Visibility = Visibility.Collapsed;
                 menuSettingsToastTest.Visibility = Visibility.Collapsed;
             }
 
@@ -1108,6 +1160,23 @@ namespace KLC_Proxy {
         }
 
         private void MenuToolsLCDownload_Click(object sender, RoutedEventArgs e) {
+            if (Kaseya.VSA.Count == 0)
+            {
+                using (TaskDialog dialog = new TaskDialog())
+                {
+                    dialog.WindowTitle = "KLCProxy";
+                    dialog.Content = "No known VSA to check, sources can be:\r\n- KLC-Shared.json \"VSA\" list.\r\n- Anything launched from VSA this session.";
+                    //dialog.MainIcon = TaskDialogIcon.Information;
+                    dialog.CenterParent = true;
+
+                    TaskDialogButton tdbOk = new TaskDialogButton(ButtonType.Ok);
+                    dialog.Buttons.Add(tdbOk);
+
+                    dialog.ShowDialog(this);
+                }
+                return;
+            }
+
             string versionLocal = "";
             string versionOnline = "";
 
@@ -1122,9 +1191,9 @@ namespace KLC_Proxy {
                 versionLocal = versionInfo.FileVersion;
             }
 
-            foreach (string vsa in App.Shared.VSA)
+            foreach (KeyValuePair<string, KaseyaVSA> vsa in Kaseya.VSA)
             {
-                RestClient client = new RestClient("https://" + vsa + "/vsapres/api/session/AppVersions/1")
+                RestClient client = new RestClient("https://" + vsa.Key + "/vsapres/api/session/AppVersions/1")
                 {
                     Timeout = 5000
                 };
@@ -1151,7 +1220,7 @@ namespace KLC_Proxy {
 
                 if (versionOnline.Length > 0 && versionOnline != versionLocal)
                 {
-                    Process.Start(new ProcessStartInfo("https://" + vsa + "/ManagedFiles/VSAHiddenFiles/KaseyaLiveConnect/win64/LiveConnect.exe") { UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo("https://" + vsa.Key + "/ManagedFiles/VSAHiddenFiles/KaseyaLiveConnect/win64/LiveConnect.exe") { UseShellExecute = true });
                 }
                 else
                 {
@@ -1284,6 +1353,7 @@ namespace KLC_Proxy {
         {
             Visibility vis = (System.Windows.Forms.Control.ModifierKeys == System.Windows.Forms.Keys.Shift) ? Visibility.Visible : Visibility.Collapsed;
             sepToolsVSA.Visibility = vis;
+            menuToolsVSAEcho.Visibility = vis;
             menuToolsVSA.Visibility = vis;
             menuToolsVSANav.Visibility = vis;
             menuToolsVSAWhosOnline.Visibility = vis;
@@ -1335,5 +1405,20 @@ namespace KLC_Proxy {
         {
             Settings.ShowAgentsVSA = menuSettingsShowAgentsVSA.IsChecked;
         }
+
+        private void menuToolsVSAEcho_Click(object sender, RoutedEventArgs e)
+        {
+            WindowEcho echo = new WindowEcho()
+            {
+                Owner = this
+            };
+            echo.Show();
+        }
+
+        private void chkOverride_Changed(object sender, RoutedEventArgs e)
+        {
+            chkOverride.IsChecked = Settings.OverrideRCSharedtoLC = !Settings.OverrideRCSharedtoLC;
+        }
+
     }
 }

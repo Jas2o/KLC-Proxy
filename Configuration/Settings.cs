@@ -41,5 +41,6 @@ namespace KLC_Proxy {
         public bool ShowAgentsVSA = false;
 
         [JsonIgnore] public ConfigureHandler.ProxyState ProxyState = ConfigureHandler.ProxyState.Disabled;
+        [JsonIgnore] public bool RedirectDebug = false;
     }
 }
