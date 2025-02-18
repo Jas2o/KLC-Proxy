@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO.Pipes;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace KLC_Proxy {
@@ -74,7 +73,7 @@ namespace KLC_Proxy {
         public event NamedPipeMessageErrorHandler Error;
 
         static readonly String DEFAULT_PIPENAME = typeof(NamedPipeListener).FullName;
-        static readonly BinaryFormatter formatter = new BinaryFormatter();
+        //static readonly BinaryFormatter formatter = new BinaryFormatter();
 
         NamedPipeServerStream pipeServer;
         private bool IsUserUnique;

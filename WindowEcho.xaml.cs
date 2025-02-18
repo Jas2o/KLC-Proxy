@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using LibKaseya;
 
-namespace KLCProxy
+namespace KLC_Proxy
 {
     /// <summary>
     /// Interaction logic for WindowEcho.xaml
