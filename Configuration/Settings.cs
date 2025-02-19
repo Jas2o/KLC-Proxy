@@ -1,11 +1,6 @@
 ﻿using LibKaseya;
 using Newtonsoft.Json;
 using nucs.JsonSettings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KLC_Proxy {
     public class Settings : JsonSettings {

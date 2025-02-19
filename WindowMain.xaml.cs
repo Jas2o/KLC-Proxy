@@ -15,7 +15,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 
 namespace KLC_Proxy {
 
