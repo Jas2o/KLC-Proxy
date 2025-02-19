@@ -34,7 +34,7 @@ namespace KLC_Proxy {
 
             try
             {
-                IRestResponse response = Kaseya.GetRequest(vsa, "api/v1.5/navigation/header/onlineadmins");
+                RestResponse response = Kaseya.GetRequest(vsa, "api/v1.5/navigation/header/onlineadmins");
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     dynamic json = JsonConvert.DeserializeObject(response.Content);

@@ -33,7 +33,7 @@ namespace KLC_Proxy {
 
         private void btnImport_Click(object sender, RoutedEventArgs e)
         {
-            IRestResponse response = Kaseya.GetRequest(vsa, "api/v1.5/navigation/modules");
+            RestResponse response = Kaseya.GetRequest(vsa, "api/v1.5/navigation/modules");
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 txtInput.Text = response.Content;
@@ -42,7 +42,7 @@ namespace KLC_Proxy {
 
         private void btnImport2_Click(object sender, RoutedEventArgs e)
         {
-            IRestResponse response = Kaseya.GetRequest(vsa, "api/v1.5/navigation/modulestap");
+            RestResponse response = Kaseya.GetRequest(vsa, "api/v1.5/navigation/modulestap");
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 txtInput.Text = response.Content;

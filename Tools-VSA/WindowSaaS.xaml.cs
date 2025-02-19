@@ -98,7 +98,7 @@ namespace KLC_Proxy {
 
         private string GetKLCversion(RestClient client)
         {
-            IRestResponse response = client.Execute(new RestRequest("/vsapres/api/session/AppVersions/1"));
+            RestResponse response = client.Execute(new RestRequest("/vsapres/api/session/AppVersions/1"));
             /*
             if (response.ResponseStatus == ResponseStatus.Error)
             {
@@ -138,10 +138,10 @@ namespace KLC_Proxy {
             if (!url.StartsWith("https://"))
                 url = "https://" + url;
 
-            RestClient client = new RestClient(url)
-            {
-                Timeout = 5000
+            RestClientOptions options = new RestClientOptions(url) {
+                Timeout = TimeSpan.FromSeconds(5)
             };
+            RestClient client = new RestClient();
             return GetKLCversion(client);
         }
 

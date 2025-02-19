@@ -1,7 +1,7 @@
 ﻿using LibKaseya;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using nucs.JsonSettings;
+using Nucs.JsonSettings;
 using RestSharp;
 using System;
 using System.ComponentModel;
@@ -154,7 +154,7 @@ namespace KLC_Proxy {
             if (vsa.Length == 0 || agentID.Length == 0)
                 return;
 
-            IRestResponse responseTV = Kaseya.GetRequest(vsa, "api/v1.0/assetmgmt/agents?$filter=AgentId eq " + agentID + "M");
+            RestResponse responseTV = Kaseya.GetRequest(vsa, "api/v1.0/assetmgmt/agents?$filter=AgentId eq " + agentID + "M");
             if (responseTV.StatusCode == System.Net.HttpStatusCode.OK) {
                 dynamic resultTV = JsonConvert.DeserializeObject(responseTV.Content);
 
@@ -168,7 +168,7 @@ namespace KLC_Proxy {
 
         public void AddAgentToList(Bookmark bm)
         {
-            IRestResponse responseTV = Kaseya.GetRequest(bm.VSA, "api/v1.0/assetmgmt/agents?$filter=AgentId eq " + bm.AgentGUID + "M");
+            RestResponse responseTV = Kaseya.GetRequest(bm.VSA, "api/v1.0/assetmgmt/agents?$filter=AgentId eq " + bm.AgentGUID + "M");
             if (responseTV.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 dynamic resultTV = JsonConvert.DeserializeObject(responseTV.Content);
@@ -1206,11 +1206,11 @@ namespace KLC_Proxy {
 
             foreach (KeyValuePair<string, KaseyaVSA> vsa in Kaseya.VSA)
             {
-                RestClient client = new RestClient("https://" + vsa.Key + "/vsapres/api/session/AppVersions/1")
-                {
-                    Timeout = 5000
+                RestClientOptions options = new RestClientOptions("https://" + vsa.Key + "/vsapres/api/session/AppVersions/1") {
+                    Timeout = TimeSpan.FromSeconds(5)
                 };
-                IRestResponse response = client.Execute(new RestRequest());
+                RestClient client = new RestClient(options);
+                RestResponse response = client.Execute(new RestRequest());
                 if (response.ResponseStatus == ResponseStatus.Completed)
                 {
                     try
