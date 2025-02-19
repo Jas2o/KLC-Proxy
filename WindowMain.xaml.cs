@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 
 namespace KLC_Proxy {
 
@@ -768,21 +769,34 @@ namespace KLC_Proxy {
         }
 
         private void MenuToolsAddThis_Click(object sender, RoutedEventArgs e) {
-            string valAddress = ""; 
-            string valGUID = "";
-
             try {
+                List<string> listAgent = new List<string>();
+                List<string> listAddress = new List<string>();
+                List<string> listGUID = new List<string>();
+
                 using (RegistryKey view32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
-                    RegistryKey subkey = view32.OpenSubKey(@"SOFTWARE\Kaseya\Agent\AGENT11111111111111"); //Actually in WOW6432Node
+                    RegistryKey subkey = view32.OpenSubKey(@"SOFTWARE\Kaseya\Agent"); //Actually in WOW6432Node
                     if (subkey != null)
                     {
-                        valAddress = subkey.GetValue("lastKnownConnAddr").ToString();
-                        valGUID = subkey.GetValue("AgentGUID").ToString();
+                        string[] agents = subkey.GetSubKeyNames();
+                        foreach (string agent in agents) {
+                            RegistryKey agentkey = subkey.OpenSubKey(agent);
+                            if(agentkey != null) {
+                                string valAddress = (string) agentkey.GetValue("lastKnownConnAddr");
+                                string valGUID = (string) agentkey.GetValue("AgentGUID");
+                                if (valAddress != null && valGUID != null) {
+                                    listAgent.Add(agent);
+                                    listAddress.Add(valAddress);
+                                    listGUID.Add(valGUID);
+                                }
+                                agentkey.Close();
+                            }
+                        }
+                        subkey.Close();
                     }
-                    subkey.Close();
                 }
 
-                WindowAddAgentByID entry = new WindowAddAgentByID(valAddress, valGUID)
+                WindowAddAgentByID entry = new WindowAddAgentByID(listAgent, listAddress, listGUID)
                 {
                     Owner = this
                 };

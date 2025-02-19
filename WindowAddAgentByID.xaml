@@ -19,26 +19,42 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Label x:Name="lblAddress" Content="VSA Address:" />
+        <Expander
+            x:Name="expanderThisPC"
+            Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}"
+            Foreground="White"
+            Header="Registry of This PC">
+            <ComboBox
+                Name="cmbThisPC"
+                Grid.Row="3"
+                Margin="5,0,5,5"
+                VerticalAlignment="Center"
+                SelectionChanged="cmbThisPC_SelectionChanged" />
+        </Expander>
+        <Label
+            x:Name="lblAddress"
+            Grid.Row="1"
+            Content="VSA Address:" />
         <ComboBox
             Name="cmbAddress"
-            Grid.Row="1"
+            Grid.Row="2"
             Margin="5,0,5,5"
             VerticalAlignment="Center" />
         <Label
             x:Name="lblLabel"
-            Grid.Row="2"
+            Grid.Row="3"
             Content="Agent GUID:" />
         <TextBox
             x:Name="txtValue"
-            Grid.Row="3"
+            Grid.Row="4"
             Margin="5,0,5,5"
             VerticalAlignment="Center"
             KeyDown="txtName_KeyDown" />
         <Button
             x:Name="btnSave"
-            Grid.Row="4"
+            Grid.Row="5"
             Width="80"
             Margin="5"
             HorizontalAlignment="Right"
