@@ -25,6 +25,8 @@ The main reason this exists is because years ago Live Connect was really unstabl
 - Apps menu then Auth Token can save the token to Windows Credential Manager temporarilly.
   - This is needed before launching Ex/Explorer, or Finch directly for testing using agent GUIDs instead of from VSA.
 
+![Screenshot of KLC-Proxy](/Resources/KLC-Proxy-Annotated.png?raw=true)
+
 ## Required other repos to build
 - LibKaseya
 - LibKaseyaAuth
